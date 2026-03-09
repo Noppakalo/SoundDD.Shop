@@ -1,0 +1,40 @@
+@import url(~/assets/css/typegraphy.css);
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+:root {
+  --ui-primary: #0079ff;
+  --ui-secondary: #d11414;
+  --ui-success: #06c755;
+  --ui-error: #e70303;
+  --ui-text: #0f172a;
+  --ui-container: 1280px;
+}
+
+@theme {
+  /* Font Sizes */
+  --text-xs: 1rem;
+  --text-sm: 1.125rem;
+  --text-base: 1.25rem;
+  --text-lg: 1.5rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 1.875rem;
+  --text-3xl: 2rem;
+  --text-4xl: 2.5rem;
+  --text-5xl: 2.75rem;
+  --text-6xl: 3rem;
+}
+
+body {
+  font-family: "DB Heavent", sans-serif;
+  font-weight: 400;
+  color: var(--ui-text);
+  font-size: var(--text-base);
+  word-wrap: break-word;
+  overflow-x: hidden;
+  overflow-wrap: break-word;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  height: auto;
+  scroll-behavior: smooth;
+}

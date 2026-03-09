@@ -1,0 +1,51 @@
+@font-face {
+  font-family: "DB Heavent";
+  src:
+    url("/fonts/woff2/DB Heavent v3.2.1.woff2") format("woff2"),
+    url("/fonts/woff/DB Heavent v3.2.1.woff") format("woff"),
+    url("/fonts/woff/DB Heavent v3.2.1.eot") format("eot"),
+    url("/fonts/woff/DB Heavent v3.2.1.oth") format("otf"),
+    url("/fonts/woff/DB Heavent v3.2.1.ttf") format("ttf");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DB Heavent";
+  src:
+    url("/fonts/woff2/DB Heavent Med v3.2.1.woff2") format("woff2"),
+    url("/fonts/woff/DB Heavent Med v3.2.1.woff") format("woff"),
+    url("/fonts/woff/DB Heavent Med v3.2.1.eot") format("eot"),
+    url("/fonts/woff/DB Heavent Med v3.2.1.oth") format("otf"),
+    url("/fonts/woff/DB Heavent Med v3.2.1.ttf") format("ttf");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DB Heavent";
+  src:
+    url("/fonts/woff2/DB Heavent Bd v3.2.1.woff2") format("woff2"),
+    url("/fonts/woff/DB Heavent Bd v3.2.1.woff") format("woff"),
+    url("/fonts/woff/DB Heavent Bd v3.2.1.eot") format("eot"),
+    url("/fonts/woff/DB Heavent Bd v3.2.1.oth") format("otf"),
+    url("/fonts/woff/DB Heavent Bd v3.2.1.ttf") format("ttf");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DB Heavent";
+  src:
+    url("/fonts/woff2/DB Heavent Blk v3.2.1.woff2") format("woff2"),
+    url("/fonts/woff/DB Heavent Blk v3.2.1.woff") format("woff"),
+    url("/fonts/woff/DB Heavent Blk v3.2.1.eot") format("eot"),
+    url("/fonts/woff/DB Heavent Blk v3.2.1.oth") format("otf"),
+    url("/fonts/woff/DB Heavent Blk v3.2.1.ttf") format("ttf");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}

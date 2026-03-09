@@ -1,0 +1,61 @@
+# ----------------------
+# Nuxt & Build Output
+# ----------------------
+.nuxt
+.nitro
+.output
+.data
+.cache
+dist
+build
+.vite/
+
+# ----------------------
+# Dependencies & Logs
+# ----------------------
+node_modules
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+coverage/
+
+# ----------------------
+# Environment Variables
+# ----------------------
+# Block all .env files
+.env
+.env.*
+# Allow the example file
+!.env.example
+
+# ----------------------
+# IDE & Editors
+# ----------------------
+.vscode/
+.idea/
+.fleet
+*.swp
+*.sublime*
+
+# ----------------------
+# Operating System (OS)
+# ----------------------
+.DS_Store
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+
+# ----------------------
+# Databases & Backups
+# ----------------------
+*.sql
+*.sqlite
+*.zip
+*.tar
+*.gz
+*.7z
+*.dmg

@@ -1,0 +1,137 @@
+<template>
+    <section>
+        <UContainer class="flex flex-col gap-6 py-6">
+            <div class="flex flex-col gap-1">
+                <div class="flex items-center justify-between">
+                    <h2
+                        v-if="title"
+                        class="flex-1 text-3xl font-bold whitespace-nowrap"
+                        :class="
+                            align === 'center' ? 'text-center' : 'text-left'
+                        "
+                    >
+                        {{ title }}
+                    </h2>
+                    <UButton
+                        trailing-icon="i-iconamoon:arrow-right-6-circle"
+                        color="primary"
+                        variant="ghost"
+                        class="px-2.5 whitespace-nowrap hover:bg-transparent"
+                    >
+                        ดูทั้งหมด
+                    </UButton>
+                </div>
+                <div
+                    v-if="subcategories && subcategories.length > 0"
+                    class="flex items-center gap-1.5"
+                >
+                    <UButton
+                        v-for="sub in subcategories"
+                        :key="sub.id"
+                        :variant="
+                            activeCategoryId === sub.id ? 'solid' : 'outline'
+                        "
+                        :color="
+                            activeCategoryId === sub.id
+                                ? 'primary'
+                                : 'secondary'
+                        "
+                        size="md"
+                        class="rounded-full whitespace-nowrap"
+                        @click="activeCategoryId = sub.id"
+                    >
+                        {{ sub.name }}
+                    </UButton>
+                </div>
+            </div>
+            <div v-if="pending" class="grid grid-cols-2 gap-6 md:grid-cols-5">
+                <div
+                    v-for="i in 5"
+                    :key="i"
+                    class="h-80 animate-pulse rounded-lg bg-gray-100"
+                ></div>
+            </div>
+            <UCarousel
+                v-slot="{ item }"
+                v-else-if="products?.data"
+                :items="products?.data || []"
+                :ui="{
+                    viewport: 'px-2 pb-4',
+                    controls: 'inset-x-10',
+                    item: 'basis-1/2 md:basis-1/3 lg:basis-1/5',
+                    prev: 'bg-white text-primary ring-0 shadow-sm transition-all duration-200 active:scale-90 active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50',
+                    next: 'bg-white text-primary ring-0 shadow-sm transition-all duration-200 active:scale-90 active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50',
+                }"
+                arrows
+            >
+                <ProductCard :product="item" class="w-full" />
+            </UCarousel>
+        </UContainer>
+    </section>
+</template>
+
+<script setup lang="ts">
+interface Props {
+    title?: string
+    categoryId?: number
+    limit?: number
+    align?: 'left' | 'center'
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    align: 'left',
+})
+
+const activeCategoryId = ref(props.categoryId)
+const { getProducts } = useWooProductApi()
+const { getCategories } = useWooCategoriesApi()
+
+const { data: subcategories } = await useAsyncData(
+    `subcategories-${props.categoryId || 'all'}`,
+    async () => {
+        if (!props.categoryId) return []
+        const res = await getCategories({
+            parent: props.categoryId,
+            hide_empty: false,
+        })
+
+        let data = res?.data || []
+
+        data = data.sort((a, b) => a.id - b.id)
+
+        if (data.length > 0 && !activeCategoryId.value) {
+            activeCategoryId.value = data[0]?.id
+        }
+
+        return data
+    }
+)
+
+const { data: products, pending } = await useAsyncData(
+    `products-carousel-${props.categoryId || 'all'}`,
+    () =>
+        getProducts({
+            per_page: props.limit || 10,
+            category: activeCategoryId.value,
+            orderby: 'date',
+            order: 'desc',
+        }),
+    {
+        watch: [activeCategoryId],
+    }
+)
+
+watch(
+    subcategories,
+    (newVal) => {
+        if (
+            newVal &&
+            newVal.length > 0 &&
+            activeCategoryId.value === props.categoryId
+        ) {
+            activeCategoryId.value = newVal[0]?.id
+        }
+    },
+    { immediate: true }
+)
+</script>
