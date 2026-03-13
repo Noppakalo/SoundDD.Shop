@@ -1,20 +1,32 @@
 import type { Customer } from '~/types/customer'
 
+function buildBasicAuth(username: string, password: string): string {
+    return `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`
+}
+
 export function buildWooAuth(
     config: ReturnType<typeof useRuntimeConfig>
 ): string {
-    return `Basic ${Buffer.from(`${config.wooConsumerKey}:${config.wooConsumerSecret}`).toString('base64')}`
-}
-
-export function buildWpAuth(
-    config: ReturnType<typeof useRuntimeConfig>
-): string {
-    const username =
+    const wpUsername =
         (config.wpAppUsername as string) ||
         process.env.NUXT_WP_APP_USERNAME ||
         'Oatzys'
-    const password = config.wpAppPassword as string
-    return `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`
+    const wpPassword =
+        (config.wpAppPassword as string) ||
+        process.env.NUXT_WP_APP_PASSWORD ||
+        ''
+    if (wpPassword) return buildBasicAuth(wpUsername, wpPassword)
+
+    const key =
+        (config.wooConsumerKey as string) ||
+        process.env.NUXT_WOO_CONSUMER_KEY ||
+        ''
+    const secret =
+        (config.wooConsumerSecret as string) ||
+        process.env.NUXT_WOO_CONSUMER_SECRET ||
+        ''
+
+    return buildBasicAuth(key, secret)
 }
 
 export async function wooFindCustomerByEmail(

@@ -5,15 +5,14 @@
                 <div class="space-y-4 lg:col-span-2">
                     <div class="flex items-center justify-between">
                         <p class="text-3xl font-bold">ที่อยู่จัดส่งสินค้า</p>
-                        <NuxtLink to="/account/shipping-address">
-                            <UButton
-                                color="primary"
-                                variant="ghost"
-                                icon="i-heroicons-map-pin"
-                            >
-                                จัดการที่อยู่
-                            </UButton>
-                        </NuxtLink>
+                        <UButton
+                            to="/account/shipping-address"
+                            color="primary"
+                            variant="ghost"
+                            icon="i-heroicons-map-pin"
+                        >
+                            จัดการที่อยู่
+                        </UButton>
                     </div>
                     <div class="flex flex-col gap-8 rounded-lg p-8 shadow-sm">
                         <UForm

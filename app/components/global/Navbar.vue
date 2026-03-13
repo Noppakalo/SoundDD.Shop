@@ -8,16 +8,19 @@
                 </p>
             </UContainer>
         </div>
-        <UContainer class="grid grid-cols-3 items-center py-4"
-            ><NuxtLink to="/">
-                <NuxtImg
-                    src="/logos/SoundDD-logo.webp"
-                    alt="SoundDD Shop"
-                    loading="lazy"
-                    draggable="false"
-                    class="h-10 w-auto"
-                />
-            </NuxtLink>
+        <UContainer class="grid grid-cols-3 items-center py-4">
+            <div class="flex items-center gap-6">
+                <ULink to="/">
+                    <NuxtImg
+                        src="/logos/SoundDD-logo.webp"
+                        alt="SoundDD Shop"
+                        loading="lazy"
+                        draggable="false"
+                        class="h-10 w-auto"
+                    />
+                </ULink>
+                <MegaMenu />
+            </div>
             <UInput
                 icon="i-lucide-search"
                 size="md"
@@ -33,15 +36,14 @@
                         :text="cartItemCount"
                         :show="cartItemCount > 0"
                     >
-                        <NuxtLink to="/cart">
-                            <UButton
-                                aria-label="สินค้าที่สนใจ"
-                                icon="i-iconamoon:shopping-bag"
-                                color="neutral"
-                                variant="ghost"
-                                size="xl"
-                            />
-                        </NuxtLink>
+                        <UButton
+                            to="/cart"
+                            aria-label="สินค้าที่สนใจ"
+                            icon="i-iconamoon:shopping-bag"
+                            color="neutral"
+                            variant="ghost"
+                            size="xl"
+                        />
                     </UChip>
                 </div>
                 <div v-if="user">

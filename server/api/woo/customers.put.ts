@@ -60,7 +60,7 @@ export default defineEventHandler(async (event) => {
             id,
             payload,
             buildWooAuth(config),
-            config.public.wpUrl as string
+            config.public.wpUrl
         )
         return { success: true, data: response, message: null }
     } catch (error: any) {
@@ -75,7 +75,7 @@ export default defineEventHandler(async (event) => {
                 const retryResp = await wooUpdateCustomer(
                     id,
                     payload,
-                    buildWpAuth(config),
+                    buildWooAuth(config),
                     config.public.wpUrl as string
                 )
                 return { success: true, data: retryResp, message: null }

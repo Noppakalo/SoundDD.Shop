@@ -16,7 +16,7 @@ export default defineOAuthGoogleEventHandler({
         }
 
         try {
-            const authHeader = buildWpAuth(config)
+            const authHeader = buildWooAuth(config)
             const wpUrl = config.public.wpUrl as string
             const socialPassword = `${sub}${config.wpAppPassword}`
 

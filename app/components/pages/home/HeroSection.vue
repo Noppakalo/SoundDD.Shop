@@ -1,27 +1,25 @@
 <template>
     <section>
         <UContainer class="py-6">
-            <div>
-                <UCarousel
-                    v-slot="{ item }"
-                    :prev="{ color: 'primary' }"
-                    :next="{ color: 'primary' }"
-                    :items="items"
-                    :autoplay="{ delay: 5000 }"
-                    arrows
-                    dots
-                >
-                    <NuxtLink :to="item.link">
-                        <NuxtImg
-                            :src="item.src"
-                            :alt="item.alt"
-                            loading="lazy"
-                            draggable="false"
-                            class="w-full cursor-pointer rounded-2xl object-cover"
-                        />
-                    </NuxtLink>
-                </UCarousel>
-            </div>
+            <UCarousel
+                v-slot="{ item }"
+                :prev="{ color: 'primary' }"
+                :next="{ color: 'primary' }"
+                :items="items"
+                :autoplay="{ delay: 5000 }"
+                arrows
+                dots
+            >
+                <ULink :to="item.link">
+                    <NuxtImg
+                        :src="item.src"
+                        :alt="item.alt"
+                        loading="lazy"
+                        draggable="false"
+                        class="w-full cursor-pointer rounded-2xl object-cover"
+                    />
+                </ULink>
+            </UCarousel>
         </UContainer>
     </section>
 </template>

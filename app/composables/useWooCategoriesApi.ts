@@ -1,4 +1,4 @@
-import type { Category } from '~/types/product'
+import type { Category } from '~/types/category'
 
 const categoryCache = new Map<string, { success: boolean; data: Category[] }>();
 

@@ -11,6 +11,11 @@ export default defineEventHandler(async (event) => {
     const search = query.search || null
     const stockStatus = query.stock_status || undefined
     const include = query.include as string | undefined
+    const minPrice = query.min_price as string | undefined
+    const maxPrice = query.max_price as string | undefined
+    const brandIds = query.brand as string | undefined
+    const orderby = (query.orderby as string) || 'date'
+    const order = (query.order as string) || 'desc'
 
     const productCardFields = [
         'id',
@@ -18,25 +23,24 @@ export default defineEventHandler(async (event) => {
         'slug',
         'price',
         'regular_price',
-        'sale_price',
         'on_sale',
         'brands',
         'images',
+        'attributes',
+        'variations',
         'stock_status',
-        'meta_data',
+        'acf',
     ].join(',')
 
     const productDetailFields = [
         'id',
         'name',
         'slug',
-        'permalink',
         'description',
         'short_description',
         'sku',
         'price',
         'regular_price',
-        'sale_price',
         'on_sale',
         'weight',
         'dimensions',
@@ -45,22 +49,18 @@ export default defineEventHandler(async (event) => {
         'tags',
         'images',
         'attributes',
-        'related_ids',
+        'variations',
         'stock_status',
-        'meta_data',
+        'acf',
     ].join(',')
 
     const fields = slug ? productDetailFields : productCardFields
-    const auth = btoa(`Oatzys:${config.wpAppPassword}`)
-
+    const wooAuthHeader = buildWooAuth(config)
     try {
-        const response = await $fetch<Product[]>(
-            `${config.public.wpUrl}/wp-json/wc/v3/products`,
-            {
+        const fetchProducts = (authHeader: string) =>
+            $fetch<Product[]>(`${config.public.wpUrl}/wp-json/wc/v3/products`, {
                 method: 'GET',
-                headers: {
-                    Authorization: `Basic ${auth}`,
-                },
+                headers: { Authorization: authHeader },
                 query: {
                     _fields: fields,
                     slug: slug,
@@ -69,35 +69,29 @@ export default defineEventHandler(async (event) => {
                     category: categoryId,
                     search: search,
                     status: 'publish',
-                    orderby: 'date',
-                    order: 'desc',
+                    orderby: orderby,
+                    order: order,
                     stock_status: stockStatus,
                     include: include,
+                    min_price: minPrice,
+                    max_price: maxPrice,
+                    brand: brandIds,
                 },
-            }
-        )
+            })
 
-        const formatProduct = (product: Product) => {
-            const promoPriceMeta = product.meta_data?.find(
-                (meta) => meta.key === 'promotional_price'
-            )
-            return {
-                ...product,
-                promotional_price: promoPriceMeta ? promoPriceMeta.value : null,
-            }
-        }
+        const response = await fetchProducts(wooAuthHeader)
 
         if (slug) {
             const firstProduct = response[0]
             return {
                 success: true,
-                data: firstProduct ? formatProduct(firstProduct) : null,
+                data: firstProduct || null,
             }
         }
 
         return {
             success: true,
-            data: response.map(formatProduct),
+            data: response,
         }
     } catch (error: any) {
         throw createError({

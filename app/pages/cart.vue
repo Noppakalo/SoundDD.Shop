@@ -36,7 +36,7 @@
                         <div
                             class="size-20 shrink-0 overflow-hidden rounded-lg"
                         >
-                            <NuxtLink :to="`/product/${item.product.slug}`">
+                            <ULink :to="`/product/${item.product.slug}`">
                                 <NuxtImg
                                     :src="
                                         item.product.images?.[0]?.src ||
@@ -47,33 +47,40 @@
                                     draggable="false"
                                     class="h-full w-full object-cover"
                                 />
-                            </NuxtLink>
+                            </ULink>
                         </div>
-                        <NuxtLink
+                        <ULink
                             :to="`/product/${item.product.slug}`"
                             class="hover:text-primary line-clamp-2 font-medium"
                         >
                             {{ item.product.name }}
-                        </NuxtLink>
+                        </ULink>
                         <div>
-                            <div
-                                class="mt-auto flex items-baseline justify-end gap-2"
-                            >
-                                <p
-                                    v-if="
-                                        item.product.on_sale &&
-                                        item.product.regular_price !==
-                                            item.product.price
-                                    "
-                                    class="text-md text-gray-400 line-through decoration-1"
-                                >
-                                    ฿{{
-                                        formatPrice(item.product.regular_price)
-                                    }}
-                                </p>
-                                <p class="text-error text-lg font-bold">
-                                    ฿{{ formatPrice(item.product.price) }}
-                                </p>
+                            <div v-if="item.product.price" class="mt-auto flex flex-col items-end">
+                                <div v-if="item.product.acf?.promotional_price" class="flex flex-col items-end">
+                                    <div class="flex items-baseline gap-2 text-xs text-gray-400">
+                                        <p v-if="parseFloat(item.product.regular_price) > parseFloat(item.product.price)">
+                                            <span class="line-through decoration-1">฿{{ formatPrice(item.product.regular_price) }}</span>
+                                        </p>
+                                        <p v-if="parseFloat(item.product.acf?.promotional_price) > parseFloat(item.product.price)">
+                                            <span class="line-through decoration-1">฿{{ formatPrice(item.product.acf.promotional_price) }}</span>
+                                        </p>
+                                    </div>
+                                    <p class="text-error text-lg font-bold">
+                                        ฿{{ formatPrice(item.product.price) }}
+                                    </p>
+                                </div>
+                                <div v-else class="flex items-baseline gap-2">
+                                    <p
+                                        v-if="item.product.on_sale && parseFloat(item.product.regular_price) > parseFloat(item.product.price)"
+                                        class="text-xs text-gray-400 line-through decoration-1"
+                                    >
+                                        ฿{{ formatPrice(item.product.regular_price) }}
+                                    </p>
+                                    <p class="text-error text-lg font-bold">
+                                        ฿{{ formatPrice(item.product.price) }}
+                                    </p>
+                                </div>
                             </div>
                             <div class="flex gap-2">
                                 <UInputNumber
@@ -122,16 +129,15 @@
                                 ฿{{ formatPrice(cartTotal) }}
                             </p>
                         </div>
-                        <NuxtLink to="/checkout">
-                            <UButton
-                                color="primary"
-                                size="xl"
-                                block
-                                class="mt-2"
-                            >
-                                ดำเนินการชำระเงิน
-                            </UButton>
-                        </NuxtLink>
+                        <UButton
+                            to="/checkout"
+                            color="primary"
+                            size="xl"
+                            block
+                            class="mt-2"
+                        >
+                            ดำเนินการชำระเงิน
+                        </UButton>
                     </div>
                 </div>
             </div>

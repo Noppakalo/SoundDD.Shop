@@ -1,9 +1,11 @@
-import type { Brands } from '~/types/product'
+import type { Brands } from '~/types/brand'
 
 export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig()
     const query = getQuery(event)
     const slug = query.slug || null
+
+    const authHeader = buildWooAuth(config)
 
     try {
         const response = await $fetch<Brands[]>(
@@ -11,7 +13,7 @@ export default defineEventHandler(async (event) => {
             {
                 method: 'GET',
                 headers: {
-                    Authorization: `Basic ${Buffer.from(`Oatzys:${config.wpAppPassword}`).toString('base64')}`,
+                    Authorization: authHeader,
                 },
                 query: {
                     slug: slug,

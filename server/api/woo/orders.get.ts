@@ -12,13 +12,13 @@ export default defineEventHandler(async (event) => {
         })
     }
 
-    const auth = buildWpAuth(config)
+    const authHeader = buildWooAuth(config)
 
     try {
         const response = await $fetch<Order[]>(
             `${config.public.wpUrl}/wp-json/wc/v3/orders`,
             {
-                headers: { Authorization: `Basic ${auth}` },
+                headers: { Authorization: authHeader },
                 query: {
                     customer: customerId,
                     per_page: 20,

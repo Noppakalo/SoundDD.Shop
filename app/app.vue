@@ -9,8 +9,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 
-const toaster = { max: 3, duration: 2000 }
-useAuthToast()
+const toaster = { max: 1, duration: 2000 }
 
 const { initWishlist } = useWishlist()
 const { initCart } = useCart()

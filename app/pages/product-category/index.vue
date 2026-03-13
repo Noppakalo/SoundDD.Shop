@@ -17,30 +17,25 @@
                     </div>
                 </div>
             </div>
-            <div v-else-if="error || !product" class="py-24 text-center">
+            <div v-else-if="error || !category" class="py-24 text-center">
                 <UIcon
                     name="i-lucide-package-x"
                     class="mb-4 text-6xl text-gray-300"
                 />
-                <p>
-                    class="mb-2 text-2xl font-bold text-gray-900">
-                    ไม่พบสินค้าที่คุณค้นหา
+                <p class="mb-2 text-2xl font-bold text-gray-900">
+                    ไม่พบหมวดหมู่ที่คุณค้นหา
                 </p>
                 <UButton to="/" color="primary" variant="solid" size="lg"
                     >กลับสู่หน้าหลัก</UButton
                 >
             </div>
             <div v-else class="flex flex-col gap-8">
-                <UBreadcrumb
-                    separator-icon="i-iconamoon:arrow-right-2"
-                    :items="breadcrumbItems"
-                />
-                <div class="grid grid-cols-1 gap-10 lg:grid-cols-2">
-                    <ProductImageGallery
-                        :product="product"
-                        :productImages="productImages"
+                <div class="flex flex-col gap-2 rounded-lg p-2">
+                    <UBreadcrumb
+                        separator-icon="i-iconamoon:arrow-right-2"
+                        :items="breadcrumbItems"
                     />
-                    <ProductDetailInfo :product="product" />
+                    <h1>{{ category?.name }}</h1>
                 </div>
             </div>
         </UContainer>
@@ -57,11 +52,11 @@ const {
     data: response,
     pending,
     error,
-} = await useAsyncData(`product-${slug}`, () =>
-    useWooProductApi().getProducts({ slug })
+} = await useAsyncData(`category-${slug}`, () =>
+    useWooCategoriesApi().getCategories({ slug })
 )
 
-const product = computed(() => {
+const category = computed(() => {
     if (response.value?.success && response.value?.data) {
         return Array.isArray(response.value.data)
             ? response.value.data[0]
@@ -70,14 +65,8 @@ const product = computed(() => {
     return null
 })
 
-const productImages = computed(() => {
-    const imgs = (product.value?.images || []).map((img: any) => img?.src)
-    return imgs.filter((src: string | null | undefined) => !!src)
-})
-
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     { label: 'หน้าแรก', to: '/' },
-     { label: 'สินค้า', to: '/product' },
-    { label: product.value?.name || 'กำลังโหลด...', to: route.fullPath },
+    { label: category.value?.name || 'หมวดหมู่', to: route.fullPath },
 ])
 </script>

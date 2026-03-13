@@ -13,10 +13,11 @@
                         {{ title }}
                     </h2>
                     <UButton
+                        :to="displayLink"
                         trailing-icon="i-iconamoon:arrow-right-6-circle"
                         color="primary"
                         variant="ghost"
-                        class="px-2.5 whitespace-nowrap hover:bg-transparent"
+                        class="px-2.5 whitespace-nowrap"
                     >
                         ดูทั้งหมด
                     </UButton>
@@ -53,12 +54,12 @@
             </div>
             <UCarousel
                 v-slot="{ item }"
-                v-else-if="products?.data"
-                :items="products?.data || []"
+                v-else-if="availableProducts.length"
+                :items="availableProducts"
                 :ui="{
                     viewport: 'px-2 pb-4',
                     controls: 'inset-x-10',
-                    item: 'basis-1/2 md:basis-1/3 lg:basis-1/5',
+                    item: 'basis-1/2 md:basis-1/3 lg:basis-1/4',
                     prev: 'bg-white text-primary ring-0 shadow-sm transition-all duration-200 active:scale-90 active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50',
                     next: 'bg-white text-primary ring-0 shadow-sm transition-all duration-200 active:scale-90 active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50',
                 }"
@@ -85,6 +86,22 @@ const props = withDefaults(defineProps<Props>(), {
 const activeCategoryId = ref(props.categoryId)
 const { getProducts } = useWooProductApi()
 const { getCategories } = useWooCategoriesApi()
+
+const { data: categoryInfo } = await useAsyncData(
+    `category-link-${props.categoryId}`,
+    async () => {
+        if (!props.categoryId) return null
+        const res = await getCategories({ include: [props.categoryId] })
+        return res?.data?.[0] || null
+    }
+)
+
+const displayLink = computed(() => {
+    if (categoryInfo.value?.slug) {
+        return `/product-category/${categoryInfo.value.slug}`
+    }
+    return '/product-category'
+})
 
 const { data: subcategories } = await useAsyncData(
     `subcategories-${props.categoryId || 'all'}`,
@@ -120,6 +137,13 @@ const { data: products, pending } = await useAsyncData(
         watch: [activeCategoryId],
     }
 )
+
+const availableProducts = computed(() => {
+    if (!products.value?.data) return []
+    return (products.value.data as any[]).filter(
+        (p) => p.stock_status !== 'outofstock'
+    )
+})
 
 watch(
     subcategories,

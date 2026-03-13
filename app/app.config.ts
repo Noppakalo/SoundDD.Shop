@@ -46,6 +46,21 @@ export default defineAppConfig({
                 size: 'lg',
             },
         },
+        link: {
+            variants: {
+                active: {
+                    false: 'text-black',
+                },
+                disabled: {
+                    true: 'opacity-100',
+                },
+            },
+            compoundVariants: [
+                {
+                    class: ['hover:text-primary'],
+                },
+            ],
+        },
         carousel: {
             slots: {
                 root: 'relative focus:outline-none',

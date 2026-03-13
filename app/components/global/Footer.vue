@@ -5,7 +5,7 @@
                 class="grid grid-cols-1 gap-10 md:grid-cols-[1.5fr_1fr_1fr_1fr_1fr]"
             >
                 <div class="flex flex-col gap-4">
-                    <NuxtLink to="/">
+                    <ULink to="/">
                         <NuxtImg
                             src="logos/SoundDD-Group-Main.webp"
                             alt="SoundDD Group"
@@ -13,7 +13,7 @@
                             draggable="false"
                             class="h-8 w-auto"
                         />
-                    </NuxtLink>
+                    </ULink>
                     <address class="flex flex-col gap-2.5 text-sm not-italic">
                         <p class="text-base font-bold">
                             บริษัท ซาวด์ดีดี กรุ๊ป จำกัด
@@ -23,7 +23,7 @@
                             กรุงเทพมหานคร 10170
                         </p>
                         <div class="flex flex-col gap-1">
-                            <NuxtLink
+                            <ULink
                                 to="tel:024358998"
                                 class="hover:text-primary flex items-center gap-2 transition-colors"
                             >
@@ -32,8 +32,8 @@
                                     class="size-5"
                                 />
                                 02-435-8998
-                            </NuxtLink>
-                            <NuxtLink
+                            </ULink>
+                            <ULink
                                 to="tel:0653968888"
                                 class="hover:text-primary flex items-center gap-2 transition-colors"
                             >
@@ -42,7 +42,7 @@
                                     class="size-5"
                                 />
                                 065-396-8888
-                            </NuxtLink>
+                            </ULink>
                         </div>
                         <p>เลขที่ทะเบียน: 0105562106163</p>
                     </address>
@@ -55,12 +55,12 @@
                     <p class="font-bold">{{ nav.title }}</p>
                     <ul class="space-y-3">
                         <li v-for="link in nav.links" :key="link.to">
-                            <NuxtLink
+                            <ULink
                                 :to="link.to"
                                 class="hover:text-primary text-sm transition-colors"
                             >
                                 {{ link.label }}
-                            </NuxtLink>
+                            </ULink>
                         </li>
                     </ul>
                 </nav>
@@ -98,7 +98,7 @@
                     <div class="flex flex-col gap-4">
                         <p class="font-bold">ติดตามเรา</p>
                         <div class="flex gap-4">
-                            <NuxtLink
+                            <ULink
                                 v-for="social in socialLinks"
                                 :key="social.to"
                                 :to="social.to"
@@ -107,12 +107,12 @@
                                 :class="social.color"
                             >
                                 <UIcon :name="social.icon" class="h-6" />
-                            </NuxtLink>
+                            </ULink>
                         </div>
                     </div>
                     <div class="flex flex-col gap-4">
                         <p class="font-bold">รับรองโดย</p>
-                        <NuxtLink
+                        <ULink
                             to="social.to"
                             target="_blank"
                             class="text-xl transition-transform hover:scale-110"
@@ -124,7 +124,7 @@
                                 draggable="false"
                                 class="h-6 w-auto"
                             />
-                        </NuxtLink>
+                        </ULink>
                     </div>
                 </div>
             </div>
@@ -136,12 +136,12 @@
                     Rights Reserved.
                 </p>
                 <div class="flex gap-4 text-xs text-gray-500">
-                    <NuxtLink to="/privacy-policy" class="hover:text-primary"
-                        >นโยบายความเป็นส่วนตัว</NuxtLink
+                    <ULink to="/privacy-policy" class="hover:text-primary"
+                        >นโยบายความเป็นส่วนตัว</ULink
                     >
                     <span class="text-gray-300">|</span>
-                    <NuxtLink to="/refund-policy" class="hover:text-primary"
-                        >นโยบายการคืนสินค้า</NuxtLink
+                    <ULink to="/refund-policy" class="hover:text-primary"
+                        >นโยบายการคืนสินค้า</ULink
                     >
                 </div>
             </div>

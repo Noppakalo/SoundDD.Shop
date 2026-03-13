@@ -34,7 +34,6 @@ export const useWishlist = () => {
                 }
             }
         } catch (error) {
-            console.error('Failed to fetch customer wishlist:', error)
             if (updateItems) wishlistItems.value = []
         } finally {
             isLoading.value = false

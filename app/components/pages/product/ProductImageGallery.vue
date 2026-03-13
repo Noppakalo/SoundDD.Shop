@@ -23,12 +23,13 @@
                         calculateDiscount(
                             product.regular_price,
                             product.price,
-                            product.promotional_price || undefined
+                            product.acf?.promotional_price || undefined
                         )
                     }}%
                 </UBadge>
             </div>
             <UCarousel
+                v-if="productImages.length"
                 ref="carouselRef"
                 v-slot="{ item }"
                 :items="productImages"
@@ -49,6 +50,29 @@
                     @click="showLightbox(activeIndex)"
                 />
             </UCarousel>
+            <div
+                v-else
+                class="flex aspect-square w-full items-center justify-center rounded-2xl bg-gray-100 text-gray-400"
+            >
+                <UIcon
+                    name="i-iconamoon:folder-image-light"
+                    class="size-20"
+                    aria-hidden="true"
+                />
+            </div>
+            <div
+                v-if="product.acf?.image_gift"
+                class="absolute right-0 bottom-4 left-0 mx-auto w-120 px-4"
+            >
+                <NuxtImg
+                    v-if="product.acf?.image_gift.url"
+                    :src="product.acf?.image_gift.url"
+                    :alt="product.acf?.image_gift.alt"
+                    loading="lazy"
+                    draggable="false"
+                    class="relative size-full object-cover"
+                />
+            </div>
         </div>
         <div v-if="productImages.length > 1">
             <UCarousel
@@ -88,46 +112,51 @@
                 :loop="false"
                 :index="indexRef"
                 class="bg-black backdrop-blur-sm"
-                @on-index-change="(oldIdx: number, newIdx: number) => (indexRef = newIdx)"
+                @on-index-change="
+                    (oldIdx: number, newIdx: number) => (indexRef = newIdx)
+                "
                 @hide="onHide"
             >
                 <template #close-btn>
                     <div
-                        class="hover:text-primary absolute top-6 right-6 z-[100] cursor-pointer text-white transition-colors disabled:cursor-not-allowed"
+                        class="hover:text-primary absolute top-6 right-6 z-100 cursor-pointer text-white transition-colors disabled:cursor-not-allowed"
                         @click="onHide"
                     >
-                        <UIcon name="i-iconamoon:close-duotone" class="size-10" />
+                        <UIcon
+                            name="i-iconamoon:close-duotone"
+                            class="size-10"
+                        />
                     </div>
                 </template>
                 <template #prev-btn="{ prev }">
                     <div
-                        class="group absolute top-1/2 left-1/2 z-[100] flex -translate-x-[min(45vw,calc(500px+5rem))] -translate-y-1/2 items-center justify-center rounded-full p-2 text-white ring transition-all active:scale-95"
+                        class="group absolute top-1/2 left-1/2 z-100 flex -translate-x-[min(45vw,calc(500px+5rem))] -translate-y-1/2 items-center justify-center rounded-full p-2 text-white ring transition-all active:scale-95"
                         :class="
                             indexRef === 0
                                 ? 'cursor-not-allowed opacity-30'
-                                : 'cursor-pointer hover:text-primary hover:ring-2 hover:ring-primary ring-white text-white'
+                                : 'hover:text-primary hover:ring-primary cursor-pointer text-white ring-white hover:ring-2'
                         "
                         @click="indexRef > 0 && prev()"
                     >
                         <UIcon
                             name="i-iconamoon:arrow-left-2"
-                            class="size-8 max-sm:size-5 transition-colors group-hover:text-primary"
+                            class="group-hover:text-primary size-8 transition-colors max-sm:size-5"
                         />
                     </div>
                 </template>
                 <template #next-btn="{ next }">
                     <div
-                        class="group absolute top-1/2 right-1/2 z-[100] flex translate-x-[min(45vw,calc(500px+5rem))] -translate-y-1/2 items-center justify-center rounded-full p-2 text-white ring transition-all active:scale-95"
+                        class="group absolute top-1/2 right-1/2 z-100 flex translate-x-[min(45vw,calc(500px+5rem))] -translate-y-1/2 items-center justify-center rounded-full p-2 text-white ring transition-all active:scale-95"
                         :class="
                             indexRef === productImages.length - 1
                                 ? 'cursor-not-allowed opacity-30'
-                                : 'cursor-pointer hover:text-primary hover:ring-2 hover:ring-primary ring-white text-white'
+                                : 'hover:text-primary hover:ring-primary cursor-pointer text-white ring-white hover:ring-2'
                         "
                         @click="indexRef < productImages.length - 1 && next()"
                     >
                         <UIcon
                             name="i-iconamoon:arrow-right-2"
-                            class="size-8 max-sm:size-5 transition-colors group-hover:text-primary"
+                            class="group-hover:text-primary size-8 transition-colors max-sm:size-5"
                         />
                     </div>
                 </template>
@@ -149,7 +178,6 @@ const carouselRef = useTemplateRef('carouselRef')
 const activeIndex = ref(0)
 const thumbnailRefs = ref<any[]>([])
 
-// Lightbox state
 const visibleRef = ref(false)
 const indexRef = ref(0)
 
@@ -196,7 +224,6 @@ function onHide() {
     border-radius: var(--radius-4xl);
     box-shadow: var(--shadow-xs);
     background: white;
-    width: 800px;
-    aspect-ratio: 1/1 ;
+    aspect-ratio: 1/1;
 }
 </style>

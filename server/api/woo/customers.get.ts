@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 400, statusMessage: 'กรุณาระบุ email' })
     }
 
-    const auth = buildWpAuth(config)
+     const authHeader = buildWooAuth(config)
     const wpUrl = config.public.wpUrl as string
 
     try {
@@ -28,14 +28,14 @@ export default defineEventHandler(async (event) => {
             `${wpUrl}/wp-json/wc/v3/customers`,
             {
                 method: 'GET',
-                headers: { Authorization: auth },
+                headers: { Authorization: authHeader },
                 query: { email, per_page: 1, _fields: customerFileds },
             }
         )
 
         if (!customers || customers.length === 0) {
             try {
-                const created = await wooCreateCustomer({ email }, auth, wpUrl)
+                const created = await wooCreateCustomer({ email }, authHeader, wpUrl)
                 return { success: true, data: created }
             } catch {
                 return { success: false, data: null }

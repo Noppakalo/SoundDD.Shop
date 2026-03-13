@@ -6,28 +6,26 @@ export const formatPrice = (price: string | number) => {
 
 export const calculateDiscount = (
     regularPrice: string | number,
-    salePrice: string | number,
+    price: string | number,
     promotionalPrice?: string | number | null
 ) => {
     const regular =
         typeof regularPrice === 'string'
             ? parseFloat(regularPrice)
-            : regularPrice
-    const sale =
-        typeof salePrice === 'string' ? parseFloat(salePrice) : salePrice
-
+            : Number(regularPrice) || 0
+    const currentPrice =
+        typeof price === 'string' ? parseFloat(price) : Number(price) || 0
     const promotional = promotionalPrice
         ? typeof promotionalPrice === 'string'
             ? parseFloat(promotionalPrice)
-            : promotionalPrice
+            : Number(promotionalPrice)
         : 0
-
-    if (regular > promotional && promotional > 0) {
-        const discount = ((regular - promotional) / regular) * 100
+    if (promotional > 0 && currentPrice > promotional) {
+        const discount = ((currentPrice - promotional) / currentPrice) * 100
         return Math.round(discount)
     }
-    if (regular > sale && sale > 0) {
-        const discount = ((regular - sale) / regular) * 100
+    if (regular > currentPrice && currentPrice > 0) {
+        const discount = ((regular - currentPrice) / regular) * 100
         return Math.round(discount)
     }
     return 0
