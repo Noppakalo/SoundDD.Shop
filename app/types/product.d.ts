@@ -41,37 +41,28 @@ export interface Product {
     description?: string
     short_description?: string
     sku?: string
-    price: string
+    sale_price: string
     regular_price: string
     on_sale: boolean
-    weight?: string
-    dimensions?: { length: string; width: string; height: string }
     categories?: ProductCategories[]
     brands?: ProductBrands[]
     tags?: ProductTag[]
     images: ProductImages[]
-    attributes: {
-        id: number
-        name: string
-        position?: number
-        visible?: boolean
-        variation?: boolean
-        options: string[]
-    }[]
-    variations: number[]
     stock_status: 'instock' | 'outofstock' | 'onbackorder'
     acf?: ProductAcf
+    variations_data?: ProductVariations[]
 }
 
 export interface ProductVariations {
     id: number
-    name: string
+    slug: string
     sku: string
-    price: string
+    sale_price: string
     regular_price: string
     on_sale: boolean
-    weight?: string
-    dimensions?: { length: string; width: string; height: string }
     images: ProductImages[]
     stock_status: 'instock' | 'outofstock' | 'onbackorder'
+    attributes?: {
+        option?: string
+    }[]
 }

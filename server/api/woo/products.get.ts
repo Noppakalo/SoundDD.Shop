@@ -21,15 +21,14 @@ export default defineEventHandler(async (event) => {
         'id',
         'name',
         'slug',
-        'price',
+        'sale_price',
         'regular_price',
         'on_sale',
         'brands',
         'images',
-        'attributes',
-        'variations',
         'stock_status',
         'acf',
+        'variations_data',
     ].join(',')
 
     const productDetailFields = [
@@ -39,19 +38,16 @@ export default defineEventHandler(async (event) => {
         'description',
         'short_description',
         'sku',
-        'price',
+        'sale_price',
         'regular_price',
         'on_sale',
-        'weight',
-        'dimensions',
         'categories',
         'brands',
         'tags',
         'images',
-        'attributes',
-        'variations',
         'stock_status',
         'acf',
+        'variations_data',
     ].join(',')
 
     const fields = slug ? productDetailFields : productCardFields

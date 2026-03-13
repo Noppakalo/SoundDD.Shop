@@ -5,27 +5,13 @@
                 class="absolute top-4 left-4 z-10 flex flex-col gap-2 tracking-wider"
             >
                 <UBadge
-                    v-if="product.stock_status === 'outofstock'"
-                    color="error"
-                    variant="solid"
-                    size="md"
-                >
-                    สินค้าหมด
-                </UBadge>
-                <UBadge
-                    v-else-if="product.on_sale"
+                    v-if="displayPriceData.discount"
                     color="error"
                     variant="solid"
                     size="xl"
                     class="rounded-full"
                 >
-                    {{
-                        calculateDiscount(
-                            product.regular_price,
-                            product.price,
-                            product.acf?.promotional_price || undefined
-                        )
-                    }}%
+                    {{ displayPriceData.discount }}%
                 </UBadge>
             </div>
             <UCarousel
@@ -173,6 +159,8 @@ const props = defineProps<{
     product: Product
     productImages: string[]
 }>()
+
+const { displayPriceData } = useProductPrice(() => props.product)
 
 const carouselRef = useTemplateRef('carouselRef')
 const activeIndex = ref(0)

@@ -52,6 +52,7 @@ import type { BreadcrumbItem } from '@nuxt/ui'
 
 const route = useRoute()
 const slug = route.params.slug as string
+const selectedColor = ref(route.query.color || 'สีเริ่มต้น')
 
 const {
     data: response,
@@ -80,4 +81,8 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
      { label: 'สินค้า', to: '/product' },
     { label: product.value?.name || 'กำลังโหลด...', to: route.fullPath },
 ])
+
+watch(() => route.query.color, (newColor) => {
+    if (newColor) selectedColor.value = newColor
+})
 </script>

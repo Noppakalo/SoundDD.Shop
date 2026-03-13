@@ -22,19 +22,19 @@
                 <div class="flex items-baseline gap-4 text-gray-400">
                     <p
                         v-if="
-                            parseFloat(product.regular_price) >
-                            parseFloat(product.price)
+                            parseFloat(displayPriceData.regular) >
+                            parseFloat(displayPriceData.sale)
                         "
                     >
                         ราคาปกติ
                         <span class="line-through decoration-1"
-                            >฿{{ formatPrice(product.regular_price) }}</span
+                            >฿{{ formatPrice(displayPriceData.regular) }}</span
                         >
                     </p>
                     <p
                         v-if="
                             parseFloat(product.acf?.promotional_price) >
-                            parseFloat(product.price)
+                            parseFloat(displayPriceData.sale)
                         "
                         class="text-xl"
                     >
@@ -48,7 +48,7 @@
                 </div>
                 <div class="flex items-baseline gap-2">
                     <p class="text-error text-4xl font-bold">
-                        ฿{{ formatPrice(product.price) }}
+                        ฿{{ formatPrice(displayPriceData.sale) }}
                     </p>
                     <p>รวม VAT 7% แล้ว</p>
                 </div>
@@ -56,17 +56,16 @@
             <div v-else class="flex items-baseline gap-4">
                 <p
                     v-if="
-                        product.on_sale &&
-                        parseFloat(product.regular_price) >
-                            parseFloat(product.price)
+                        parseFloat(displayPriceData.regular) >
+                        parseFloat(displayPriceData.sale)
                     "
                     class="text-xl text-gray-400 line-through decoration-1"
                 >
-                    ฿{{ formatPrice(product.regular_price) }}
+                    ฿{{ formatPrice(displayPriceData.regular) }}
                 </p>
                 <div class="flex items-baseline gap-2">
                     <p class="text-error text-4xl font-bold">
-                        ฿{{ formatPrice(product.price) }}
+                        ฿{{ formatPrice(displayPriceData.sale) }}
                     </p>
                     <p>รวม VAT 7% แล้ว</p>
                 </div>
@@ -176,6 +175,7 @@
 
 <script setup lang="ts">
 import type { Product } from '~/types/product'
+import { formatPrice, calculateDiscount } from '~/utils/formatter'
 
 const props = defineProps<{
     product: Product
@@ -186,10 +186,7 @@ const quantity = ref(1)
 const { addToCart } = useCart()
 const { isInWishlist, toggleWishlist } = useWishlist()
 
-const hasDisplayPrice = computed(() => {
-    const price = props.product.price
-    return typeof price === 'string' ? price.trim() !== '' : price != null
-})
+const { displayPriceData, hasDisplayPrice } = useProductPrice(() => props.product)
 
 const onAddToCart = () => {
     addToCart(props.product, quantity.value)

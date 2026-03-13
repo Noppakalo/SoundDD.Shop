@@ -112,7 +112,7 @@ export const useCart = () => {
 
     const cartTotal = computed(() => {
         return items.value.reduce((total, item) => {
-            const price = parseFloat(item.product.price || '0')
+            const price = parseFloat(item.product.sale_price || '0')
             return total + price * item.quantity
         }, 0)
     })
