@@ -111,7 +111,7 @@
             </ULink>
         </div>
         <div
-            class="flex flex-1 flex-col"
+            class="flex flex-1 flex-col justify-between"
             :class="viewMode === 'list' ? 'px-8 py-2' : 'gap-2 p-4'"
         >
             <ULink :to="`/product/${product.slug}`">
@@ -124,8 +124,11 @@
                     {{ product.name }}
                 </p>
             </ULink>
-            <div class="flex items-center justify-between">
-                <div class="flex flex-col">
+            <div class="flex items-end justify-between">
+                <div
+                    class="flex flex-col justify-end"
+                    :class="viewMode === 'list' ? '' : 'h-14'"
+                >
                     <div v-if="hasDisplayPrice">
                         <div class="flex items-baseline gap-2">
                             <p

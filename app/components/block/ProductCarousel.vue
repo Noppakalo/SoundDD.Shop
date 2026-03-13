@@ -45,12 +45,31 @@
                     </UButton>
                 </div>
             </div>
-            <div v-if="pending" class="grid grid-cols-2 gap-6 md:grid-cols-5">
+            <div v-if="pending" class="grid grid-cols-2 gap-6 md:grid-cols-4">
                 <div
-                    v-for="i in 5"
+                    v-for="i in 4"
                     :key="i"
-                    class="h-80 animate-pulse rounded-lg bg-gray-100"
-                ></div>
+                    class="flex flex-col overflow-hidden rounded-xl shadow-lg"
+                >
+                    <USkeleton class="aspect-square w-full rounded-none" />
+                    <div class="flex flex-1 flex-col justify-between gap-2 p-4">
+                        <div class="min-h-[3rem] space-y-2">
+                            <USkeleton class="h-4 w-full" />
+                            <USkeleton class="h-4 w-5/6" />
+                        </div>
+                        <div class="flex h-14 items-end justify-between">
+                            <div class="flex flex-col justify-end space-y-1.5 pb-1">
+                                <USkeleton class="h-3 w-16" />
+                                <USkeleton class="h-5 w-24" />
+                                <USkeleton class="h-3 w-20" />
+                            </div>
+                            <div class="flex gap-2">
+                                <USkeleton class="size-9.5 rounded-full" />
+                                <USkeleton class="size-9.5 rounded-full" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <UCarousel
                 v-slot="{ item }"
