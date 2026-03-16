@@ -92,17 +92,9 @@
                     </UButton>
                 </UTooltip>
                 <UTooltip
-                    :aria-label="
-                        isInCart(product.id)
-                            ? 'นำออกจากตะกร้า'
-                            : 'หยิบใส่ตะกร้า'
-                    "
+                    aria-label="หยิบใส่ตะกร้า"
                     :delay-duration="0"
-                    :text="
-                        isInCart(product.id)
-                            ? 'นำออกจากตะกร้า'
-                            : 'หยิบใส่ตะกร้า'
-                    "
+                    text="หยิบใส่ตะกร้า"
                     :content="{
                         align: 'center',
                         side: 'left',
@@ -110,7 +102,7 @@
                     }"
                 >
                     <UButton
-                        @click.prevent="toggleCart(product)"
+                        @click.prevent="addToCart(product)"
                         icon="i-iconamoon:shopping-bag-fill"
                         color="primary"
                         :variant="isInCart(product.id) ? 'solid' : 'soft'"
@@ -138,7 +130,7 @@ const props = withDefaults(
     }
 )
 
-const { isInCart, toggleCart } = useCart()
+const { isInCart, addToCart } = useCart()
 const { isInWishlist, toggleWishlist } = useWishlist()
 const { displayPriceData, hasDisplayPrice } = useProductPrice(() => props.product)
 </script>

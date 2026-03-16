@@ -6,7 +6,7 @@ export interface CartItem {
 }
 
 export const useCart = () => {
-    const { user } = useWpAuthApi()
+
     const items = useState<CartItem[]>('cart', () => [])
     const toast = useToast()
 
@@ -29,27 +29,7 @@ export const useCart = () => {
         }
     }
 
-    const toggleCart = async (product: Product) => {
-        const index = items.value.findIndex(
-            (item) => item.product.id === product.id
-        )
-        if (index > -1) {
-            items.value.splice(index, 1)
-            toast.add({
-                title: 'นำออกจากตะกร้าแล้ว',
-                color: 'success',
-                icon: 'i-iconamoon:check-circle-1',
-            })
-        } else {
-            items.value.push({ product, quantity: 1 })
-            toast.add({
-                title: 'เพิ่มสินค้าเข้าตะกร้า',
-                color: 'success',
-                icon: 'i-iconamoon:check-circle-1',
-            })
-        }
-        await saveCart()
-    }
+
 
     const isInCart = (productId: number | string) => {
         return items.value.some((item) => item.product.id === productId)
@@ -121,7 +101,6 @@ export const useCart = () => {
         items,
         initCart,
         isInCart,
-        toggleCart,
         addToCart,
         removeFromCart,
         updateQuantity,
