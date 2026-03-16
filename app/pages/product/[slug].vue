@@ -39,8 +39,12 @@
                     <ProductImageGallery
                         :product="product"
                         :productImages="productImages"
+                        :selectedVariation="selectedVariation"
                     />
-                    <ProductDetailInfo :product="product" />
+                    <ProductDetailInfo
+                        :product="product"
+                        :selectedVariation="selectedVariation"
+                    />
                 </div>
             </div>
         </UContainer>
@@ -52,7 +56,13 @@ import type { BreadcrumbItem } from '@nuxt/ui'
 
 const route = useRoute()
 const slug = route.params.slug as string
-const selectedColor = ref(route.query.color || 'สีเริ่มต้น')
+
+onMounted(() => {
+    if (route.query.variation_id || route.query.color) {
+        const router = useRouter()
+        router.replace({ query: {} })
+    }
+})
 
 const {
     data: response,
@@ -71,18 +81,37 @@ const product = computed(() => {
     return null
 })
 
+const selectedVariation = computed(() => {
+    const state = history.state
+    const varIdFromState = state?.variation_id
+    const colorFromState = state?.color
+    const varId = varIdFromState || route.query.variation_id
+    const color = colorFromState || route.query.color
+
+    if (!product.value?.variations_data) return null
+    if (varId) return product.value.variations_data.find((v: any) => v.id === Number(varId))
+    if (color) {
+        return product.value.variations_data.find((v: any) => 
+            v.attributes?.some((attr: any) => decodeURIComponent(attr.option || '') === color)
+        )
+    }
+    return null
+})
+
 const productImages = computed(() => {
-    const imgs = (product.value?.images || []).map((img: any) => img?.src)
+    let imgs = (product.value?.images || []).map((img: any) => img?.src)
+    if (selectedVariation.value?.images?.length) {
+        const varImgs = selectedVariation.value.images.map((img: any) => img.src)
+        // Put variation images at the front, avoiding duplicates
+        imgs = [...varImgs, ...imgs.filter((src: string) => !varImgs.includes(src))]
+    }
     return imgs.filter((src: string | null | undefined) => !!src)
 })
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     { label: 'หน้าแรก', to: '/' },
-     { label: 'สินค้า', to: '/product' },
+    { label: 'สินค้า', to: '/product' },
     { label: product.value?.name || 'กำลังโหลด...', to: route.fullPath },
 ])
 
-watch(() => route.query.color, (newColor) => {
-    if (newColor) selectedColor.value = newColor
-})
 </script>

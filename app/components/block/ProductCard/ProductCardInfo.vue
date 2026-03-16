@@ -3,7 +3,7 @@
         class="flex flex-1 flex-col justify-between"
         :class="viewMode === 'list' ? 'px-8 py-2' : 'gap-2 p-4'"
     >
-        <ULink :to="`/product/${product.slug}`">
+        <ULink :to="productLink">
             <p
                 class="group-hover:text-primary line-clamp-2 font-medium"
                 :class="
@@ -13,6 +13,7 @@
                 {{ product.name }}
             </p>
         </ULink>
+
         <div class="flex items-end justify-between">
             <div
                 class="flex flex-col justify-end"
@@ -22,13 +23,13 @@
                     <div class="flex items-baseline gap-2">
                         <p
                             v-if="
-                                parseFloat(displayPriceData.regular) >
-                                parseFloat(displayPriceData.sale)
+                                parseFloat(currentPrice.regular) >
+                                parseFloat(currentPrice.sale)
                             "
                             class="text-gray-400 line-through decoration-1"
                             :class="viewMode === 'list' ? '' : 'text-md'"
                         >
-                            ฿{{ formatPrice(displayPriceData.regular) }}
+                            ฿{{ formatPrice(currentPrice.regular) }}
                         </p>
                         <p
                             class="text-error font-bold"
@@ -36,13 +37,14 @@
                                 viewMode === 'list' ? 'text-2xl' : 'text-lg'
                             "
                         >
-                            ฿{{ formatPrice(displayPriceData.sale) }}
+                            ฿{{ formatPrice(currentPrice.sale) }}
                         </p>
                     </div>
                     <p :class="viewMode === 'list' ? '' : 'text-xs'">
                         รวม VAT 7% แล้ว
                     </p>
                 </div>
+
                 <UButton
                     v-else
                     to="https://page.line.me/lyd9910p?oat__id=3047370&openQrModal=true"
@@ -50,9 +52,11 @@
                     size="xs"
                     color="error"
                     class="w-max"
-                    >ติดต่อสอบถามราคา</UButton
                 >
+                    ติดต่อสอบถามราคา
+                </UButton>
             </div>
+
             <div
                 class="flex gap-2"
                 :class="
@@ -62,44 +66,26 @@
                 "
             >
                 <UTooltip
-                    :aria-label="
-                        isInWishlist(product.id)
-                            ? 'นำสินค้าที่สนใจออก'
-                            : 'เพิ่มสินค้าที่สนใจ'
-                    "
-                    :delay-duration="0"
                     :text="
                         isInWishlist(product.id)
                             ? 'นำสินค้าที่สนใจออก'
                             : 'เพิ่มสินค้าที่สนใจ'
                     "
-                    :content="{
-                        align: 'center',
-                        side: 'left',
-                        sideOffset: 8,
-                    }"
+                    :content="{ align: 'center', side: 'left', sideOffset: 8 }"
                 >
                     <UButton
                         @click.prevent="toggleWishlist(product.id)"
                         icon="i-iconamoon:heart-fill"
                         color="primary"
-                        :variant="
-                            isInWishlist(product.id) ? 'solid' : 'soft'
-                        "
+                        :variant="isInWishlist(product.id) ? 'solid' : 'soft'"
                         size="xl"
                         class="size-9.5 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
-                    >
-                    </UButton>
+                    />
                 </UTooltip>
+
                 <UTooltip
-                    aria-label="หยิบใส่ตะกร้า"
-                    :delay-duration="0"
                     text="หยิบใส่ตะกร้า"
-                    :content="{
-                        align: 'center',
-                        side: 'left',
-                        sideOffset: 8,
-                    }"
+                    :content="{ align: 'center', side: 'left', sideOffset: 8 }"
                 >
                     <UButton
                         @click.prevent="addToCart(product)"
@@ -108,8 +94,7 @@
                         :variant="isInCart(product.id) ? 'solid' : 'soft'"
                         size="xl"
                         class="size-9.5 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
-                    >
-                    </UButton>
+                    />
                 </UTooltip>
             </div>
         </div>
@@ -124,13 +109,38 @@ const props = withDefaults(
     defineProps<{
         product: Product
         viewMode?: 'grid' | 'list'
+        // 🌟 รับราคาสีที่กำลัง Hover มาจาก ProductCard.vue
+        activePrice?: { regular: string; sale: string; id?: number } | null
     }>(),
     {
         viewMode: 'grid',
+        activePrice: null,
     }
 )
 
 const { isInCart, addToCart } = useCart()
 const { isInWishlist, toggleWishlist } = useWishlist()
-const { displayPriceData, hasDisplayPrice } = useProductPrice(() => props.product)
+const { displayPriceData, hasDisplayPrice } = useProductPrice(
+    () => props.product
+)
+
+const currentPrice = computed(() => {
+    if (props.activePrice) {
+        return {
+            regular: props.activePrice.regular,
+            sale: props.activePrice.sale,
+        }
+    }
+    return {
+        regular: displayPriceData.value.regular,
+        sale: displayPriceData.value.sale,
+    }
+})
+
+const productLink = computed(() => {
+    const base = `/product/${props.product.slug}`
+    return props.activePrice?.id
+        ? `${base}?variation_id=${props.activePrice.id}`
+        : base
+})
 </script>

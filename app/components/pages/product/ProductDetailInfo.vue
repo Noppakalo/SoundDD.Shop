@@ -118,7 +118,7 @@
                     </UButton>
                 </UTooltip>
                 <UButton
-                    :disabled="product.stock_status === 'outofstock'"
+                    :disabled="currentStockStatus === 'outofstock'"
                     color="primary"
                     variant="soft"
                     size="lg"
@@ -129,7 +129,7 @@
                     ใส่ตะกร้า
                 </UButton>
                 <UButton
-                    :disabled="product.stock_status === 'outofstock'"
+                    :disabled="currentStockStatus === 'outofstock'"
                     color="primary"
                     size="lg"
                     class="flex-1 justify-center"
@@ -179,6 +179,7 @@ import { formatPrice, calculateDiscount } from '~/utils/formatter'
 
 const props = defineProps<{
     product: Product
+    selectedVariation?: any
 }>()
 
 const quantity = ref(1)
@@ -186,14 +187,34 @@ const quantity = ref(1)
 const { addToCart } = useCart()
 const { isInWishlist, toggleWishlist } = useWishlist()
 
-const { displayPriceData, hasDisplayPrice } = useProductPrice(() => props.product)
+const { displayPriceData: basePriceData, hasDisplayPrice } = useProductPrice(() => props.product)
+
+const displayPriceData = computed(() => {
+    if (props.selectedVariation) {
+        const v = props.selectedVariation
+        const sale = v.sale_price || v.regular_price
+        const regular = v.regular_price
+        const discount = (sale && regular && parseFloat(regular) > parseFloat(sale)) 
+            ? Math.round(((parseFloat(regular) - parseFloat(sale)) / parseFloat(regular)) * 100)
+            : null
+        return { sale, regular, discount }
+    }
+    return basePriceData.value
+})
+
+const currentStockStatus = computed(() => {
+    return props.selectedVariation?.stock_status || props.product.stock_status
+})
 
 const onAddToCart = () => {
-    addToCart(props.product, quantity.value)
+    const productToCart = props.selectedVariation 
+        ? { ...props.product, ...props.selectedVariation, id: props.product.id, variation_id: props.selectedVariation.id }
+        : props.product
+    addToCart(productToCart as any, quantity.value)
 }
 
 const onBuyNow = () => {
-    addToCart(props.product, quantity.value)
+    onAddToCart()
     navigateTo('/cart')
 }
 </script>

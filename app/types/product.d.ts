@@ -55,7 +55,6 @@ export interface Product {
 
 export interface ProductVariations {
     id: number
-    slug: string
     sku: string
     sale_price: string
     regular_price: string

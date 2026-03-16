@@ -2,7 +2,7 @@
     <div class="flex flex-col gap-2.5">
         <div class="group relative">
             <div
-                class="absolute top-4 left-4 z-10 flex flex-col gap-2 tracking-wider"
+                class="absolute top-4 left-4 z-30 flex flex-col gap-2 tracking-wider"
             >
                 <UBadge
                     v-if="displayPriceData.discount"
@@ -21,8 +21,8 @@
                 :items="productImages"
                 :ui="{
                     item: 'basis-full',
-                    prev: 'bg-white text-primary ring-0 shadow-sm transition-all duration-200 active:scale-90 active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50',
-                    next: 'bg-white text-primary ring-0 shadow-sm transition-all duration-200 active:scale-90 active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50',
+                    prev: 'bg-white text-primary ring-0 shadow-sm transition-all duration-200 active:scale-90  active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50 z-30',
+                    next: 'bg-white text-primary ring-0 shadow-sm transition-all duration-200 active:scale-90 active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50 z-30',
                 }"
                 arrows
                 @select="onSelect"
@@ -32,7 +32,7 @@
                     :alt="product.name"
                     loading="lazy"
                     draggable="false"
-                    class="h-full w-full cursor-pointer rounded-2xl object-contain"
+                    class="relative size-full cursor-pointer rounded-2xl object-contain"
                     @click="showLightbox(activeIndex)"
                 />
             </UCarousel>
@@ -48,7 +48,7 @@
             </div>
             <div
                 v-if="product.acf?.image_gift"
-                class="absolute right-0 bottom-4 left-0 mx-auto w-120 px-4"
+                class="absolute right-0 bottom-4 z-10 left-0 mx-auto w-120 px-4"
             >
                 <NuxtImg
                     v-if="product.acf?.image_gift.url"
@@ -58,6 +58,22 @@
                     draggable="false"
                     class="relative size-full object-cover"
                 />
+            </div>
+            <div
+                v-if="isSoldOut"
+                class="absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-black/30 pointer-events-none"
+            >
+                <div
+                    class="bg-primary/80 absolute bottom-0 flex w-full items-center justify-center py-2 rounded-b-2xl"
+                >
+                    <p class="font-bold text-lg text-white">
+                        {{
+                            currentStockStatus === 'outofstock'
+                                ? 'สินค้าหมด'
+                                : 'สินค้าหมดชั่วคราว'
+                        }}
+                    </p>
+                </div>
             </div>
         </div>
         <div v-if="productImages.length > 1">
@@ -153,14 +169,37 @@
 
 <script setup lang="ts">
 import type { Product } from '~/types/product'
-import { calculateDiscount } from '~/utils/formatter'
 
 const props = defineProps<{
     product: Product
     productImages: string[]
+    selectedVariation?: any
 }>()
 
-const { displayPriceData } = useProductPrice(() => props.product)
+const { displayPriceData: basePriceData } = useProductPrice(() => props.product)
+
+const displayPriceData = computed(() => {
+    if (props.selectedVariation) {
+        const v = props.selectedVariation
+        const sale = v.sale_price || v.regular_price
+        const regular = v.regular_price
+        const discount = (sale && regular && parseFloat(regular) > parseFloat(sale)) 
+            ? Math.round(((parseFloat(regular) - parseFloat(sale)) / parseFloat(regular)) * 100)
+            : null
+        return { sale, regular, discount }
+    }
+    return basePriceData.value
+})
+
+const currentStockStatus = computed(() => {
+    return props.selectedVariation?.stock_status || props.product.stock_status
+})
+
+const isSoldOut = computed(
+    () =>
+        currentStockStatus.value === 'outofstock' ||
+        currentStockStatus.value === 'onbackorder'
+)
 
 const carouselRef = useTemplateRef('carouselRef')
 const activeIndex = ref(0)
