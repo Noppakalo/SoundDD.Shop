@@ -24,7 +24,7 @@
                     prev: 'bg-white text-primary ring-0 shadow-sm transition-all duration-200 active:scale-90  active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50 z-30',
                     next: 'bg-white text-primary ring-0 shadow-sm transition-all duration-200 active:scale-90 active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50 z-30',
                 }"
-                arrows
+                :arrows="productImages.length > 1"
                 @select="onSelect"
             >
                 <NuxtImg

@@ -62,6 +62,7 @@ export interface ProductVariations {
     images: ProductImages[]
     stock_status: 'instock' | 'outofstock' | 'onbackorder'
     attributes?: {
+        id: number
         option?: string
     }[]
 }

@@ -32,7 +32,7 @@
         class="relative overflow-hidden"
         :class="viewMode === 'list' ? 'size-45 p-4' : 'aspect-square w-full'"
     >
-        <ULink :to="productLink">
+        <div @click="onCardClick" class="cursor-pointer">
             <NuxtImg
                 v-if="hoveredVariationImage || displayImageUrls[0]"
                 :src="hoveredVariationImage || displayImageUrls[0]"
@@ -83,8 +83,7 @@
                     </p>
                 </div>
             </div>
-        </ULink>
-
+        </div>
         <div
             v-if="colorVariations.length > 0"
             class="absolute top-1/2 z-30 flex -translate-y-1/2 flex-col gap-2"
@@ -127,14 +126,32 @@ const hoveredVariationId = ref<number | null>(null)
 const hoveredDiscount = ref<number | null>(null)
 const hoveredStockStatus = ref<string | null>(null)
 
-const currentStockStatus = computed(() => {
-    if (hoveredStockStatus.value) return hoveredStockStatus.value
+const getColorName = (v: any) => {
+    if (!v?.attributes) return null
+    const attr = v.attributes.find((a: any) => {
+        const name = decodeURIComponent(a.name || '').toLowerCase()
+        return (
+            name.includes('color') ||
+            name.includes('สี') ||
+            name.includes('pa_')
+        )
+    })
+    const rawOption = attr?.option || v.attributes[0]?.option || ''
+    return rawOption ? decodeURIComponent(rawOption) : 'Default'
+}
+
+const currentVariation = computed(() => {
+    if (hoveredVariationId.value) {
+        return props.product.variations_data?.find(v => v.id === hoveredVariationId.value)
+    }
     const currentImage = displayImageUrls.value[0]
-    const matchingVariation = props.product.variations_data?.find(v => 
+    return props.product.variations_data?.find(v => 
         v.images?.[0]?.src === currentImage
     )
+})
 
-    return matchingVariation ? matchingVariation.stock_status : props.product.stock_status
+const currentStockStatus = computed(() => {
+    return currentVariation.value?.stock_status || props.product.stock_status
 })
 
 const isSoldOut = computed(
@@ -143,12 +160,17 @@ const isSoldOut = computed(
         currentStockStatus.value === 'onbackorder'
 )
 
-const productLink = computed(() => {
-    const base = `/product/${props.product.slug}`
-    return hoveredVariationId.value
-        ? `${base}?variation_id=${hoveredVariationId.value}`
-        : base
-})
+const onCardClick = () => {
+    const router = useRouter()
+    const variation = currentVariation.value
+    router.push({
+        path: `/product/${props.product.slug}`,
+        state: variation ? {
+            variation_id: variation.id,
+            color: getColorName(variation),
+        } : undefined,
+    })
+}
 
 const { displayPriceData } = useProductPrice(() => props.product)
 const currentDiscount = computed(

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-6">
         <div class="flex items-center justify-between">
             <div v-if="product.brands && product.brands.length > 0">
                 <ULink
@@ -10,8 +10,7 @@
                 </ULink>
             </div>
             <div v-if="product.sku" class="flex gap-1 text-xs">
-                <p>รหัสสินค้า:</p>
-                <span>{{ product.sku }}</span>
+                <p>รหัสสินค้า : <span>{{ product.sku }}</span></p>
             </div>
         </div>
         <h1 class="text-4xl font-bold">
@@ -84,9 +83,36 @@
             v-if="product.short_description"
             v-html="product.short_description"
         ></div>
+        <div v-if="colorVariations.length > 0" class="flex flex-col">
+            <p >
+                เลือกสี : <span class="text-primary font-bold">{{
+                    currentColorName || 'โปรดเลือก'
+                }}</span>
+            </p>
+            <div class="flex flex-wrap gap-2">
+                <UButton
+                    v-for="variation in colorVariations"
+                    :key="variation.id"
+                    :variant="
+                        selectedVariation?.id === variation.id
+                            ? 'solid'
+                            : 'outline'
+                    "
+                    :color="
+                        selectedVariation?.id === variation.id
+                            ? 'primary'
+                            : 'neutral'
+                    "
+                    class="min-w-[4rem] justify-center"
+                    @click="onVariationSelect(variation)"
+                >
+                    {{ variation.colorName }}
+                </UButton>
+            </div>
+        </div>
         <div class="flex flex-col gap-4 rounded-md bg-gray-100 p-4">
             <div class="flex items-center gap-2">
-                <p class="font-medium">จำนวน:</p>
+                <p class="font-medium">จำนวน : </p>
                 <UInputNumber v-model="quantity" :min="1" />
             </div>
             <div class="flex gap-4">
@@ -118,7 +144,7 @@
                     </UButton>
                 </UTooltip>
                 <UButton
-                    :disabled="currentStockStatus === 'outofstock'"
+                    :disabled="isSoldOut"
                     color="primary"
                     variant="soft"
                     size="lg"
@@ -129,7 +155,7 @@
                     ใส่ตะกร้า
                 </UButton>
                 <UButton
-                    :disabled="currentStockStatus === 'outofstock'"
+                    :disabled="isSoldOut"
                     color="primary"
                     size="lg"
                     class="flex-1 justify-center"
@@ -175,12 +201,16 @@
 
 <script setup lang="ts">
 import type { Product } from '~/types/product'
-import { formatPrice, calculateDiscount } from '~/utils/formatter'
+
+const route = useRoute()
+const router = useRouter()
 
 const props = defineProps<{
     product: Product
     selectedVariation?: any
 }>()
+
+const emit = defineEmits(['select-variation'])
 
 const quantity = ref(1)
 
@@ -205,6 +235,56 @@ const displayPriceData = computed(() => {
 const currentStockStatus = computed(() => {
     return props.selectedVariation?.stock_status || props.product.stock_status
 })
+
+const isSoldOut = computed(
+    () =>
+        currentStockStatus.value === 'outofstock' ||
+        currentStockStatus.value === 'onbackorder'
+)
+
+const getColorName = (v: any) => {
+    if (!v?.attributes) return null
+    const attr = v.attributes.find((a: any) => {
+        const name = decodeURIComponent(a.name || '').toLowerCase()
+        return (
+            name.includes('color') ||
+            name.includes('สี') ||
+            name.includes('pa_')
+        )
+    })
+    const rawOption = attr?.option || v.attributes[0]?.option || ''
+    return rawOption ? decodeURIComponent(rawOption) : 'Default'
+}
+
+const colorVariations = computed(() => {
+    if (!props.product.variations_data) return []
+    const uniqueVariations = new Map<string, any>()
+
+    props.product.variations_data.forEach((v) => {
+        const colorName = getColorName(v)
+        const key = colorName || v.id.toString()
+
+        if (!uniqueVariations.has(key)) {
+            uniqueVariations.set(key, {
+                id: v.id,
+                colorName,
+                stock_status: v.stock_status,
+            })
+        }
+    })
+    return Array.from(uniqueVariations.values())
+})
+
+const currentColorName = computed(() => {
+    return props.selectedVariation ? getColorName(props.selectedVariation) : null
+})
+
+const onVariationSelect = (variation: any) => {
+    const fullVariation = props.product.variations_data?.find(v => v.id === variation.id)
+    if (fullVariation) {
+        emit('select-variation', fullVariation)
+    }
+}
 
 const onAddToCart = () => {
     const productToCart = props.selectedVariation 
