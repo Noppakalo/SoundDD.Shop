@@ -77,6 +77,10 @@ export default defineNuxtConfig({
             pathPrefix: false,
         },
     ],
+    nitro: {
+     // @ts-ignore
+        trustProxy: true,
+    },
     devtools: {
         enabled: true,
         timeline: {
