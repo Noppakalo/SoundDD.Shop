@@ -72,7 +72,6 @@ const fields: AuthFormField[] = [
     },
 ]
 
-// 🌟 เปลี่ยนจาก computed() มาเป็น ref() ตามที่คุณต้องการ
 const schema = ref(
     object({
         email: string()
@@ -87,7 +86,6 @@ const schema = ref(
     })
 )
 
-// 🌟 การใช้ InferType กับ ref ต้องระบุ typeof schema.value
 type Schema = InferType<typeof schema.value>
 
 const onSubmit = async (event: FormSubmitEvent<Schema>) => {
@@ -98,7 +96,6 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
             email: event.data.email,
             password: event.data.password,
         })
-
         if (result.success) {
             showRegisterSuccess()
             emit('success')
@@ -109,8 +106,8 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
                 emit('existing-user')
             }
         }
-    } catch (error) {
-        showRegisterError()
+    } catch (error: any) {
+        showRegisterError(error.statusMessage || 'เกิดข้อผิดพลาดในการสมัครสมาชิก')
     } finally {
         isLoading.value = false
     }

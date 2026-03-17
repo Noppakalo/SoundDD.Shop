@@ -41,6 +41,10 @@ export default defineNuxtConfig({
         'nuxt-auth-utils',
         'nuxt-easy-lightbox',
     ],
+    nitro: {
+      // @ts-ignore
+  trustProxy: true,
+  },
     runtimeConfig: {
         wpAppPassword: process.env.NUXT_WP_APP_PASSWORD,
         wpAppUsername: process.env.NUXT_WP_APP_USERNAME,
@@ -77,10 +81,6 @@ export default defineNuxtConfig({
             pathPrefix: false,
         },
     ],
-    nitro: {
-     // @ts-ignore
-        trustProxy: true,
-    },
     devtools: {
         enabled: true,
         timeline: {
