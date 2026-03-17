@@ -51,6 +51,7 @@ export interface Product {
     stock_status: 'instock' | 'outofstock' | 'onbackorder'
     acf?: ProductAcf
     variations_data?: ProductVariations[]
+    variation_id?: number
 }
 
 export interface ProductVariations {

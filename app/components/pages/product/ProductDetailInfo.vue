@@ -287,9 +287,20 @@ const onVariationSelect = (variation: any) => {
 }
 
 const onAddToCart = () => {
-    const productToCart = props.selectedVariation 
-        ? { ...props.product, ...props.selectedVariation, id: props.product.id, variation_id: props.selectedVariation.id }
-        : props.product
+    let productToCart = { ...props.product }
+    
+    if (props.selectedVariation) {
+        productToCart = {
+            ...productToCart,
+            variation_id: props.selectedVariation.id,
+            sale_price: props.selectedVariation.sale_price || props.selectedVariation.regular_price,
+            regular_price: props.selectedVariation.regular_price,
+            images: props.selectedVariation.images?.length 
+                ? props.selectedVariation.images 
+                : productToCart.images
+        }
+    }
+    
     addToCart(productToCart as any, quantity.value)
 }
 
