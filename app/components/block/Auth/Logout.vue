@@ -51,9 +51,6 @@ const handleLogout = async () => {
         await logout()
         showLogoutSuccess()
         emit('update:modelValue', false)
-        setTimeout(() => {
-            window.location.href = '/'
-        }, 500)
     } catch (error) {
         showLogoutError()
     }

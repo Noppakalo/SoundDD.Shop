@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
             {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
                 body: {
                     username: body.email,
@@ -43,7 +43,8 @@ export default defineEventHandler(async (event) => {
         console.error('Login Error:', error.response?._data || error.message)
 
         const statusCode = error.response?.status || 401
-        const message = error.response?._data?.message || 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
+        const message =
+            error.response?._data?.message || 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
 
         throw createError({
             statusCode: statusCode,

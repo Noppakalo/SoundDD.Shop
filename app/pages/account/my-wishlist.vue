@@ -12,11 +12,11 @@
                 name="i-svg-spinners:90-ring-with-bg"
                 class="text-primary text-2xl"
             />
-            <p>กำลังโหลดรายการที่สนใจ...</p>
+            <p>กำลังโหลดรายการสินค้าที่สนใจ...</p>
         </div>
         <div
             v-else-if="products.length > 0"
-            class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4"
+            class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3"
         >
             <ProductCard
                 v-for="product in products"

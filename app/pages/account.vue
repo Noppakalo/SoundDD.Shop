@@ -41,7 +41,7 @@ definePageMeta({
 const { user } = useWpAuthApi()
 const { getCustomer } = useWooCustomerApi()
 
-const customer = ref<Customer | null>(null)
+const customer = useState<Customer | null>('current_customer', () => null)
 const customerLoading = ref(false)
 const showLogoutModal = ref(false)
 

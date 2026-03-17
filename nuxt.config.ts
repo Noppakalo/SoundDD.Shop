@@ -42,9 +42,9 @@ export default defineNuxtConfig({
         'nuxt-easy-lightbox',
     ],
     nitro: {
-      // @ts-ignore
-  trustProxy: true,
-  },
+        // @ts-ignore
+        trustProxy: true,
+    },
     runtimeConfig: {
         wpAppPassword: process.env.NUXT_WP_APP_PASSWORD,
         wpAppUsername: process.env.NUXT_WP_APP_USERNAME,
@@ -55,7 +55,7 @@ export default defineNuxtConfig({
             name: 'auth_SoundDD',
             cookie: {
                 sameSite: 'lax',
-                secure: process.env.NODE_ENV === 'production',
+                secure: true,
                 maxAge: 60 * 60 * 24 * 7,
             },
         },

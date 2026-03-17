@@ -55,8 +55,8 @@
                         }"
                     >
                         <UAvatar
-                            :src="user.avatar"
-                            :alt="user.name"
+                            :src="user?.avatar || customer?.avatar_url || ''"
+    :alt="user?.name"
                             loading="lazy"
                             draggable="false"
                             size="xl"
@@ -96,10 +96,13 @@
 </template>
 
 <script setup lang="ts">
+import type { Customer } from '~/types/customer'
 const { user } = useWpAuthApi()
 const { cartItemCount } = useCart()
 const isOpen = ref(false)
 const showLogoutModal = ref(false)
+
+const customer = useState<Customer | null>('current_customer')
 
 const accountMenu = [
     { label: 'บัญชีของฉัน', click: () => navigateTo('/account') },

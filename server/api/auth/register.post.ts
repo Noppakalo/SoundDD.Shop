@@ -27,7 +27,8 @@ export default defineEventHandler(async (event) => {
         if (existingCustomers && existingCustomers.length > 0) {
             throw createError({
                 statusCode: 409,
-                statusMessage: 'อีเมลนี้ถูกใช้งานแล้ว คุณสามารถเข้าสู่ระบบได้ทันที',
+                statusMessage:
+                    'อีเมลนี้ถูกใช้งานแล้ว คุณสามารถเข้าสู่ระบบได้ทันที',
             })
         }
     } catch (error: any) {
@@ -35,7 +36,8 @@ export default defineEventHandler(async (event) => {
         console.error('WP Check Error:', error.response?._data || error.message)
     }
 
-    const baseUsername = email?.split('@')[0]?.replace(/[^a-zA-Z0-9]/g, '') || ''
+    const baseUsername =
+        email?.split('@')[0]?.replace(/[^a-zA-Z0-9]/g, '') || ''
     let username = baseUsername
     let attempts = 0
     const maxAttempts = 5
@@ -64,7 +66,10 @@ export default defineEventHandler(async (event) => {
         } catch (error: any) {
             const errorCode = error.response?._data?.code
 
-            if (errorCode === 'existing_user_login' && attempts < maxAttempts - 1) {
+            if (
+                errorCode === 'existing_user_login' &&
+                attempts < maxAttempts - 1
+            ) {
                 username = `${baseUsername}${Math.floor(1000 + Math.random() * 9000)}`
                 attempts++
                 continue
@@ -72,7 +77,8 @@ export default defineEventHandler(async (event) => {
 
             throw createError({
                 statusCode: error.response?.status || 500,
-                statusMessage: error.response?._data?.message || 'สมัครสมาชิกไม่สำเร็จ',
+                statusMessage:
+                    error.response?._data?.message || 'สมัครสมาชิกไม่สำเร็จ',
             })
         }
     }

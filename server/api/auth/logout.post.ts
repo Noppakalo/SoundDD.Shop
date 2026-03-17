@@ -1,10 +1,13 @@
 export default defineEventHandler(async (event) => {
     try {
         await clearUserSession(event)
-        
         const config = useRuntimeConfig()
-        deleteCookie(event, config.session?.name || 'auth_SoundDD', {
+        const cookieName = config.session?.name || 'auth_SoundDD'
+        
+        deleteCookie(event, cookieName, {
             path: '/',
+            secure: true,
+            httpOnly: true
         })
 
         return { success: true }

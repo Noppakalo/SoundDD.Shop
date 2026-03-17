@@ -57,6 +57,7 @@
                 <UInput
                     :value="`${address.first_name} ${address.last_name}`.trim()"
                     readonly
+                    placeholder="-- ยังไม่มีข้อมูล --"
                     class="w-full"
                 />
             </UFormField>

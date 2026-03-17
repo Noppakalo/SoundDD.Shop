@@ -2,17 +2,12 @@ import type { LoginResponse, RegisterResponse } from '~/types/auth'
 
 export const useWpAuthApi = () => {
     const { user, fetch, clear } = useUserSession()
-    const authCookie = useCookie('auth_SoundDD')
-
     const register = async (data: any) => {
         try {
-            const response = await $fetch<RegisterResponse>(
-                '/api/auth/register',
-                {
-                    method: 'POST',
-                    body: data,
-                }
-            )
+            const response = await $fetch<RegisterResponse>('/api/auth/register', {
+                method: 'POST',
+                body: data,
+            })
             return { success: true, data: response }
         } catch (error: any) {
             return {
@@ -29,17 +24,12 @@ export const useWpAuthApi = () => {
                 method: 'POST',
                 body: data,
             })
-
             await fetch()
-
-            return {
-                success: true,
-                user: response.user,
-            }
+            return { success: true, user: response.user }
         } catch (error: any) {
             return {
                 success: false,
-                error: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
+                error: error.data?.statusMessage || 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
             }
         }
     }
@@ -47,23 +37,14 @@ export const useWpAuthApi = () => {
     const logout = async () => {
         try {
             await $fetch('/api/auth/logout', {
-                method: 'POST',
-                credentials: 'include',
+                method: 'POST'
             })
-        } catch (e) {}
-        authCookie.value = null
-        await clear()
-        await navigateTo('/', { replace: true })
-        try {
-            await $fetch('/api/auth/logout', {
-                method: 'POST',
-                credentials: 'include',
-            })
-        } catch (e) {}
-
-        authCookie.value = null
-        await clear()
-        await navigateTo('/', { replace: true })
+        } catch (e) {
+            console.error('Logout API error:', e)
+        } finally {
+            await clear()
+            await navigateTo('/', { replace: true })
+        }
     }
 
     return { register, login, logout, user }

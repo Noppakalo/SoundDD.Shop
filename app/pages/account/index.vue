@@ -158,7 +158,6 @@ const UpdateCustomer = async () => {
     if (!props.customer?.id) return
     isUpdating.value = true
     
-    // Original payload structure that worked
     const payload: Record<string, unknown> = {
         first_name: editForm.value.first_name,
         last_name: editForm.value.last_name,

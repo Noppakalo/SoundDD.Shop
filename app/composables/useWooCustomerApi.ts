@@ -1,12 +1,19 @@
 import type { Customer, UpdateCustomerPayload, Order } from '~/types/customer'
 
 export const useWooCustomerApi = () => {
+    const authCustomer = useState<Customer | null>('auth-customer', () => null)
+
     const getCustomer = async (email: string) => {
         try {
             const response = await $fetch<{
                 success: boolean
                 data: Customer | null
             }>('/api/woo/customers', { query: { email } })
+
+            if (response.success && response.data) {
+                authCustomer.value = response.data
+            }
+
             return response
         } catch {
             return { success: false, data: null }
