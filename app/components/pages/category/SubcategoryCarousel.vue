@@ -4,34 +4,41 @@
         :items="items"
         :ui="{
             viewport: 'px-2 py-4',
-            controls: 'inset-x-10',
-            item: 'basis-1/2 md:basis-1/3 lg:basis-1/4',
-            prev: 'bg-white text-primary ring-0 shadow-sm transition-all duration-200 active:scale-90 active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50',
-            next: 'bg-white text-primary ring-0 shadow-sm transition-all duration-200 active:scale-90 active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50',
+            controls: 'inset-x-10 max-sm:-inset-x-4',
+            item: 'basis-1/2 sm:basis-1/4 lg:basis-1/6',
+            prev: 'bg-white text-primary ring-0 shadow-sm transition-all duration-300 active:scale-90 active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50',
+            next: 'bg-white text-primary ring-0 shadow-sm transition-all duration-300 active:scale-90 active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50',
         }"
         arrows
     >
         <template v-slot="{ item }">
             <ULink
                 :to="`${parentPath}/${item.slug}`"
-                class="group hover:shadow-primary/20 relative mx-2 flex h-22 cursor-pointer items-center justify-center gap-6 overflow-hidden rounded-xl p-4 shadow-lg transition-transform"
+                class="group flex flex-col items-center gap-3"
             >
-                <NuxtImg
-                    v-if="item.acf?.image_category"
-                    :src="item.acf.image_category.url"
-                    :alt="item.acf.image_category.alt || item.name"
-                    class="size-25 object-cover transition-transform duration-300 group-hover:scale-110"
-                />
                 <div
-                    v-else
-                    class="flex items-center justify-center text-gray-400"
+                    class="flex size-40 items-center justify-center overflow-hidden max-sm:size-36"
                 >
-                    <UIcon
-                        name="i-iconamoon:folder-image-light"
-                        class="size-12"
+                    <NuxtImg
+                        v-if="item.acf?.image_category"
+                        :src="item.acf.image_category.url"
+                        :alt="item.acf.image_category.alt || item.name"
+                        loading="lazy"
+                        draggable="false"
+                        class="size-full object-contain transition-transform duration-300 group-hover:scale-110"
                     />
+
+                    <div
+                        v-else
+                        class="flex size-full items-center justify-center rounded-full bg-gray-50 text-gray-400"
+                    >
+                        <UIcon
+                            name="i-iconamoon:folder-image-light"
+                            class="size-20"
+                        />
+                    </div>
                 </div>
-                <p class="text-center text-sm font-semibold">
+                <p class="px-2 text-center text-sm leading-tight font-semibold">
                     {{ item.name }}
                 </p>
             </ULink>

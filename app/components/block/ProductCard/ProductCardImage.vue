@@ -12,7 +12,6 @@
             >{{ currentDiscount }}%
         </UBadge>
     </div>
-
     <div
         v-if="brandImage"
         class="absolute z-10"
@@ -23,14 +22,18 @@
                 :src="brandImage"
                 :alt="product.brands?.[0]?.name"
                 loading="lazy"
+                draggable="false"
                 class="h-12 w-auto object-contain"
             />
         </ULink>
     </div>
-
     <div
         class="relative overflow-hidden"
-        :class="viewMode === 'list' ? 'size-45 p-4' : 'aspect-square w-full'"
+        :class="
+            viewMode === 'list'
+                ? 'p-4 max-sm:size-40 sm:size-60 lg:size-45'
+                : 'aspect-square w-full'
+        "
     >
         <div @click="onCardClick" class="cursor-pointer">
             <NuxtImg
@@ -38,7 +41,8 @@
                 :src="hoveredVariationImage || displayImageUrls[0]"
                 :alt="product.name"
                 loading="lazy"
-                class="relative size-full object-cover transition-opacity duration-500"
+                draggable="false"
+                class="relative size-full object-cover transition-opacity duration-300"
                 :class="[
                     !hoveredVariationImage && displayImageUrls[1]
                         ? 'group-hover:opacity-0'
@@ -49,21 +53,10 @@
                 v-if="!hoveredVariationImage && displayImageUrls[1]"
                 :src="displayImageUrls[1]"
                 :alt="product.name"
-                class="absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                loading="lazy"
+                draggable="false"
+                class="absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
             />
-
-            <div
-                v-if="product.acf?.image_gift"
-                class="absolute right-0 left-0 m-auto"
-                :class="viewMode === 'list' ? 'bottom-2 w-40' : 'bottom-0 w-60'"
-            >
-                <NuxtImg
-                    v-if="product.acf?.image_gift.url"
-                    :src="product.acf?.image_gift.url"
-                    class="relative h-full w-full object-cover"
-                />
-            </div>
-
             <div
                 v-if="isSoldOut"
                 class="absolute inset-0 z-20 flex items-center justify-center bg-black/30"
@@ -87,12 +80,14 @@
         <div
             v-if="colorVariations.length > 0"
             class="absolute top-1/2 z-30 flex -translate-y-1/2 flex-col gap-2"
-            :class="viewMode === 'list' ? 'left-2' : 'left-4'"
+            :class="
+                viewMode === 'list' ? 'left-2 hidden' : 'left-4 max-sm:hidden'
+            "
         >
             <div
                 v-for="variation in colorVariations"
                 :key="variation.id"
-                class="relative block size-10 cursor-pointer overflow-hidden rounded-full shadow-md transition-all hover:scale-110"
+                class="relative block size-10 cursor-pointer overflow-hidden rounded-full shadow-md transition-all hover:scale-110 max-lg:size-12"
                 @mouseenter="onHover(variation)"
                 @mouseleave="onLeave"
                 @click="onVariationClick(variation)"
@@ -104,6 +99,23 @@
                 />
             </div>
         </div>
+    </div>
+    <div
+        v-if="product.acf?.image_gift"
+        class="absolute z-10 mx-auto -translate-y-1/2 px-4"
+        :class="
+            viewMode === 'list'
+                ? '-bottom-4.5 max-sm:-bottom-3 max-sm:w-44 sm:w-60 lg:w-50'
+                : 'top-[60%] max-sm:top-[50%] sm:top-[62%]'
+        "
+    >
+        <NuxtImg
+            v-if="product.acf?.image_gift.url"
+            :src="product.acf?.image_gift.url"
+            class="relative h-full w-full object-cover"
+            loading="lazy"
+            draggable="false"
+        />
     </div>
 </template>
 
@@ -142,11 +154,13 @@ const getColorName = (v: any) => {
 
 const currentVariation = computed(() => {
     if (hoveredVariationId.value) {
-        return props.product.variations_data?.find(v => v.id === hoveredVariationId.value)
+        return props.product.variations_data?.find(
+            (v) => v.id === hoveredVariationId.value
+        )
     }
     const currentImage = displayImageUrls.value[0]
-    return props.product.variations_data?.find(v => 
-        v.images?.[0]?.src === currentImage
+    return props.product.variations_data?.find(
+        (v) => v.images?.[0]?.src === currentImage
     )
 })
 
@@ -165,10 +179,12 @@ const onCardClick = () => {
     const variation = currentVariation.value
     router.push({
         path: `/product/${props.product.slug}`,
-        state: variation ? {
-            variation_id: variation.id,
-            color: getColorName(variation),
-        } : undefined,
+        state: variation
+            ? {
+                  variation_id: variation.id,
+                  color: getColorName(variation),
+              }
+            : undefined,
     })
 }
 

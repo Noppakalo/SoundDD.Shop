@@ -36,6 +36,8 @@
                             <NuxtImg
                                 v-if="cat.acf?.image_category"
                                 :src="cat.acf.image_category.url"
+                                loading="lazy"
+                                draggable="false"
                                 class="size-6 object-contain"
                             />
                             <UIcon

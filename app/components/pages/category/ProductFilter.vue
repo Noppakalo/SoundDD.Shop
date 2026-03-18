@@ -1,5 +1,5 @@
 <template>
-    <div class="flex justify-between">
+    <div class="flex justify-between max-sm:flex-col max-sm:gap-4">
         <USlideover title="ตัวกรองทั้งหมด">
             <UButton
                 icon="i-iconamoon:options-light"
@@ -14,7 +14,7 @@
                 </div>
             </template>
         </USlideover>
-        <div class="flex items-center gap-8">
+        <div class="flex items-center justify-center gap-8">
             <div class="flex gap-2">
                 <UButton
                     icon="i-tabler:layout-grid"
@@ -35,7 +35,6 @@
                 icon="i-iconamoon:sorting-left-light"
                 color="neutral"
                 variant="subtle"
-                class="w-48"
             />
         </div>
     </div>

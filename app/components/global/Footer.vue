@@ -2,9 +2,11 @@
     <footer class="bg-white pt-10 pb-4">
         <UContainer>
             <div
-                class="grid grid-cols-1 gap-10 md:grid-cols-[1.5fr_1fr_1fr_1fr_1fr]"
+                class="grid grid-cols-2 gap-10 sm:grid-cols-3 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr]"
             >
-                <div class="flex flex-col gap-4">
+                <div
+                    class="flex flex-col gap-4 max-sm:col-span-2 max-sm:items-center max-sm:text-center"
+                >
                     <ULink to="/">
                         <NuxtImg
                             src="logos/SoundDD-Group-Main.webp"
@@ -22,7 +24,7 @@
                             7, 9 ถนนชัยพฤกษ์ แขวงตลิ่งชัน<br />เขตตลิ่งชัน
                             กรุงเทพมหานคร 10170
                         </p>
-                        <div class="flex flex-col gap-1">
+                        <div class="flex flex-col gap-1 max-sm:items-center">
                             <ULink
                                 to="tel:024358998"
                                 class="hover:text-primary flex items-center gap-2 transition-colors"
@@ -75,7 +77,7 @@
                                 :alt="img.name"
                                 loading="lazy"
                                 draggable="false"
-                                class="h-9 w-auto"
+                                class="h-9 w-auto max-sm:h-8"
                             />
                         </div>
                     </div>
@@ -89,7 +91,7 @@
                                 :alt="img.name"
                                 loading="lazy"
                                 draggable="false"
-                                class="h-9 w-auto"
+                                class="h-9 w-auto max-sm:h-8"
                             />
                         </div>
                     </div>

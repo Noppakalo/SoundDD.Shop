@@ -28,7 +28,7 @@
                     :items="subcategories"
                     wheel-gestures
                     :ui="{
-                        item: 'basis-auto ps-4',
+                        item: 'basis-auto',
                     }"
                 >
                     <UButton
@@ -83,10 +83,10 @@
                 :items="availableProducts"
                 :ui="{
                     viewport: 'px-2 pb-4',
-                    controls: 'inset-x-10',
+                    controls: 'sm:inset-x-10 max-sm:-inset-x-4',
                     item: 'basis-1/2 md:basis-1/3 lg:basis-1/4',
-                    prev: 'bg-white text-primary ring-0 shadow-sm transition-all duration-200 active:scale-90 active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50',
-                    next: 'bg-white text-primary ring-0 shadow-sm transition-all duration-200 active:scale-90 active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50',
+                    prev: 'bg-white text-primary ring-0 shadow-sm transition-all duration-300 active:scale-90 active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50',
+                    next: 'bg-white text-primary ring-0 shadow-sm transition-all duration-300 active:scale-90 active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50',
                 }"
                 arrows
             >

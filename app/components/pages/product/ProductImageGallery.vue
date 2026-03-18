@@ -21,8 +21,8 @@
                 :items="productImages"
                 :ui="{
                     item: 'basis-full',
-                    prev: 'bg-white text-primary ring-0 shadow-sm transition-all duration-200 active:scale-90  active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50 z-30',
-                    next: 'bg-white text-primary ring-0 shadow-sm transition-all duration-200 active:scale-90 active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50 z-30',
+                    prev: 'bg-white text-primary ring-0 shadow-sm transition-all duration-300 active:scale-90  active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50 z-30',
+                    next: 'bg-white text-primary ring-0 shadow-sm transition-all duration-300 active:scale-90 active:bg-primary/50 hover:bg-gray-50 disabled:opacity-50 z-30',
                 }"
                 :arrows="productImages.length > 1"
                 @select="onSelect"
@@ -48,7 +48,7 @@
             </div>
             <div
                 v-if="product.acf?.image_gift"
-                class="absolute right-0 bottom-4 z-10 left-0 mx-auto w-120 px-4"
+                class="absolute right-0 bottom-0 left-0 z-10 px-4"
             >
                 <NuxtImg
                     v-if="product.acf?.image_gift.url"
@@ -56,17 +56,17 @@
                     :alt="product.acf?.image_gift.alt"
                     loading="lazy"
                     draggable="false"
-                    class="relative size-full object-cover"
+                    class="relative mx-auto object-cover sm:w-140 lg:w-120"
                 />
             </div>
             <div
                 v-if="isSoldOut"
-                class="absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-black/30 pointer-events-none"
+                class="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-black/30"
             >
                 <div
-                    class="bg-primary/80 absolute bottom-0 flex w-full items-center justify-center py-2 rounded-b-2xl"
+                    class="bg-primary/80 absolute bottom-0 flex w-full items-center justify-center rounded-b-2xl py-2"
                 >
-                    <p class="font-bold text-lg text-white">
+                    <p class="text-lg font-bold text-white">
                         {{
                             currentStockStatus === 'outofstock'
                                 ? 'สินค้าหมด'
@@ -81,14 +81,14 @@
                 v-slot="{ item, index }"
                 :items="productImages"
                 :ui="{
-                    container: 'gap-3',
+                    container: 'gap-3 max-sm:gap-0',
                     item: 'basis-auto',
                 }"
                 class="w-full"
             >
                 <div
                     :ref="(el) => (thumbnailRefs[index] = el)"
-                    class="size-20 shrink-0 cursor-pointer overflow-hidden rounded-lg border bg-white transition-all"
+                    class="size-20 shrink-0 cursor-pointer overflow-hidden rounded-lg border bg-white transition-all max-sm:border-2"
                     :class="
                         activeIndex === index
                             ? 'border-primary opacity-100 shadow-sm'
@@ -132,33 +132,34 @@
                 </template>
                 <template #prev-btn="{ prev }">
                     <div
-                        class="group absolute top-1/2 left-1/2 z-100 flex -translate-x-[min(45vw,calc(500px+5rem))] -translate-y-1/2 items-center justify-center rounded-full p-2 text-white ring transition-all active:scale-95"
-                        :class="
-                            indexRef === 0
-                                ? 'cursor-not-allowed opacity-30'
-                                : 'hover:text-primary hover:ring-primary cursor-pointer text-white ring-white hover:ring-2'
-                        "
-                        @click="indexRef > 0 && prev()"
+                        :aria-disabled="indexRef === 0"
+                        class="text-primary active:bg-primary/50 absolute top-1/2 z-100 flex size-12 items-center justify-center rounded-full bg-white shadow-sm transition-all duration-300 hover:bg-gray-50 active:scale-90"
+                        :class="[
+                            'left-1/2 -translate-x-[min(48vw,480px)] -translate-y-1/2',
+                            'aria-disabled:cursor-not-allowed aria-disabled:opacity-30',
+                            'cursor-pointer opacity-100',
+                        ]"
+                        @click="indexRef > 0 ? prev() : null"
                     >
-                        <UIcon
-                            name="i-iconamoon:arrow-left-2"
-                            class="group-hover:text-primary size-8 transition-colors max-sm:size-5"
-                        />
+                        <UIcon name="i-iconamoon:arrow-left-2" class="size-6" />
                     </div>
                 </template>
                 <template #next-btn="{ next }">
                     <div
-                        class="group absolute top-1/2 right-1/2 z-100 flex translate-x-[min(45vw,calc(500px+5rem))] -translate-y-1/2 items-center justify-center rounded-full p-2 text-white ring transition-all active:scale-95"
-                        :class="
-                            indexRef === productImages.length - 1
-                                ? 'cursor-not-allowed opacity-30'
-                                : 'hover:text-primary hover:ring-primary cursor-pointer text-white ring-white hover:ring-2'
+                        :aria-disabled="indexRef === productImages.length - 1"
+                        class="text-primary active:bg-primary/50 absolute top-1/2 z-100 flex size-12 items-center justify-center rounded-full bg-white shadow-sm transition-all duration-300 hover:bg-gray-50 active:scale-90"
+                        :class="[
+                            'right-1/2 translate-x-[min(48vw,480px)] -translate-y-1/2',
+                            'aria-disabled:cursor-not-allowed aria-disabled:opacity-30',
+                            'cursor-pointer opacity-100',
+                        ]"
+                        @click="
+                            indexRef < productImages.length - 1 ? next() : null
                         "
-                        @click="indexRef < productImages.length - 1 && next()"
                     >
                         <UIcon
                             name="i-iconamoon:arrow-right-2"
-                            class="group-hover:text-primary size-8 transition-colors max-sm:size-5"
+                            class="size-6"
                         />
                     </div>
                 </template>
@@ -183,9 +184,14 @@ const displayPriceData = computed(() => {
         const v = props.selectedVariation
         const sale = v.sale_price || v.regular_price
         const regular = v.regular_price
-        const discount = (sale && regular && parseFloat(regular) > parseFloat(sale)) 
-            ? Math.round(((parseFloat(regular) - parseFloat(sale)) / parseFloat(regular)) * 100)
-            : null
+        const discount =
+            sale && regular && parseFloat(regular) > parseFloat(sale)
+                ? Math.round(
+                      ((parseFloat(regular) - parseFloat(sale)) /
+                          parseFloat(regular)) *
+                          100
+                  )
+                : null
         return { sale, regular, discount }
     }
     return basePriceData.value

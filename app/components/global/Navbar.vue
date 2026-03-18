@@ -1,14 +1,16 @@
 <template>
     <header class="sticky top-0 z-50 bg-white shadow-lg">
         <div class="bg-primary">
-            <UContainer class="text-center text-white">
+            <UContainer class="text-center text-white max-md:hidden">
                 <p>
                     ซาวด์ดีดี ช็อป เครื่องเสียง / ระบบภาพ ออนไลน์ | โชว์รูมเปิด
                     จันทร์ - เสาร์ (9:00 - 17:00 น.)
                 </p>
             </UContainer>
         </div>
-        <UContainer class="grid grid-cols-3 items-center py-4">
+        <UContainer
+            class="grid grid-cols-3 items-center py-4 max-md:grid-cols-2"
+        >
             <div class="flex items-center gap-6">
                 <ULink to="/">
                     <NuxtImg
@@ -27,7 +29,7 @@
                 variant="outline"
                 placeholder="Search..."
             />
-            <div class="flex items-center justify-end gap-6">
+            <div class="flex items-center justify-end gap-6 max-md:hidden">
                 <div class="flex items-center gap-2">
                     <UChip
                         color="primary"
@@ -56,7 +58,7 @@
                     >
                         <UAvatar
                             :src="user?.avatar || customer?.avatar_url || ''"
-    :alt="user?.name"
+                            :alt="user?.name"
                             loading="lazy"
                             draggable="false"
                             size="xl"

@@ -1,7 +1,10 @@
 <template>
     <section class="py-8">
         <UContainer>
-            <div v-if="pending" class="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-16">
+            <div
+                v-if="pending"
+                class="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-16"
+            >
                 <div class="aspect-square w-full">
                     <USkeleton class="h-full w-full rounded-2xl" />
                 </div>
@@ -16,7 +19,10 @@
             </div>
 
             <div v-else-if="error || !product" class="py-24 text-center">
-                <UIcon name="i-lucide-package-x" class="mb-4 text-6xl text-gray-300" />
+                <UIcon
+                    name="i-lucide-package-x"
+                    class="mb-4 text-6xl text-gray-300"
+                />
                 <p class="mb-2 text-2xl font-bold text-gray-900">
                     ไม่พบสินค้าที่คุณค้นหา
                 </p>
@@ -30,7 +36,7 @@
                     separator-icon="i-iconamoon:arrow-right-2"
                     :items="breadcrumbItems"
                 />
-                <div class="grid grid-cols-1 gap-10 lg:grid-cols-2">
+                <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
                     <ProductImageGallery
                         :product="product"
                         :productImages="productImages"
@@ -39,7 +45,7 @@
                     <ProductDetailInfo
                         :product="product"
                         :selectedVariation="selectedVariation"
-                        @select-variation="(v: any) => manualSelection = v"
+                        @select-variation="(v: any) => (manualSelection = v)"
                     />
                 </div>
             </div>
@@ -50,7 +56,7 @@
 <script setup lang="ts">
 import type { BreadcrumbItem } from '@nuxt/ui'
 
-const route = useRoute() 
+const route = useRoute()
 const router = useRouter()
 const slug = route.params.slug as string
 
@@ -89,12 +95,17 @@ const selectedVariation = computed(() => {
     const color = colorFromState || route.query.color
 
     if (!product.value?.variations_data) return null
-    
-    if (varId) return product.value.variations_data.find((v: any) => v.id === Number(varId))
-    
+
+    if (varId)
+        return product.value.variations_data.find(
+            (v: any) => v.id === Number(varId)
+        )
+
     if (color) {
-        return product.value.variations_data.find((v: any) => 
-            v.attributes?.some((attr: any) => decodeURIComponent(attr.option || '') === color)
+        return product.value.variations_data.find((v: any) =>
+            v.attributes?.some(
+                (attr: any) => decodeURIComponent(attr.option || '') === color
+            )
         )
     }
     return null
@@ -103,8 +114,13 @@ const selectedVariation = computed(() => {
 const productImages = computed(() => {
     let imgs = (product.value?.images || []).map((img: any) => img?.src)
     if (selectedVariation.value?.images?.length) {
-        const varImgs = selectedVariation.value.images.map((img: any) => img.src)
-        imgs = [...varImgs, ...imgs.filter((src: string) => !varImgs.includes(src))]
+        const varImgs = selectedVariation.value.images.map(
+            (img: any) => img.src
+        )
+        imgs = [
+            ...varImgs,
+            ...imgs.filter((src: string) => !varImgs.includes(src)),
+        ]
     }
     return imgs.filter((src: string | null | undefined) => !!src)
 })

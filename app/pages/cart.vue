@@ -56,31 +56,97 @@
                             {{ item.product.name }}
                         </ULink>
                         <div>
-                            <div v-if="item.product.sale_price" class="mt-auto flex flex-col items-end">
-                                <div v-if="item.product.acf?.promotional_price" class="flex flex-col items-end">
-                                    <div class="flex items-baseline gap-2 text-xs text-gray-400">
-                                        <p v-if="parseFloat(item.product.regular_price) > parseFloat(item.product.sale_price)">
-                                            <span class="line-through decoration-1">฿{{ formatPrice(item.product.regular_price) }}</span>
+                            <div
+                                v-if="item.product.sale_price"
+                                class="mt-auto flex flex-col items-end"
+                            >
+                                <div
+                                    v-if="item.product.acf?.promotional_price"
+                                    class="flex flex-col items-end"
+                                >
+                                    <div
+                                        class="flex flex-col items-end text-sm text-gray-400"
+                                    >
+                                        <p
+                                            v-if="
+                                                parseFloat(
+                                                    item.product.regular_price
+                                                ) >
+                                                parseFloat(
+                                                    item.product.sale_price
+                                                )
+                                            "
+                                        >
+                                            ราคาปกติ
+                                            <span
+                                                class="line-through decoration-1"
+                                                >฿{{
+                                                    formatPrice(
+                                                        item.product
+                                                            .regular_price
+                                                    )
+                                                }}</span
+                                            >
                                         </p>
-                                        <p v-if="parseFloat(item.product.acf?.promotional_price) > parseFloat(item.product.sale_price)">
-                                            <span class="line-through decoration-1">฿{{ formatPrice(item.product.acf.promotional_price) }}</span>
+                                        <p
+                                            v-if="
+                                                parseFloat(
+                                                    item.product.acf
+                                                        ?.promotional_price
+                                                ) >
+                                                parseFloat(
+                                                    item.product.sale_price
+                                                )
+                                            "
+                                        >
+                                            ราคาโปรโมชันเดิม
+                                            <span
+                                                class="line-through decoration-1"
+                                                >฿{{
+                                                    formatPrice(
+                                                        item.product.acf
+                                                            .promotional_price
+                                                    )
+                                                }}</span
+                                            >
                                         </p>
                                     </div>
                                     <p class="text-error text-lg font-bold">
-                                        ฿{{ formatPrice(item.product.sale_price) }}
+                                        ฿{{
+                                            formatPrice(item.product.sale_price)
+                                        }}
                                     </p>
                                 </div>
                                 <div v-else class="flex items-baseline gap-2">
                                     <p
-                                        v-if="item.product.on_sale && parseFloat(item.product.regular_price) > parseFloat(item.product.sale_price)"
-                                        class="text-xs text-gray-400 line-through decoration-1"
+                                        v-if="
+                                            item.product.on_sale &&
+                                            parseFloat(
+                                                item.product.regular_price
+                                            ) >
+                                                parseFloat(
+                                                    item.product.sale_price
+                                                )
+                                        "
+                                        class="text-gray-400 line-through decoration-1"
                                     >
-                                        ฿{{ formatPrice(item.product.regular_price) }}
+                                        ฿{{
+                                            formatPrice(
+                                                item.product.regular_price
+                                            )
+                                        }}
                                     </p>
                                     <p class="text-error text-lg font-bold">
-                                        ฿{{ formatPrice(item.product.sale_price) }}
+                                        ฿{{
+                                            formatPrice(item.product.sale_price)
+                                        }}
                                     </p>
                                 </div>
+                            </div>
+                            <div v-else class="flex flex-col items-end">
+                                <p class="text-error text-lg font-bold"> 
+                                    ฿{{ formatPrice(item.product.regular_price) }}
+                                </p>
                             </div>
                             <div class="flex gap-2">
                                 <UInputNumber
@@ -90,6 +156,7 @@
                                         (val) =>
                                             updateQuantity(
                                                 item.product.id,
+                                                item.product.variation_id,
                                                 val ?? 1
                                             )
                                     "

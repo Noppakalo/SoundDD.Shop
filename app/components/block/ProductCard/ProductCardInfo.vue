@@ -1,13 +1,13 @@
 <template>
     <div
         class="flex flex-1 flex-col justify-between"
-        :class="viewMode === 'list' ? 'px-8 py-2' : 'gap-2 p-4'"
+        :class="viewMode === 'list' ? 'px-8 py-2 max-sm:px-4' : 'gap-2 p-4'"
     >
         <ULink :to="productLink">
             <p
                 class="group-hover:text-primary line-clamp-2 font-medium"
                 :class="
-                    viewMode === 'list' ? 'min-h-0 text-xl' : 'min-h-[3rem]'
+                    viewMode === 'list' ? 'min-h-0 sm:text-xl' : 'min-h-[3rem]'
                 "
             >
                 {{ product.name }}
@@ -26,23 +26,15 @@
                                 parseFloat(currentPrice.regular) >
                                 parseFloat(currentPrice.sale)
                             "
-                            class="text-gray-400 line-through decoration-1"
-                            :class="viewMode === 'list' ? '' : 'text-md'"
+                            class="text-md text-gray-400 line-through decoration-1"
                         >
                             ฿{{ formatPrice(currentPrice.regular) }}
                         </p>
-                        <p
-                            class="text-error font-bold"
-                            :class="
-                                viewMode === 'list' ? 'text-2xl' : 'text-lg'
-                            "
-                        >
+                        <p class="text-error text-lg font-bold">
                             ฿{{ formatPrice(currentPrice.sale) }}
                         </p>
                     </div>
-                    <p :class="viewMode === 'list' ? '' : 'text-xs'">
-                        รวม VAT 7% แล้ว
-                    </p>
+                    <p class="text-sm">รวม VAT 7% แล้ว</p>
                 </div>
 
                 <UButton
@@ -58,7 +50,7 @@
             </div>
 
             <div
-                class="flex gap-2"
+                class="flex gap-2 max-md:hidden"
                 :class="
                     viewMode === 'list'
                         ? 'absolute top-1/2 right-4 z-30 -translate-y-1/2 flex-col'
@@ -82,7 +74,6 @@
                         class="size-9.5 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
                     />
                 </UTooltip>
-
                 <UTooltip
                     text="หยิบใส่ตะกร้า"
                     :content="{ align: 'center', side: 'left', sideOffset: 8 }"
@@ -109,7 +100,6 @@ const props = withDefaults(
     defineProps<{
         product: Product
         viewMode?: 'grid' | 'list'
-        // 🌟 รับราคาสีที่กำลัง Hover มาจาก ProductCard.vue
         activePrice?: { regular: string; sale: string; id?: number } | null
     }>(),
     {

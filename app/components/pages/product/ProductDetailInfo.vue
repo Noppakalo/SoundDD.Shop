@@ -10,7 +10,9 @@
                 </ULink>
             </div>
             <div v-if="product.sku" class="flex gap-1 text-xs">
-                <p>รหัสสินค้า : <span>{{ product.sku }}</span></p>
+                <p>
+                    รหัสสินค้า : <span>{{ product.sku }}</span>
+                </p>
             </div>
         </div>
         <h1 class="text-4xl font-bold">
@@ -84,8 +86,9 @@
             v-html="product.short_description"
         ></div>
         <div v-if="colorVariations.length > 0" class="flex flex-col">
-            <p >
-                เลือกสี : <span class="text-primary font-bold">{{
+            <p>
+                เลือกสี :
+                <span class="text-primary font-bold">{{
                     currentColorName || 'โปรดเลือก'
                 }}</span>
             </p>
@@ -112,7 +115,7 @@
         </div>
         <div class="flex flex-col gap-4 rounded-md bg-gray-100 p-4">
             <div class="flex items-center gap-2">
-                <p class="font-medium">จำนวน : </p>
+                <p class="font-medium">จำนวน :</p>
                 <UInputNumber v-model="quantity" :min="1" />
             </div>
             <div class="flex gap-4">
@@ -149,7 +152,7 @@
                     variant="soft"
                     size="lg"
                     icon="i-iconamoon:shopping-bag"
-                    class="flex-1 justify-center"
+                    class="flex-1 justify-center whitespace-nowrap"
                     @click.prevent="onAddToCart"
                 >
                     ใส่ตะกร้า
@@ -158,7 +161,7 @@
                     :disabled="isSoldOut"
                     color="primary"
                     size="lg"
-                    class="flex-1 justify-center"
+                    class="flex-1 justify-center whitespace-nowrap"
                     @click="onBuyNow"
                 >
                     ซื้อเลย
@@ -202,9 +205,6 @@
 <script setup lang="ts">
 import type { Product } from '~/types/product'
 
-const route = useRoute()
-const router = useRouter()
-
 const props = defineProps<{
     product: Product
     selectedVariation?: any
@@ -217,16 +217,23 @@ const quantity = ref(1)
 const { addToCart } = useCart()
 const { isInWishlist, toggleWishlist } = useWishlist()
 
-const { displayPriceData: basePriceData, hasDisplayPrice } = useProductPrice(() => props.product)
+const { displayPriceData: basePriceData, hasDisplayPrice } = useProductPrice(
+    () => props.product
+)
 
 const displayPriceData = computed(() => {
     if (props.selectedVariation) {
         const v = props.selectedVariation
         const sale = v.sale_price || v.regular_price
         const regular = v.regular_price
-        const discount = (sale && regular && parseFloat(regular) > parseFloat(sale)) 
-            ? Math.round(((parseFloat(regular) - parseFloat(sale)) / parseFloat(regular)) * 100)
-            : null
+        const discount =
+            sale && regular && parseFloat(regular) > parseFloat(sale)
+                ? Math.round(
+                      ((parseFloat(regular) - parseFloat(sale)) /
+                          parseFloat(regular)) *
+                          100
+                  )
+                : null
         return { sale, regular, discount }
     }
     return basePriceData.value
@@ -276,11 +283,15 @@ const colorVariations = computed(() => {
 })
 
 const currentColorName = computed(() => {
-    return props.selectedVariation ? getColorName(props.selectedVariation) : null
+    return props.selectedVariation
+        ? getColorName(props.selectedVariation)
+        : null
 })
 
 const onVariationSelect = (variation: any) => {
-    const fullVariation = props.product.variations_data?.find(v => v.id === variation.id)
+    const fullVariation = props.product.variations_data?.find(
+        (v) => v.id === variation.id
+    )
     if (fullVariation) {
         emit('select-variation', fullVariation)
     }
@@ -288,19 +299,21 @@ const onVariationSelect = (variation: any) => {
 
 const onAddToCart = () => {
     let productToCart = { ...props.product }
-    
+
     if (props.selectedVariation) {
         productToCart = {
             ...productToCart,
             variation_id: props.selectedVariation.id,
-            sale_price: props.selectedVariation.sale_price || props.selectedVariation.regular_price,
+            sale_price:
+                props.selectedVariation.sale_price ||
+                props.selectedVariation.regular_price,
             regular_price: props.selectedVariation.regular_price,
-            images: props.selectedVariation.images?.length 
-                ? props.selectedVariation.images 
-                : productToCart.images
+            images: props.selectedVariation.images?.length
+                ? props.selectedVariation.images
+                : productToCart.images,
         }
     }
-    
+
     addToCart(productToCart as any, quantity.value)
 }
 

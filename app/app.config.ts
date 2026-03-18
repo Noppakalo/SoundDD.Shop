@@ -65,11 +65,12 @@ export default defineAppConfig({
             slots: {
                 root: 'relative focus:outline-none',
                 arrows: 'pointer-events-none',
-                controls: 'pointer-events-none absolute inset-y-0 inset-x-20',
+                controls:
+                    'pointer-events-none absolute inset-y-0 inset-x-20 max-sm:-inset-x-2.5',
                 prev: 'absolute rounded-full size-10 pointer-events-auto',
                 next: 'absolute rounded-full size-10 pointer-events-auto',
-                dots: 'bottom-4',
-                dot: 'bg-black/50',
+                dots: 'bottom-4 max-md:bottom-2',
+                dot: 'bg-black/50 max-md:size-2.5',
             },
             variants: {
                 active: {

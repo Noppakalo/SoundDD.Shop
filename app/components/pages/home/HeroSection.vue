@@ -73,11 +73,6 @@ const items = computed<CarouselItem[]>(() => [
         link: '/blog?tag=ga4',
     },
     {
-        src: '/promotions/Banner-Klipsch-ProMedia-Lumina-JAN2026.webp',
-        alt: 'Keyword SEO Result',
-        link: '/blog?tag=ga4',
-    },
-    {
         src: '/images/promotions/Banner-Jabra-Speak-2-JAN2026webp.webp',
         alt: 'Keyword SEO Result',
         link: '/blog?tag=ga4',
