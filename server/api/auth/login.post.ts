@@ -19,11 +19,25 @@ export default defineEventHandler(async (event) => {
             }
         )
 
+        const authHeader = buildWooAuth(config)
+        const wpUrl = config.public.wpUrl as string
+        const wpUser = await wooFindCustomerByEmail(
+            response.user_email,
+            authHeader,
+            wpUrl
+        ).catch(() => null)
+
+        const socialAvatar = wpUser?.meta_data?.find(
+            (m: any) => m.key === 'social_avatar_url'
+        )?.value
+        const avatar = socialAvatar || wpUser?.avatar_url || ''
+
         await setUserSession(event, {
             user: {
                 name: response.user_display_name,
                 email: response.user_email,
                 nicename: response.user_nicename,
+                avatar: avatar,
             },
             secure: {
                 token: response.token,
@@ -37,6 +51,7 @@ export default defineEventHandler(async (event) => {
                 name: response.user_display_name,
                 email: response.user_email,
                 nicename: response.user_nicename,
+                avatar: avatar,
             },
         }
     } catch (error: any) {

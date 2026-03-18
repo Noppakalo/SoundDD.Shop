@@ -98,12 +98,12 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
         })
         if (result.success) {
             showRegisterSuccess()
-            emit('success')
+                emit('success')
         } else {
             showRegisterError(result.error)
 
             if (result.statusCode === 409) {
-                emit('existing-user')
+                    emit('existing-user')
             }
         }
     } catch (error: any) {

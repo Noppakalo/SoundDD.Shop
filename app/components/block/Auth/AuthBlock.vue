@@ -57,7 +57,7 @@ const items = [
 ] satisfies TabsItem[]
 
 const switchToLogin = () => {
-    activeTab.value = 'login'
+        activeTab.value = 'login'
 }
 
 const handleLoginSuccess = () => {

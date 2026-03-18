@@ -43,6 +43,8 @@ export interface Product {
     sku?: string
     sale_price: string
     regular_price: string
+    date_on_sale_from?: string
+    date_on_sale_to?: string
     on_sale: boolean
     categories?: ProductCategories[]
     brands?: ProductBrands[]

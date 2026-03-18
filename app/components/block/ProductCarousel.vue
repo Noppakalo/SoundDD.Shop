@@ -22,28 +22,32 @@
                         ดูทั้งหมด
                     </UButton>
                 </div>
-                <div
+                <UCarousel
                     v-if="subcategories && subcategories.length > 0"
-                    class="flex items-center gap-1.5"
+                    v-slot="{ item }"
+                    :items="subcategories"
+                    wheel-gestures
+                    :ui="{
+                        item: 'basis-auto ps-4',
+                    }"
                 >
                     <UButton
-                        v-for="sub in subcategories"
-                        :key="sub.id"
+                        :key="item.id"
                         :variant="
-                            activeCategoryId === sub.id ? 'solid' : 'outline'
+                            activeCategoryId === item.id ? 'solid' : 'outline'
                         "
                         :color="
-                            activeCategoryId === sub.id
+                            activeCategoryId === item.id
                                 ? 'primary'
                                 : 'secondary'
                         "
                         size="md"
-                        class="rounded-full whitespace-nowrap"
-                        @click="activeCategoryId = sub.id"
+                        class="mx-1 flex-none rounded-full whitespace-nowrap"
+                        @click="activeCategoryId = item.id"
                     >
-                        {{ sub.name }}
+                        {{ item.name }}
                     </UButton>
-                </div>
+                </UCarousel>
             </div>
             <div v-if="pending" class="grid grid-cols-2 gap-6 md:grid-cols-4">
                 <div
@@ -58,7 +62,9 @@
                             <USkeleton class="h-4 w-5/6" />
                         </div>
                         <div class="flex h-14 items-end justify-between">
-                            <div class="flex flex-col justify-end space-y-1.5 pb-1">
+                            <div
+                                class="flex flex-col justify-end space-y-1.5 pb-1"
+                            >
                                 <USkeleton class="h-3 w-16" />
                                 <USkeleton class="h-5 w-24" />
                                 <USkeleton class="h-3 w-20" />
