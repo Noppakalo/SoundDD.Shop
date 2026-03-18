@@ -6,7 +6,6 @@ export interface CartItem {
 }
 
 export const useCart = () => {
-
     const items = useState<CartItem[]>('cart', () => [])
     const toast = useToast()
 
@@ -29,19 +28,21 @@ export const useCart = () => {
         }
     }
 
-
-
-    const isInCart = (productId: number | string, variationId?: number | string) => {
-        return items.value.some((item) => 
-            item.product.id === productId && 
-            (!variationId || item.product.variation_id === variationId)
+    const isInCart = (
+        productId: number | string,
+        variationId?: number | string
+    ) => {
+        return items.value.some(
+            (item) =>
+                item.product.id === productId &&
+                (!variationId || item.product.variation_id === variationId)
         )
     }
 
     const addToCart = async (product: Product, quantity: number = 1) => {
         const existingItem = items.value.find(
-            (item) => 
-                item.product.id === product.id && 
+            (item) =>
+                item.product.id === product.id &&
                 item.product.variation_id === product.variation_id
         )
         if (existingItem) {
@@ -59,10 +60,13 @@ export const useCart = () => {
         await saveCart()
     }
 
-    const removeFromCart = async (productId: string | number, variationId?: string | number) => {
+    const removeFromCart = async (
+        productId: string | number,
+        variationId?: string | number
+    ) => {
         const index = items.value.findIndex(
-            (item) => 
-                item.product.id === productId && 
+            (item) =>
+                item.product.id === productId &&
                 (!variationId || item.product.variation_id === variationId)
         )
         if (index > -1) {
@@ -77,8 +81,8 @@ export const useCart = () => {
         quantity: number
     ) => {
         const existingItem = items.value.find(
-            (item) => 
-                item.product.id === productId && 
+            (item) =>
+                item.product.id === productId &&
                 (!variationId || item.product.variation_id === variationId)
         )
         if (existingItem) {
@@ -102,7 +106,10 @@ export const useCart = () => {
 
     const cartTotal = computed(() => {
         return items.value.reduce((total, item) => {
-            const price = parseFloat(item.product.sale_price || '0')
+            const price = parseFloat(
+                item.product.sale_price || item.product.regular_price || '0'
+            )
+
             return total + price * item.quantity
         }, 0)
     })

@@ -144,8 +144,10 @@
                                 </div>
                             </div>
                             <div v-else class="flex flex-col items-end">
-                                <p class="text-error text-lg font-bold"> 
-                                    ฿{{ formatPrice(item.product.regular_price) }}
+                                <p class="text-error text-lg font-bold">
+                                    ฿{{
+                                        formatPrice(item.product.regular_price)
+                                    }}
                                 </p>
                             </div>
                             <div class="flex gap-2">
@@ -166,7 +168,12 @@
                                     variant="ghost"
                                     icon="i-lucide-trash"
                                     class="hover:text-error text-gray-400 hover:bg-rose-50"
-                                    @click="removeFromCart(item.product.id)"
+                                    @click="
+                                        removeFromCart(
+                                            item.product.id,
+                                            item.product.variation_id
+                                        )
+                                    "
                                 />
                             </div>
                         </div>
