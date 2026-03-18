@@ -36,7 +36,6 @@
                     </div>
                     <p class="text-sm">รวม VAT 7% แล้ว</p>
                 </div>
-
                 <UButton
                     v-else
                     to="https://page.line.me/lyd9910p?oat__id=3047370&openQrModal=true"

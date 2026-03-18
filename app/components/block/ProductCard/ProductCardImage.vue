@@ -31,7 +31,7 @@
         class="relative overflow-hidden"
         :class="
             viewMode === 'list'
-                ? 'p-4 max-sm:size-40 sm:size-60 lg:size-45'
+                ? 'size-60 p-4 max-sm:size-40'
                 : 'aspect-square w-full'
         "
     >
@@ -66,7 +66,11 @@
                 >
                     <p
                         class="font-bold text-white"
-                        :class="viewMode === 'list' ? '' : 'text-lg'"
+                        :class="
+                            viewMode === 'list'
+                                ? ''
+                                : 'text-lg max-sm:text-base'
+                        "
                     >
                         {{
                             currentStockStatus === 'outofstock'
@@ -81,7 +85,9 @@
             v-if="colorVariations.length > 0"
             class="absolute top-1/2 z-30 flex -translate-y-1/2 flex-col gap-2"
             :class="
-                viewMode === 'list' ? 'left-2 hidden' : 'left-4 max-sm:hidden'
+                viewMode === 'list'
+                    ? 'left-2 max-lg:hidden'
+                    : 'left-4 max-sm:hidden'
             "
         >
             <div
@@ -99,23 +105,19 @@
                 />
             </div>
         </div>
-    </div>
-    <div
-        v-if="product.acf?.image_gift"
-        class="absolute z-10 mx-auto -translate-y-1/2 px-4"
-        :class="
-            viewMode === 'list'
-                ? '-bottom-4.5 max-sm:-bottom-3 max-sm:w-44 sm:w-60 lg:w-50'
-                : 'top-[60%] max-sm:top-[50%] sm:top-[62%]'
-        "
-    >
-        <NuxtImg
-            v-if="product.acf?.image_gift.url"
-            :src="product.acf?.image_gift.url"
-            class="relative h-full w-full object-cover"
-            loading="lazy"
-            draggable="false"
-        />
+        <div
+            v-if="product.acf?.image_gift"
+            class="absolute z-10 mx-auto"
+            :class="viewMode === 'list' ? 'bottom-1 px-2' : 'bottom-0 px-4'"
+        >
+            <NuxtImg
+                v-if="product.acf?.image_gift.url"
+                :src="product.acf?.image_gift.url"
+                class="relative h-full w-full object-cover"
+                loading="lazy"
+                draggable="false"
+            />
+        </div>
     </div>
 </template>
 
