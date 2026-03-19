@@ -15,32 +15,11 @@ export default defineEventHandler(async (event) => {
     const wpUsername = config.wpAppUsername || 'Oatzys'
     const authHeader = `Basic ${Buffer.from(`${wpUsername}:${appPassword}`).toString('base64')}`
 
-    try {
-        const existingCustomers = await $fetch<any[]>(
-            `${config.public.wpUrl}/wp-json/wc/v3/customers`,
-            {
-                headers: { Authorization: authHeader },
-                query: { email: email },
-            }
-        )
-
-        if (existingCustomers && existingCustomers.length > 0) {
-            throw createError({
-                statusCode: 409,
-                statusMessage:
-                    'อีเมลนี้ถูกใช้งานแล้ว คุณสามารถเข้าสู่ระบบได้ทันที',
-            })
-        }
-    } catch (error: any) {
-        if (error.statusCode === 409) throw error
-        console.error('WP Check Error:', error.response?._data || error.message)
-    }
-
     const baseUsername =
         email?.split('@')[0]?.replace(/[^a-zA-Z0-9]/g, '') || ''
     let username = baseUsername
     let attempts = 0
-    const maxAttempts = 5
+    const maxAttempts = 3
 
     while (attempts < maxAttempts) {
         try {
@@ -65,6 +44,14 @@ export default defineEventHandler(async (event) => {
             return { success: true, data: response }
         } catch (error: any) {
             const errorCode = error.response?._data?.code
+
+            if (errorCode === 'registration-error-email-exists') {
+                throw createError({
+                    statusCode: 409,
+                    statusMessage:
+                        'อีเมลนี้ถูกใช้งานแล้ว กรุณาลองใหม่อีกครั้ง',
+                })
+            }
 
             if (
                 errorCode === 'existing_user_login' &&
