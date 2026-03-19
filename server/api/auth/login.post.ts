@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
 
     try {
         const response = await $fetch<WpJwtResponse>(
-            `${config.public.wpUrl}/wp-json/api/v1/token`,
+            `${config.public.wpUrl}/wp-json/jwt-auth/v1/token`,
             {
                 method: 'POST',
                 headers: {

@@ -84,7 +84,7 @@ export async function wooFetchJwtToken(
 ): Promise<string | null> {
     try {
         const res = await $fetch<WpJwtResponse>(
-            `${wpUrl}/wp-json/api/v1/token`,
+            `${wpUrl}/wp-json/jwt-auth/v1/token`,
             {
                 method: 'POST',
                 body: { username, password },
