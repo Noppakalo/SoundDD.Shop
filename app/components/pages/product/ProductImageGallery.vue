@@ -11,7 +11,7 @@
                     size="xl"
                     class="rounded-full"
                 >
-                    {{ displayPriceData.discount }}%
+                    -{{ displayPriceData.discount }}%
                 </UBadge>
             </div>
             <UCarousel

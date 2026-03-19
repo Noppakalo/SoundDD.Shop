@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
         )?.value
         const avatar = socialAvatar || wpUser?.avatar_url || ''
 
-        await setUserSession(event, {
+        const sessionData: any = {
             user: {
                 name: response.user_display_name,
                 email: response.user_email,
@@ -43,7 +43,13 @@ export default defineEventHandler(async (event) => {
                 token: response.token,
             },
             loggedInAt: new Date().toISOString(),
-        })
+        }
+
+        const sessionOptions = {
+            maxAge: body.remember ? config.session.cookie.maxAge : (60 * 60 * 24)
+        }
+
+        await setUserSession(event, sessionData, sessionOptions)
 
         return {
             success: true,

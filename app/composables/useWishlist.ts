@@ -24,7 +24,19 @@ export const useWishlist = () => {
                                 ? JSON.parse(wishlistMeta.value) 
                                 : wishlistMeta.value
                             
-                            wishlistItems.value = Array.isArray(parsed) ? parsed : []
+                            const serverItems = Array.isArray(parsed) ? parsed : []
+                            
+                            // Merge local items with server items
+                            const mergedItems = Array.from(new Set([...wishlistItems.value, ...serverItems]))
+                            wishlistItems.value = mergedItems
+
+                            if (import.meta.client) {
+                                localStorage.setItem('wishlistItems', JSON.stringify(wishlistItems.value))
+                            }
+
+                            if (mergedItems.length > serverItems.length) {
+                                saveWishlist()
+                            }
                         } catch (e) {
                             wishlistItems.value = []
                         }
@@ -41,6 +53,17 @@ export const useWishlist = () => {
     }
 
     const initWishlist = () => {
+        if (import.meta.client) {
+            const stored = localStorage.getItem('wishlistItems')
+            if (stored) {
+                try {
+                    wishlistItems.value = JSON.parse(stored)
+                } catch (e) {
+                    console.error('Failed to parse local wishlist:', e)
+                }
+            }
+        }
+
         if (user.value?.email) {
             fetchCustomerData(user.value.email)
         } else {
@@ -71,10 +94,6 @@ export const useWishlist = () => {
     }
 
     const toggleWishlist = async (productId: number) => {
-        if (!user.value) {
-            return navigateTo('/?auth=required')
-        }
-
         const index = wishlistItems.value.indexOf(productId)
         if (index > -1) {
             wishlistItems.value.splice(index, 1)
@@ -91,15 +110,25 @@ export const useWishlist = () => {
                 icon: 'i-iconamoon:check-circle-1',
             })
         }
-        await saveWishlist()
+
+        if (import.meta.client) {
+            localStorage.setItem('wishlistItems', JSON.stringify(wishlistItems.value))
+        }
+
+        if (user.value) {
+            await saveWishlist()
+        }
     }
 
     const isInWishlist = (productId: number) => {
         return wishlistItems.value.includes(productId)
     }
 
+    const wishlistItemCount = computed(() => wishlistItems.value.length)
+
     return {
         wishlistItems,
+        wishlistItemCount,
         isLoading,
         initWishlist,
         toggleWishlist,

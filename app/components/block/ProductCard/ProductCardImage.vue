@@ -9,7 +9,7 @@
             variant="solid"
             size="lg"
             class="rounded-full px-2.5"
-            >{{ currentDiscount }}%
+            >-{{ currentDiscount }}%
         </UBadge>
     </div>
     <div

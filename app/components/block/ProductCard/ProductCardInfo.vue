@@ -57,6 +57,11 @@
                 "
             >
                 <UTooltip
+                 :aria-label="
+                        isInWishlist(product.id)
+                            ? 'นำสินค้าที่สนใจออก'
+                            : 'เพิ่มสินค้าที่สนใจ'
+                    "
                     :text="
                         isInWishlist(product.id)
                             ? 'นำสินค้าที่สนใจออก'
@@ -74,6 +79,7 @@
                     />
                 </UTooltip>
                 <UTooltip
+                aria-label="หยิบใส่ตะกร้า"
                     text="หยิบใส่ตะกร้า"
                     :content="{ align: 'center', side: 'left', sideOffset: 8 }"
                 >

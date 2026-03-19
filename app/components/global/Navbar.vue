@@ -32,6 +32,23 @@
             <div class="flex items-center justify-end gap-6 max-md:hidden">
                 <div class="flex items-center gap-2">
                     <UChip
+                    aria-label="สินค้าที่สนใจ"
+                        color="primary"
+                        inset
+                        size="3xl"
+                        :text="wishlistItemCount"
+                        :show="wishlistItemCount > 0"
+                    >
+                        <UButton
+                            to="/account/my-wishlist"
+                            icon="i-iconamoon:heart-light"
+                            color="neutral"
+                            variant="ghost"
+                            size="xl"
+                        />
+                    </UChip>
+                    <UChip
+                    aria-label="ตะกร้าสินค้า"
                         color="primary"
                         inset
                         size="3xl"
@@ -40,7 +57,6 @@
                     >
                         <UButton
                             to="/cart"
-                            aria-label="สินค้าที่สนใจ"
                             icon="i-iconamoon:shopping-bag"
                             color="neutral"
                             variant="ghost"
@@ -83,7 +99,7 @@
                     v-if="!user"
                     v-model="isOpen"
                     :ui="{
-                        content: 'ring-0 max-w-fit',
+                        content: 'ring-0 max-w-xl',
                         overlay: 'bg-black/50 backdrop-blur-xs',
                     }"
                 >
@@ -101,6 +117,7 @@
 import type { Customer } from '~/types/customer'
 const { user } = useWpAuthApi()
 const { cartItemCount } = useCart()
+const { wishlistItemCount } = useWishlist()
 const isOpen = ref(false)
 const showLogoutModal = ref(false)
 

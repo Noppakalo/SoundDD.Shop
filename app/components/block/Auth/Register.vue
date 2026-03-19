@@ -8,30 +8,6 @@
         }"
         @submit="onSubmit"
     >
-        <template #header>
-            <div class="grid grid-cols-2 gap-3">
-                <UButton
-                    icon="i-custom-google"
-                    block
-                    class="text-primary border-primary hover:bg-primary border bg-white hover:text-white"
-                    to="/api/auth/google"
-                    external
-                >
-                    สมัครสมาชิกด้วย Google</UButton
-                >
-                <UButton
-                    icon="i-custom-facebook"
-                    block
-                    class="text-primary border-primary hover:bg-primary border bg-white hover:text-white"
-                    to="/api/auth/facebook"
-                    external
-                    >สมัครสมาชิกด้วย Facebook</UButton
-                >
-            </div>
-        </template>
-        <template #providers>
-            <USeparator label="หรือ" />
-        </template>
     </UAuthForm>
 </template>
 

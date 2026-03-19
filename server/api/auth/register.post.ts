@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
     const authHeader = `Basic ${Buffer.from(`${wpUsername}:${appPassword}`).toString('base64')}`
 
     const baseUsername =
-        email?.split('@')[0]?.replace(/[^a-zA-Z0-9]/g, '') || ''
+    email?.split('@')[0]?.replace(/[^a-zA-Z0-9]/g, '') || ''
     let username = baseUsername
     let attempts = 0
     const maxAttempts = 3

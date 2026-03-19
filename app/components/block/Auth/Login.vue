@@ -99,6 +99,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
         const result = await login({
             email: event.data.email,
             password: event.data.password,
+            remember: event.data.remember,
         })
 
         if (result.success) {
