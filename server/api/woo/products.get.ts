@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
 
     const slug = query.slug as string | undefined
     const page = query.page || 1
-    const limit = query.limit || 12
+    const limit = query.limit || 16
     const categoryId = query.category || null
     const search = query.search || null
     const stockStatus = query.stock_status || undefined

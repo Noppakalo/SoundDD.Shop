@@ -1,50 +1,140 @@
 <template>
-    <div
-        v-if="pending"
-        class="grid gap-4"
-        :class="
-            viewMode === 'grid' ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1'
-        "
-    >
+    <div>
         <div
-            v-for="i in 8"
-            :key="i"
-            :class="viewMode === 'list' ? 'h-48' : 'aspect-square'"
+            v-if="pending && products.length === 0"
+            class="grid gap-4"
+            :class="
+                viewMode === 'grid' ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1'
+            "
         >
-            <USkeleton class="h-full w-full rounded-xl" />
+            <div
+                v-for="i in 16"
+                :key="i"
+                :class="viewMode === 'list' ? 'h-48' : 'aspect-square'"
+            >
+                <USkeleton class="h-full w-full rounded-xl" />
+            </div>
         </div>
-    </div>
-    <div
-        v-else-if="products && products.length > 0"
-        class="grid gap-4 transition-opacity duration-300"
-        :class="[
-            viewMode === 'grid' ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1',
-            pending ? 'opacity-50' : 'opacity-100',
-        ]"
-    >
-        <ProductCard
-            v-for="product in products"
-            :key="product.id"
-            :product="product"
-            :view-mode="viewMode"
-        />
-    </div>
-    <div
-        v-else
-        class="rounded-2xl border-2 border-dashed border-gray-100 bg-gray-50 py-20 text-center"
-    >
-        <UIcon name="i-lucide-search-x" class="mb-4 text-5xl text-gray-300" />
-        <p class="text-xl font-medium text-gray-900">
-            ไม่พบสินค้าที่ตรงตามเงื่อนไข
-        </p>
-        <p class="text-sm text-gray-500">ลองปรับเปลี่ยนตัวกรองของคุณ</p>
+        <div
+            v-else-if="products && products.length > 0"
+            class="flex flex-col gap-8"
+        >
+            <div
+                class="grid gap-4 transition-opacity duration-300"
+                :class="
+                    viewMode === 'grid'
+                        ? 'grid-cols-2 lg:grid-cols-4'
+                        : 'grid-cols-1'
+                "
+            >
+                <ProductCard
+                    v-for="product in products"
+                    :key="product.id"
+                    :product="product"
+                    :view-mode="viewMode"
+                />
+            </div>
+            <div
+                v-if="!isNoMoreProducts && products.length > 0"
+                class="mt-10 flex flex-col items-center gap-4"
+            >
+                <UButton
+                    :loading="loadingMore"
+                    label="ดูสินค้าเพิ่มเติม"
+                    color="primary"
+                    variant="soft"
+                    size="xl"
+                    icon="i-iconamoon:arrow-down-2-light"
+                    class="px-10 font-bold"
+                    @click="handleLoadMore"
+                />
+                <p>
+                    แสดงอยู่ {{ products.length }} จาก
+                    {{ category?.count || 0 }} รายการ
+                </p>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-defineProps<{
-    products: any[]
-    pending: boolean
+const props = defineProps<{
+    category: any
+    filters: {
+        minPrice: number
+        maxPrice: number
+        brands: number[]
+        categories: number[]
+    }
+    sortOptions: { orderby: string; order: string }
     viewMode: 'grid' | 'list'
 }>()
+
+const route = useRoute()
+const slug = route.params.slug
+const actualSlug = Array.isArray(slug) ? slug[slug.length - 1] : slug
+
+const currentPage = ref(1)
+const products = useState<any[]>(`products-${actualSlug}`, () => [])
+const isNoMoreProducts = useState(`nomore-${actualSlug}`, () => false)
+const loadingMore = ref(false)
+
+const { pending: productsPending, refresh: fetchProducts } = await useAsyncData(
+    `products-fetch-${actualSlug}`,
+    async () => {
+        if (!props.category?.id) return { success: true, data: [] }
+
+        const params: any = {
+            category: props.category.id,
+            min_price: props.filters.minPrice,
+            max_price: props.filters.maxPrice,
+            orderby: props.sortOptions.orderby,
+            order: props.sortOptions.order,
+            page: currentPage.value,
+            limit: 16,
+        }
+
+        if (props.filters.brands && props.filters.brands.length > 0) {
+            params.brand = props.filters.brands.join(',')
+        }
+
+        const res = await useWooProductApi().getProducts(params)
+
+        if (res.success) {
+            if (res.data.length < 16) {
+                isNoMoreProducts.value = true
+            } else {
+                isNoMoreProducts.value = false
+            }
+            if (currentPage.value === 1) {
+                products.value = res.data
+            } else {
+                products.value = [...products.value, ...res.data]
+            }
+        }
+        return res
+    }
+)
+
+const pending = computed(() => productsPending.value && currentPage.value === 1)
+
+const handleLoadMore = async () => {
+    loadingMore.value = true
+    currentPage.value++
+    await fetchProducts()
+    loadingMore.value = false
+}
+
+watch(
+    () => [props.filters, props.sortOptions, props.category],
+    async () => {
+        if (props.category?.id) {
+            currentPage.value = 1
+            products.value = []
+            isNoMoreProducts.value = false
+            await fetchProducts()
+        }
+    },
+    { deep: true }
+)
 </script>

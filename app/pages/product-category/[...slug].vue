@@ -45,8 +45,9 @@
                     />
                 </div>
                 <ProductGrid
-                    :products="products"
-                    :pending="productsPending"
+                    :category="category"
+                    :filters="filters"
+                    :sort-options="sortOptions"
                     :view-mode="viewMode"
                 />
             </div>
@@ -61,6 +62,7 @@ const actualSlug = Array.isArray(slug) ? slug[slug.length - 1] : slug
 
 const sortOptions = ref({ orderby: 'date', order: 'desc' })
 const viewMode = ref<'grid' | 'list'>('grid')
+
 
 const filters = ref({
     minPrice: 0,
@@ -86,34 +88,7 @@ const category = computed(() => {
     return null
 })
 
-const { data: productsRes, pending: productsPending } = await useAsyncData(
-    `products-${actualSlug}-${JSON.stringify(filters.value)}-${JSON.stringify(sortOptions.value)}`,
-    async () => {
-        if (!category.value?.id) return { success: true, data: [] }
-        const params: any = {
-            category: category.value.id,
-            min_price: filters.value.minPrice,
-            max_price: filters.value.maxPrice,
-            orderby: sortOptions.value.orderby,
-            order: sortOptions.value.order,
-        }
-        if (filters.value.brands.length > 0) {
-            params.brand = filters.value.brands.join(',')
-        }
-        if (filters.value.categories.length > 0) {
-            params.category = [
-                category.value.id,
-                ...filters.value.categories,
-            ].join(',')
-        }
-        return useWooProductApi().getProducts(params)
-    },
-    { watch: [category, filters, sortOptions] }
-)
 
-const products = computed(() =>
-    productsRes.value?.success ? productsRes.value.data : []
-)
 
 const { data: subResponse } = await useAsyncData(
     `subcategories-${actualSlug}`,
@@ -128,7 +103,7 @@ const { data: subResponse } = await useAsyncData(
     { watch: [category] }
 )
 
-const subcategories = computed(() => {
-    return subResponse.value?.success ? subResponse.value.data : []
-})
+const subcategories = computed(() =>
+    subResponse.value?.success ? subResponse.value.data : []
+)
 </script>

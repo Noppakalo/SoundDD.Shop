@@ -41,7 +41,7 @@
                     >
                         <UButton
                             to="/account/my-wishlist"
-                            icon="i-iconamoon:heart-light"
+                            icon="i-iconamoon:heart"
                             color="neutral"
                             variant="ghost"
                             size="xl"
