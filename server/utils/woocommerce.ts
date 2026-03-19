@@ -75,22 +75,24 @@ export async function wooUpdateCustomer(
     })
 }
 
+import type { WpJwtResponse } from '~/types/auth'
+
 export async function wooFetchJwtToken(
     username: string,
     password: string,
     wpUrl: string
 ): Promise<string | null> {
     try {
-        const res = await $fetch<{ token: string }>(
-            `${wpUrl}/wp-json/jwt-auth/v1/token`,
+        const res = await $fetch<WpJwtResponse>(
+            `${wpUrl}/wp-json/api/v1/token`,
             {
                 method: 'POST',
                 body: { username, password },
             }
         )
         return res.token ?? null
-    } catch (error) {
-        console.error('JWT Token Error:', error)
+    } catch (error: any) {
+        console.error('JWT Token Error:', error.response?._data || error.message)
         return null
     }
 }

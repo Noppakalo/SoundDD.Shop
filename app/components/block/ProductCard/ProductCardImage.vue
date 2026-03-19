@@ -23,7 +23,7 @@
                 :alt="product.brands?.[0]?.name"
                 loading="lazy"
                 draggable="false"
-                class="h-12 w-auto object-contain"
+                class="h-12 w-auto object-contain max-sm:h-8"
             />
         </ULink>
     </div>
@@ -108,7 +108,11 @@
         <div
             v-if="product.acf?.image_gift"
             class="absolute z-10 mx-auto"
-            :class="viewMode === 'list' ? 'bottom-1 px-2' : 'bottom-0 px-4'"
+            :class="
+                viewMode === 'list'
+                    ? 'bottom-1 px-2'
+                    : 'bottom-0 px-4 max-sm:px-2'
+            "
         >
             <NuxtImg
                 v-if="product.acf?.image_gift.url"

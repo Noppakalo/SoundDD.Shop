@@ -19,7 +19,7 @@ export interface WpJwtResponse {
     user_email: string
     user_nicename: string
     user_display_name: string
-    user_id?: number
+    user_id?: number | string
 }
 
 export interface Login {

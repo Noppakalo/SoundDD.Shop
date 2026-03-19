@@ -112,17 +112,14 @@ const selectedVariation = computed(() => {
 })
 
 const productImages = computed(() => {
-    let imgs = (product.value?.images || []).map((img: any) => img?.src)
     if (selectedVariation.value?.images?.length) {
-        const varImgs = selectedVariation.value.images.map(
-            (img: any) => img.src
-        )
-        imgs = [
-            ...varImgs,
-            ...imgs.filter((src: string) => !varImgs.includes(src)),
-        ]
+        return selectedVariation.value.images
+            .map((img: any) => img?.src)
+            .filter((src: string | null | undefined) => !!src)
     }
-    return imgs.filter((src: string | null | undefined) => !!src)
+    return (product.value?.images || [])
+        .map((img: any) => img?.src)
+        .filter((src: string | null | undefined) => !!src)
 })
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [

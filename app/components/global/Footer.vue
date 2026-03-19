@@ -99,16 +99,19 @@
                 <div class="flex flex-col gap-8">
                     <div class="flex flex-col gap-4">
                         <p class="font-bold">ติดตามเรา</p>
-                        <div class="flex gap-4">
+                        <div class="flex flex-wrap gap-4">
                             <ULink
                                 v-for="social in socialLinks"
                                 :key="social.to"
                                 :to="social.to"
                                 target="_blank"
-                                class="text-xl transition-transform hover:scale-110"
+                                class="h-6 transition-transform hover:scale-110 max-sm:h-8"
                                 :class="social.color"
                             >
-                                <UIcon :name="social.icon" class="h-6" />
+                                <UIcon
+                                    :name="social.icon"
+                                    class="h-6 max-sm:h-8"
+                                />
                             </ULink>
                         </div>
                     </div>
@@ -124,7 +127,7 @@
                                 alt="name"
                                 loading="lazy"
                                 draggable="false"
-                                class="h-6 w-auto"
+                                class="h-6"
                             />
                         </ULink>
                     </div>
