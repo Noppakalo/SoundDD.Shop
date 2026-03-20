@@ -32,7 +32,7 @@
             <div class="flex items-center justify-end gap-6 max-md:hidden">
                 <div class="flex items-center gap-2">
                     <UChip
-                    aria-label="สินค้าที่สนใจ"
+                        aria-label="สินค้าที่สนใจ"
                         color="primary"
                         inset
                         size="3xl"
@@ -48,7 +48,7 @@
                         />
                     </UChip>
                     <UChip
-                    aria-label="ตะกร้าสินค้า"
+                        aria-label="ตะกร้าสินค้า"
                         color="primary"
                         inset
                         size="3xl"

@@ -46,6 +46,13 @@ export default defineAppConfig({
                 size: 'lg',
             },
         },
+        chip: {
+            variants: {
+                size: {
+                    '3xl': 'size-4 min-w-4 text-[14px] font-bold',
+                },
+            },
+        },
         link: {
             variants: {
                 active: {

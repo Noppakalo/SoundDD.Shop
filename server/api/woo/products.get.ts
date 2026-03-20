@@ -49,6 +49,7 @@ export default defineEventHandler(async (event) => {
         'brands',
         'tags',
         'images',
+        'default_attributes',
         'stock_status',
         'acf',
         'variations_data',

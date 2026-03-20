@@ -9,9 +9,9 @@
                     {{ product.brands[0]?.name }}
                 </ULink>
             </div>
-            <div v-if="product.sku" class="flex gap-1 text-xs">
+            <div v-if="displaySku" class="flex gap-1 text-xs">
                 <p>
-                    รหัสสินค้า : <span>{{ product.sku }}</span>
+                    รหัสสินค้า : <span>{{ displaySku }}</span>
                 </p>
             </div>
         </div>
@@ -88,9 +88,9 @@
         <div v-if="colorVariations.length > 0" class="flex flex-col">
             <p>
                 เลือกสี :
-                <span class="text-primary font-bold">{{
-                    currentColorName || 'โปรดเลือก'
-                }}</span>
+                <span class="text-primary font-bold">
+                    {{ currentColorName }}
+                </span>
             </p>
             <div class="flex flex-wrap gap-2">
                 <UButton
@@ -106,7 +106,6 @@
                             ? 'primary'
                             : 'neutral'
                     "
-                    class="min-w-[4rem] justify-center"
                     @click="onVariationSelect(variation)"
                 >
                     {{ variation.colorName }}
@@ -243,6 +242,10 @@ const currentStockStatus = computed(() => {
     return props.selectedVariation?.stock_status || props.product.stock_status
 })
 
+const displaySku = computed(() => {
+    return props.selectedVariation?.sku || props.product.sku
+})
+
 const isSoldOut = computed(
     () =>
         currentStockStatus.value === 'outofstock' ||
@@ -283,14 +286,14 @@ const colorVariations = computed(() => {
 })
 
 const currentColorName = computed(() => {
-    return props.selectedVariation
-        ? getColorName(props.selectedVariation)
-        : null
+    const variation = props.selectedVariation
+    if (!variation) return ''
+    return getColorName(variation)
 })
 
 const onVariationSelect = (variation: any) => {
     const fullVariation = props.product.variations_data?.find(
-        (v) => v.id === variation.id
+        (v: any) => v.id === variation.id
     )
     if (fullVariation) {
         emit('select-variation', fullVariation)

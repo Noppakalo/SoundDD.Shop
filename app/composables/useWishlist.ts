@@ -51,15 +51,19 @@ export const useWishlist = () => {
                                 saveWishlist()
                             }
                         } catch (e) {
-                            wishlistItems.value = []
+                            if (wishlistItems.value.length > 0) {
+                                saveWishlist()
+                            }
                         }
                     } else {
-                        wishlistItems.value = []
+                        if (wishlistItems.value.length > 0) {
+                            saveWishlist()
+                        }
                     }
                 }
             }
         } catch (error) {
-            if (updateItems) wishlistItems.value = []
+            console.error('Failed to fetch user wishlist data', error)
         } finally {
             isLoading.value = false
         }
@@ -70,7 +74,8 @@ export const useWishlist = () => {
             const stored = localStorage.getItem('wishlistItems')
             if (stored) {
                 try {
-                    wishlistItems.value = JSON.parse(stored)
+                    const parsed = JSON.parse(stored)
+                    wishlistItems.value = Array.isArray(parsed) ? parsed : []
                 } catch (e) {
                     wishlistItems.value = []
                 }
@@ -142,7 +147,7 @@ export const useWishlist = () => {
         return wishlistItems.value.includes(productId)
     }
 
-    const wishlistItemCount = computed(() => wishlistItems.value.length)
+    const wishlistItemCount = computed(() => Array.isArray(wishlistItems.value) ? wishlistItems.value.length : 0)
 
     return {
         wishlistItems,

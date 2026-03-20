@@ -43,9 +43,10 @@
                         :selectedVariation="selectedVariation"
                     />
                     <ProductDetailInfo
+                        v-if="product"
                         :product="product"
                         :selectedVariation="selectedVariation"
-                        @select-variation="(v: any) => (manualSelection = v)"
+                        @select-variation="handleVariationSelect"
                     />
                 </div>
             </div>
@@ -60,14 +61,7 @@ const route = useRoute()
 const router = useRouter()
 const slug = route.params.slug as string
 
-const manualSelection = ref<any>(null)
-
-onMounted(() => {
-    if (route.query.variation_id || route.query.color) {
-        router.replace({ query: {} })
-    }
-})
-
+const selectedVariation = ref<any>(null)
 const {
     data: response,
     pending,
@@ -85,41 +79,70 @@ const product = computed(() => {
     return null
 })
 
-const selectedVariation = computed(() => {
-    if (manualSelection.value) return manualSelection.value
+watch(
+    product,
+    (newProduct) => {
+        if (newProduct && !selectedVariation.value) {
+            const variations = newProduct.variations_data || []
+            const varIdFromUrl = route.query.variation_id
 
-    const state = import.meta.client ? history.state : null
-    const varIdFromState = state?.variation_id
-    const colorFromState = state?.color
-    const varId = varIdFromState || route.query.variation_id
-    const color = colorFromState || route.query.color
+            let found = null
+            if (varIdFromUrl) {
+                found = variations.find(
+                    (v: any) => v.id === Number(varIdFromUrl)
+                )
+            }
+            if (!found && newProduct.default_attributes?.length > 0) {
+                found = variations.find((v: any) => {
+                    return newProduct.default_attributes.every(
+                        (defAttr: any) => {
+                            const defaultOpt = decodeURIComponent(
+                                defAttr.option || ''
+                            ).trim()
+                            return v.attributes?.some(
+                                (vAttr: any) =>
+                                    decodeURIComponent(
+                                        vAttr.option || ''
+                                    ).trim() === defaultOpt
+                            )
+                        }
+                    )
+                })
+            }
+            const finalVar = found || variations[0] || null
+            selectedVariation.value = finalVar
+            if (finalVar && finalVar.id) {
+                router.replace({
+                    query: {
+                        ...route.query,
+                        variation_id: finalVar.id.toString(),
+                    },
+                })
+            }
+        }
+    },
+    { immediate: true }
+)
 
-    if (!product.value?.variations_data) return null
-
-    if (varId)
-        return product.value.variations_data.find(
-            (v: any) => v.id === Number(varId)
-        )
-
-    if (color) {
-        return product.value.variations_data.find((v: any) =>
-            v.attributes?.some(
-                (attr: any) => decodeURIComponent(attr.option || '') === color
-            )
-        )
-    }
-    return null
-})
+const handleVariationSelect = (v: any) => {
+    selectedVariation.value = v
+    router.replace({
+        query: {
+            ...route.query,
+            variation_id: v.id.toString(),
+        },
+    })
+}
 
 const productImages = computed(() => {
     if (selectedVariation.value?.images?.length) {
         return selectedVariation.value.images
             .map((img: any) => img?.src)
-            .filter((src: string | null | undefined) => !!src)
+            .filter(Boolean)
     }
     return (product.value?.images || [])
         .map((img: any) => img?.src)
-        .filter((src: string | null | undefined) => !!src)
+        .filter(Boolean)
 })
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [

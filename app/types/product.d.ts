@@ -34,6 +34,22 @@ export interface ProductAcf {
     } | null
 }
 
+export interface ProductAttributes {
+    id: number
+    option?: string
+}
+
+export interface ProductVariations {
+    id: number
+    sku: string
+    sale_price: string
+    regular_price: string
+    on_sale: boolean
+    images: ProductImages[]
+    stock_status: 'instock' | 'outofstock' | 'onbackorder'
+    attributes?: ProductAttributes[]
+}
+
 export interface Product {
     id: number
     name: string
@@ -50,22 +66,9 @@ export interface Product {
     brands?: ProductBrands[]
     tags?: ProductTag[]
     images: ProductImages[]
+    default_attributes: ProductAttributes[]
     stock_status: 'instock' | 'outofstock' | 'onbackorder'
     acf?: ProductAcf
     variations_data?: ProductVariations[]
     variation_id?: number
-}
-
-export interface ProductVariations {
-    id: number
-    sku: string
-    sale_price: string
-    regular_price: string
-    on_sale: boolean
-    images: ProductImages[]
-    stock_status: 'instock' | 'outofstock' | 'onbackorder'
-    attributes?: {
-        id: number
-        option?: string
-    }[]
 }
