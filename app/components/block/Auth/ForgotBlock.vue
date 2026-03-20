@@ -56,12 +56,9 @@ const state = reactive({
 const onSubmit = async (event: FormSubmitEvent<Schema>) => {
     isLoading.value = true
     try {
-        // TODO: implement API call to send forgot password email
         await new Promise((resolve) => setTimeout(resolve, 1000))
-        // simulate success
         emit('success')
     } catch (error) {
-        console.error(error)
     } finally {
         isLoading.value = false
     }

@@ -7,8 +7,7 @@
             loading: isLoading,
         }"
         @submit="onSubmit"
-    >
-    </UAuthForm>
+    />
 </template>
 
 <script setup lang="ts">
@@ -17,12 +16,9 @@ import type { FormSubmitEvent, AuthFormField } from '@nuxt/ui'
 
 const isLoading = ref(false)
 const { showRegisterSuccess, showRegisterError } = useAuthToast()
-const { register } = useWpAuthApi()
+const { register, login } = useWpAuthApi()
 
-const emit = defineEmits<{
-    success: []
-    'existing-user': []
-}>()
+const emit = defineEmits(['success', 'close', 'existing-user'])
 
 const fields: AuthFormField[] = [
     {
@@ -48,23 +44,20 @@ const fields: AuthFormField[] = [
     },
 ]
 
-const schema = ref(
-    object({
-        email: string()
-            .email('รูปแบบอีเมลไม่ถูกต้อง')
-            .required('กรุณากรอกอีเมลล์'),
-        password: string()
-            .min(8, 'รหัสผ่านต้องมีอย่างน้อย 8 ตัว')
-            .required('กรุณากรอกรหัสผ่าน'),
-        confirmPassword: string()
-            .oneOf([yupRef('password')], 'รหัสผ่านไม่ตรงกัน')
-            .required('กรุณายืนยันรหัสผ่าน'),
-    })
-)
+const schema = object({
+    email: string().email('รูปแบบอีเมลไม่ถูกต้อง').required('กรุณากรอกอีเมลล์'),
+    password: string()
+        .min(8, 'รหัสผ่านต้องมีอย่างน้อย 8 ตัว')
+        .required('กรุณากรอกรหัสผ่าน'),
+    confirmPassword: string()
+        .oneOf([yupRef('password')], 'รหัสผ่านไม่ตรงกัน')
+        .required('กรุณายืนยันรหัสผ่าน'),
+})
 
-type Schema = InferType<typeof schema.value>
+type Schema = InferType<typeof schema>
 
 const onSubmit = async (event: FormSubmitEvent<Schema>) => {
+    if (isLoading.value) return
     isLoading.value = true
 
     try {
@@ -72,20 +65,47 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
             email: event.data.email,
             password: event.data.password,
         })
-        if (result.success) {
-            showRegisterSuccess()
-                emit('success')
-        } else {
-            showRegisterError(result.error)
 
-            if (result.statusCode === 409) {
-                    emit('existing-user')
+        if (result.success && result.jobId) {
+            let attempts = 0
+            const maxAttempts = 20
+
+            const tryLogin = async () => {
+                attempts++
+                try {
+                    const loginResult = await login({
+                        email: event.data.email,
+                        password: event.data.password,
+                    })
+
+                    if (loginResult.success) {
+                        showRegisterSuccess()
+                        emit('success')
+                        emit('close')
+                        isLoading.value = false
+                        return
+                    }
+                } catch {}
+
+                if (attempts < maxAttempts) {
+                    setTimeout(tryLogin, 1500)
+                } else {
+                    isLoading.value = false
+                    showRegisterError(
+                        'การสมัครสมาชิกใช้เวลานานเกินไป กรุณาลองเข้าสู่ระบบด้วยอีเมลนี้'
+                    )
+                }
             }
+
+            tryLogin()
+        } else {
+            isLoading.value = false
+            showRegisterError(result.error || 'ไม่สามารถสมัครสมาชิกได้')
+            if (result.statusCode === 409) emit('existing-user')
         }
     } catch (error: any) {
-        showRegisterError(error.statusMessage || 'เกิดข้อผิดพลาดในการสมัครสมาชิก')
-    } finally {
         isLoading.value = false
+        showRegisterError(error.statusMessage || 'เกิดข้อผิดพลาดในการเชื่อมต่อ')
     }
 }
 </script>

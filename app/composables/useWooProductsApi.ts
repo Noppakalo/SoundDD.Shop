@@ -1,6 +1,16 @@
 import type { Product } from '~/types/product'
 
-const productCache = new Map<string, { success: boolean; data: Product[] }>();
+const productCache = new Map<string, { success: boolean; data: Product[] }>()
+const MAX_CACHE_SIZE = 50
+
+const trimCache = () => {
+    if (productCache.size > MAX_CACHE_SIZE) {
+        const firstKey = productCache.keys().next().value
+        if (firstKey) {
+            productCache.delete(firstKey)
+        }
+    }
+}
 
 export const useWooProductApi = () => {
     const getProducts = async (params: any = {}) => {
@@ -18,10 +28,14 @@ export const useWooProductApi = () => {
                 query: params,
             })
             if (response.success && response.data) {
+                trimCache()
                 productCache.set(cacheKey, response)
-                setTimeout(() => {
-                    productCache.delete(cacheKey)
-                }, 1000 * 60 * 5)
+                setTimeout(
+                    () => {
+                        productCache.delete(cacheKey)
+                    },
+                    1000 * 60 * 5
+                )
             }
             return response
         } catch (error: any) {

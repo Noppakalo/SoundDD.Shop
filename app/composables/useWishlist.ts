@@ -1,18 +1,21 @@
 export const useWishlist = () => {
     const { user } = useWpAuthApi()
     const { getCustomer, updateCustomer } = useWooCustomerApi()
-    
+
     const wishlistItems = useState<number[]>('wishlistItems', () => [])
     const isLoading = ref(false)
     const customerId = ref<number | null>(null)
 
-    const fetchCustomerData = async (email: string, updateItems: boolean = true) => {
+    const fetchCustomerData = async (
+        email: string,
+        updateItems: boolean = true
+    ) => {
         isLoading.value = true
         try {
             const result = await getCustomer(email)
             if (result.success && result.data) {
                 customerId.value = result.data.id
-                
+
                 if (updateItems) {
                     const wishlistMeta = result.data.meta_data?.find(
                         (meta) => meta.key === 'wishlist'
@@ -20,18 +23,28 @@ export const useWishlist = () => {
 
                     if (wishlistMeta && wishlistMeta.value) {
                         try {
-                            const parsed = typeof wishlistMeta.value === 'string' 
-                                ? JSON.parse(wishlistMeta.value) 
-                                : wishlistMeta.value
-                            
-                            const serverItems = Array.isArray(parsed) ? parsed : []
-                            
-                            // Merge local items with server items
-                            const mergedItems = Array.from(new Set([...wishlistItems.value, ...serverItems]))
+                            const parsed =
+                                typeof wishlistMeta.value === 'string'
+                                    ? JSON.parse(wishlistMeta.value)
+                                    : wishlistMeta.value
+
+                            const serverItems = Array.isArray(parsed)
+                                ? parsed
+                                : []
+
+                            const mergedItems = Array.from(
+                                new Set([
+                                    ...wishlistItems.value,
+                                    ...serverItems,
+                                ])
+                            )
                             wishlistItems.value = mergedItems
 
                             if (import.meta.client) {
-                                localStorage.setItem('wishlistItems', JSON.stringify(wishlistItems.value))
+                                localStorage.setItem(
+                                    'wishlistItems',
+                                    JSON.stringify(wishlistItems.value)
+                                )
                             }
 
                             if (mergedItems.length > serverItems.length) {
@@ -59,7 +72,7 @@ export const useWishlist = () => {
                 try {
                     wishlistItems.value = JSON.parse(stored)
                 } catch (e) {
-                    console.error('Failed to parse local wishlist:', e)
+                    wishlistItems.value = []
                 }
             }
         }
@@ -67,19 +80,23 @@ export const useWishlist = () => {
         if (user.value?.email) {
             fetchCustomerData(user.value.email)
         } else {
-            const unwatch = watch(() => user.value?.email, (newEmail) => {
-                if (newEmail) {
-                    fetchCustomerData(newEmail)
-                    unwatch()
-                }
-            }, { immediate: true })
+            const unwatch = watch(
+                () => user.value?.email,
+                (newEmail) => {
+                    if (newEmail) {
+                        fetchCustomerData(newEmail)
+                        unwatch()
+                    }
+                },
+                { immediate: true }
+            )
         }
     }
 
     const saveWishlist = async () => {
         if (!customerId.value) {
             if (user.value?.email) {
-               await fetchCustomerData(user.value.email, false)
+                await fetchCustomerData(user.value.email, false)
             }
             if (!customerId.value) return
         }
@@ -88,9 +105,7 @@ export const useWishlist = () => {
             await updateCustomer(customerId.value, {
                 wishlist: JSON.stringify(wishlistItems.value),
             })
-        } catch (error) {
-            console.error('Failed to save wishlist:', error)
-        }
+        } catch (error) {}
     }
 
     const toggleWishlist = async (productId: number) => {
@@ -112,7 +127,10 @@ export const useWishlist = () => {
         }
 
         if (import.meta.client) {
-            localStorage.setItem('wishlistItems', JSON.stringify(wishlistItems.value))
+            localStorage.setItem(
+                'wishlistItems',
+                JSON.stringify(wishlistItems.value)
+            )
         }
 
         if (user.value) {

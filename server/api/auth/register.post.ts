@@ -1,22 +1,18 @@
 import type { RegisterResponse, Register } from '~/types/auth'
+import { processingQueue, completedJobs } from '../../utils/registrationQueue'
 
-export default defineEventHandler(async (event) => {
-    const body = await readBody<Register>(event)
-    const config = useRuntimeConfig()
-    const { email, password, name } = body || {}
-    if (!email || !password) {
-        throw createError({
-            statusCode: 400,
-            statusMessage: 'กรุณากรอกข้อมูลให้ครบถ้วน',
-        })
-    }
-
+async function processRegistration(
+    jobId: string,
+    data: { email: string; password: string; name: string },
+    config: any
+) {
+    const { email, password, name } = data
     const appPassword = config.wpAppPassword?.replace(/\s+/g, '') || ''
     const wpUsername = config.wpAppUsername || 'Oatzys'
     const authHeader = `Basic ${Buffer.from(`${wpUsername}:${appPassword}`).toString('base64')}`
 
     const baseUsername =
-    email?.split('@')[0]?.replace(/[^a-zA-Z0-9]/g, '') || ''
+        email?.split('@')[0]?.replace(/[^a-zA-Z0-9]/g, '') || ''
     let username = baseUsername
     let attempts = 0
     const maxAttempts = 3
@@ -41,16 +37,20 @@ export default defineEventHandler(async (event) => {
                     },
                 }
             )
+            processingQueue.delete(jobId)
+            completedJobs.set(jobId, { success: true, data: response })
             return { success: true, data: response }
         } catch (error: any) {
             const errorCode = error.response?._data?.code
 
             if (errorCode === 'registration-error-email-exists') {
-                throw createError({
-                    statusCode: 409,
-                    statusMessage:
-                        'อีเมลนี้ถูกใช้งานแล้ว กรุณาลองใหม่อีกครั้ง',
+                console.log(`[Register] Email already exists: ${email}`)
+                processingQueue.delete(jobId)
+                completedJobs.set(jobId, {
+                    success: false,
+                    error: 'email_exists',
                 })
+                return { success: false, error: 'email_exists' }
             }
 
             if (
@@ -62,11 +62,68 @@ export default defineEventHandler(async (event) => {
                 continue
             }
 
-            throw createError({
-                statusCode: error.response?.status || 500,
-                statusMessage:
-                    error.response?._data?.message || 'สมัครสมาชิกไม่สำเร็จ',
-            })
+            console.error(
+                `[Register] Failed for ${email}:`,
+                error.response?._data || error.message
+            )
+            processingQueue.delete(jobId)
+            const errorMessage =
+                error.response?._data?.message || 'Registration failed'
+            completedJobs.set(jobId, { success: false, error: errorMessage })
+            return {
+                success: false,
+                error: errorMessage,
+            }
         }
     }
+}
+
+export default defineEventHandler(async (event) => {
+    const body = await readBody<Register>(event)
+    const config = useRuntimeConfig()
+    const { email, password, name } = body || {}
+
+    if (!email || !password) {
+        throw createError({
+            statusCode: 400,
+            statusMessage: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+        })
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+        throw createError({
+            statusCode: 400,
+            statusMessage: 'รูปแบบอีเมลไม่ถูกต้อง',
+        })
+    }
+
+    const jobId = `reg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+
+    processingQueue.set(jobId, {
+        email,
+        password,
+        name: name || '',
+        timestamp: Date.now(),
+    })
+
+    const response = {
+        success: true,
+        message: 'กำลังสร้างบัญชีให้คุณ...',
+        jobId,
+    }
+
+    setImmediate(async () => {
+        try {
+            await processRegistration(
+                jobId,
+                { email, password, name: name || '' },
+                config
+            )
+        } catch (err) {
+            console.error('[Background Process] Error:', err)
+        }
+    })
+
+    return response
 })

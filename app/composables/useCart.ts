@@ -15,9 +15,7 @@ export const useCart = () => {
             if (stored) {
                 try {
                     items.value = JSON.parse(stored)
-                } catch (e) {
-                    console.error('Failed to parse local cart:', e)
-                }
+                } catch (e) {}
             }
         }
     }

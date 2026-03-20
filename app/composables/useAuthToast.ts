@@ -31,7 +31,7 @@ export const useAuthToast = () => {
 
     const showRegisterSuccess = () => {
         toast.add({
-            title: 'สมัครสมาชิกสำเร็จ!',
+            title: 'สมัครสมาชิกสำเร็จ',
             description: 'คุณสามารถเข้าสู่ระบบได้ทันที',
             color: 'success',
         })
@@ -63,8 +63,10 @@ export const useAuthToast = () => {
         })
     }
 
+    let stopWatch: (() => void) | null = null
+
     onMounted(() => {
-        watch(
+        stopWatch = watch(
             () => route.query.auth,
             (auth) => {
                 const message = route.query.message as string | undefined
@@ -88,6 +90,10 @@ export const useAuthToast = () => {
             },
             { immediate: true }
         )
+    })
+
+    onUnmounted(() => {
+        stopWatch?.()
     })
 
     return {

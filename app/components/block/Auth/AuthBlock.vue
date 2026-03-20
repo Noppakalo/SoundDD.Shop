@@ -23,7 +23,10 @@
             />
         </template>
         <template #register>
-            <Register @success="switchToLogin" @existing-user="switchToLogin" />
+            <Register
+                @success="handleLoginSuccess"
+                @close="handleLoginSuccess"
+            />
         </template>
     </UTabs>
     <ForgotBlock
@@ -55,10 +58,6 @@ const items = [
         value: 'register',
     },
 ] satisfies TabsItem[]
-
-const switchToLogin = () => {
-        activeTab.value = 'login'
-}
 
 const handleLoginSuccess = () => {
     emit('close')

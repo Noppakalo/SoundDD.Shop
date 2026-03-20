@@ -4,7 +4,9 @@
             v-if="pending && products.length === 0"
             class="grid gap-4"
             :class="
-                viewMode === 'grid' ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1'
+                viewMode === 'grid'
+                    ? 'grid-cols-2 lg:grid-cols-4'
+                    : 'grid-cols-1'
             "
         >
             <div
@@ -126,7 +128,14 @@ const handleLoadMore = async () => {
 }
 
 watch(
-    () => [props.filters, props.sortOptions, props.category],
+    () => [
+        props.category?.id,
+        props.filters.minPrice,
+        props.filters.maxPrice,
+        props.filters.brands?.length,
+        props.sortOptions.orderby,
+        props.sortOptions.order,
+    ],
     async () => {
         if (props.category?.id) {
             currentPage.value = 1
@@ -134,7 +143,6 @@ watch(
             isNoMoreProducts.value = false
             await fetchProducts()
         }
-    },
-    { deep: true }
+    }
 )
 </script>

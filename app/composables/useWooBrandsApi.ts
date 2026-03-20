@@ -1,6 +1,16 @@
-import type { Brands } from '~/types/product'
+import type { Brands } from '~/types/brand'
 
-const brandCache = new Map<string, { success: boolean; data: Brands[] }>();
+const brandCache = new Map<string, { success: boolean; data: Brands[] }>()
+const MAX_CACHE_SIZE = 50
+
+const trimCache = () => {
+    if (brandCache.size > MAX_CACHE_SIZE) {
+        const firstKey = brandCache.keys().next().value
+        if (firstKey) {
+            brandCache.delete(firstKey)
+        }
+    }
+}
 
 export const useWooBrandsApi = () => {
     const getBrands = async (params: any = {}) => {
@@ -17,10 +27,14 @@ export const useWooBrandsApi = () => {
                 }
             )
             if (response.success && response.data) {
+                trimCache()
                 brandCache.set(cacheKey, response)
-                setTimeout(() => {
-                    brandCache.delete(cacheKey)
-                }, 1000 * 60 * 5)
+                setTimeout(
+                    () => {
+                        brandCache.delete(cacheKey)
+                    },
+                    1000 * 60 * 5
+                )
             }
             return response
         } catch (error: any) {

@@ -1,6 +1,16 @@
 import type { Category } from '~/types/category'
 
-const categoryCache = new Map<string, { success: boolean; data: Category[] }>();
+const categoryCache = new Map<string, { success: boolean; data: Category[] }>()
+const MAX_CACHE_SIZE = 50
+
+const trimCache = () => {
+    if (categoryCache.size > MAX_CACHE_SIZE) {
+        const firstKey = categoryCache.keys().next().value
+        if (firstKey) {
+            categoryCache.delete(firstKey)
+        }
+    }
+}
 
 export const useWooCategoriesApi = () => {
     const getCategories = async (params: any = {}) => {
@@ -17,10 +27,14 @@ export const useWooCategoriesApi = () => {
                 query: params,
             })
             if (response.success && response.data) {
+                trimCache()
                 categoryCache.set(cacheKey, response)
-                setTimeout(() => {
-                    categoryCache.delete(cacheKey)
-                }, 1000 * 60 * 5)
+                setTimeout(
+                    () => {
+                        categoryCache.delete(cacheKey)
+                    },
+                    1000 * 60 * 5
+                )
             }
             return response
         } catch (error: any) {

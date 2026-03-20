@@ -70,22 +70,16 @@ const loadWishlistProducts = async () => {
 }
 
 watch(
-    () => wishlistItems.value,
-    (newVal) => {
-        if (!isLoading.value) {
-            loadWishlistProducts()
+    () => [wishlistItems.value.length, isLoading.value],
+    async ([newLength, loading]) => {
+        if (loading) return
+        if (newLength === 0) {
+            products.value = []
+            isLoadingWishlist.value = false
+            return
         }
+        await loadWishlistProducts()
     },
-    { deep: true }
+    { immediate: true }
 )
-
-watch(isLoading, (newVal) => {
-    if (!newVal) {
-        loadWishlistProducts()
-    }
-})
-
-onMounted(() => {
-    loadWishlistProducts()
-})
 </script>

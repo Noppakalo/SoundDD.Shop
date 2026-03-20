@@ -2,13 +2,16 @@ import type { LoginResponse, RegisterResponse } from '~/types/auth'
 
 export const useWpAuthApi = () => {
     const { user, fetch, clear } = useUserSession()
+
     const register = async (data: any) => {
         try {
-            const response = await $fetch<RegisterResponse>('/api/auth/register', {
+            const response = await $fetch<
+                RegisterResponse & { jobId: string; message: string }
+            >('/api/auth/register', {
                 method: 'POST',
                 body: data,
             })
-            return { success: true, data: response }
+            return { success: true, data: response, jobId: response.jobId }
         } catch (error: any) {
             return {
                 success: false,
@@ -29,7 +32,8 @@ export const useWpAuthApi = () => {
         } catch (error: any) {
             return {
                 success: false,
-                error: error.data?.statusMessage || 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
+                error:
+                    error.data?.statusMessage || 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
             }
         }
     }
@@ -37,10 +41,9 @@ export const useWpAuthApi = () => {
     const logout = async () => {
         try {
             await $fetch('/api/auth/logout', {
-                method: 'POST'
+                method: 'POST',
             })
         } catch (e) {
-            console.error('Logout API error:', e)
         } finally {
             await clear()
             await navigateTo('/', { replace: true })
