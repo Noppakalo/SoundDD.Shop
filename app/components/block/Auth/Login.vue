@@ -22,8 +22,7 @@
                     icon="i-custom-google"
                     block
                     class="text-primary border-primary hover:bg-primary border bg-white hover:text-white"
-                    to="/api/auth/google"
-                    external
+                    @click="openGooglePopup"
                 >
                     เข้าสู่ระบบด้วย Google</UButton
                 >
@@ -31,8 +30,7 @@
                     icon="i-custom-facebook"
                     block
                     class="text-primary border-primary hover:bg-primary border bg-white hover:text-white"
-                    to="/api/auth/facebook"
-                    external
+                    @click="openFacebookPopup"
                     >เข้าสู่ระบบด้วย Facebook</UButton
                 >
             </div>
@@ -114,5 +112,34 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
     } finally {
         isLoading.value = false
     }
+}
+
+const openPopup = (url: string, title: string) => {
+    const width = 500
+    const height = 600
+    const left = window.screenX + (window.outerWidth - width) / 2
+    const top = window.screenY + (window.outerHeight - height) / 2
+    const popup = window.open(
+        url,
+        title,
+        `width=${width},height=${height},left=${left},top=${top},popup=1`
+    )
+
+    // ตรวจสอบเมื่อ popup ปิด
+    const checkClosed = setInterval(() => {
+        if (popup?.closed) {
+            clearInterval(checkClosed)
+            // รีเฟรช session เพื่อดูว่า login สำเร็จหรือไม่
+            window.location.reload()
+        }
+    }, 500)
+}
+
+const openGooglePopup = () => {
+    openPopup('/api/auth/google', 'Google Login')
+}
+
+const openFacebookPopup = () => {
+    openPopup('/api/auth/facebook', 'Facebook Login')
 }
 </script>
