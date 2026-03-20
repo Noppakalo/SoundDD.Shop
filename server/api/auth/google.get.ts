@@ -30,19 +30,24 @@ export default defineOAuthGoogleEventHandler({
             })
 
             if (wpUser) {
-                await wooUpdateCustomer(
-                    wpUser.id,
-                    {
-                        password: socialPassword,
-                        meta_data: [
-                            { key: 'social_avatar_url', value: picture },
-                        ],
-                    },
-                    authHeader,
-                    wpUrl
-                ).catch((err: unknown) =>
-                    console.error('Failed to sync password/avatar:', err)
-                )
+                const currentAvatar = wpUser.meta_data?.find(
+                    (m: any) => m.key === 'social_avatar_url'
+                )?.value
+
+                if (currentAvatar !== picture) {
+                    await wooUpdateCustomer(
+                        wpUser.id,
+                        {
+                            meta_data: [
+                                { key: 'social_avatar_url', value: picture },
+                            ],
+                        },
+                        authHeader,
+                        wpUrl
+                    ).catch((err: unknown) =>
+                        console.error('Failed to sync avatar:', err)
+                    )
+                }
             } else {
                 const nameParts = (name || '').split(' ')
                 const firstName = nameParts[0] || ''

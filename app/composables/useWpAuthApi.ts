@@ -39,15 +39,12 @@ export const useWpAuthApi = () => {
     }
 
     const logout = async () => {
-        try {
-            await $fetch('/api/auth/logout', {
-                method: 'POST',
-            })
-        } catch (e) {
-        } finally {
-            await clear()
-            await navigateTo('/', { replace: true })
-        }
+        $fetch('/api/auth/logout', {
+            method: 'POST',
+        }).catch(() => {})
+
+        await clear()
+        await navigateTo('/', { replace: true })
     }
 
     return { register, login, logout, user }

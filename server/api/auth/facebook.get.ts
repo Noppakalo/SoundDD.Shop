@@ -45,19 +45,24 @@ export default defineOAuthFacebookEventHandler({
             })
 
             if (wpUser) {
-                await wooUpdateCustomer(
-                    wpUser.id,
-                    {
-                        password: socialPassword,
-                        meta_data: [
-                            { key: 'social_avatar_url', value: avatarUrl },
-                        ],
-                    },
-                    authHeader,
-                    wpUrl
-                ).catch((err: unknown) =>
-                    console.error('WC Customer Update Error:', err)
-                )
+                const currentAvatar = wpUser.meta_data?.find(
+                    (m: any) => m.key === 'social_avatar_url'
+                )?.value
+
+                if (currentAvatar !== avatarUrl) {
+                    await wooUpdateCustomer(
+                        wpUser.id,
+                        {
+                            meta_data: [
+                                { key: 'social_avatar_url', value: avatarUrl },
+                            ],
+                        },
+                        authHeader,
+                        wpUrl
+                    ).catch((err: unknown) =>
+                        console.error('WC Customer Update Error:', err)
+                    )
+                }
             } else {
                 const nameParts = (name || '').split(' ')
                 const firstName = nameParts[0] || ''

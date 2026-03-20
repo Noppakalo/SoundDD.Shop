@@ -61,11 +61,21 @@ export default defineEventHandler(async (event) => {
             },
         }
     } catch (error: any) {
-        console.error('Login Error:', error.response?._data || error.message)
-
         const statusCode = error.response?.status || 401
-        const message =
+        let message =
             error.response?._data?.message || 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
+        message = message.replace(/(<([^>]+)>)/gi, '')
+
+        if (
+            error.response?._data?.code === 'application_password_invalid' ||
+            message.toLowerCase().includes('application password') ||
+            error.response?._data?.code === 'incorrect_password' ||
+            message.toLowerCase().includes('incorrect password') ||
+            message.toLowerCase().includes('invalid username') ||
+            message.toLowerCase().includes('unknown email address')
+        ) {
+            message = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
+        }
 
         throw createError({
             statusCode: statusCode,
