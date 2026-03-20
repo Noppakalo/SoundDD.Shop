@@ -88,8 +88,8 @@
         <div v-else class="grid grid-cols-2 gap-4">
             <AddressDisplay
                 :address="{
-                    first_name: customer?.first_name || '',
-                    last_name: customer?.last_name || '',
+                    first_name: customer?.first_name || (user?.name?.includes(' ') ? user?.name?.split(' ')[0] : user?.nicename) || '',
+                    last_name: customer?.last_name || (user?.name?.includes(' ') ? user?.name?.split(' ').slice(1).join(' ') : '') || '',
                     phone: customer?.billing?.phone || ''
                 }"
                 :email="user?.email || ''"
@@ -145,9 +145,8 @@ const openEditModal = () => {
     birthDateValue.value = typeof metaDate?.value === 'string' ? metaDate.value : ''
 
     editForm.value = {
-        first_name: props.customer?.first_name || nameParts[0] || '',
-        last_name:
-            props.customer?.last_name || nameParts.slice(1).join(' ') || '',
+        first_name: props.customer?.first_name || (props.user?.name?.includes(' ') ? props.user?.name?.split(' ')[0] : props.user?.nicename) || '',
+        last_name: props.customer?.last_name || (props.user?.name?.includes(' ') ? props.user?.name?.split(' ').slice(1).join(' ') : '') || '',
         email: props.user?.email || '',
         phone: props.customer?.billing?.phone || '',
     }
