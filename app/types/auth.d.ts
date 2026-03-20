@@ -47,7 +47,7 @@ declare module '#auth-utils' {
         nickname?: string
     }
     interface SecureSessionData {
-        token: string | null
+        token?: string | null
         provider?: string
     }
     interface SessionData {

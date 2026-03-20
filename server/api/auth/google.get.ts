@@ -50,6 +50,7 @@ export default defineOAuthGoogleEventHandler({
                 const safeUsername = email.split('@')[0]
 
                 try {
+                    console.log('[Google] Creating customer for:', email)
                     wpUser = await wooCreateCustomer(
                         {
                             username: safeUsername,
@@ -64,19 +65,15 @@ export default defineOAuthGoogleEventHandler({
                         authHeader,
                         wpUrl
                     )
+                    console.log('[Google] Customer created:', wpUser?.id)
                 } catch (error: any) {
+                    console.error('[Google] Create customer failed:', error)
                     throw createError({
                         statusCode: 500,
-                        statusMessage: `สร้างบัญชีไม่สำเร็จ: ${error.data?.message || 'Unknown Error'}`,
+                        statusMessage: `สร้างบัญชีไม่สำเร็จ: ${error.data?.message || error.message || 'Unknown Error'}`,
                     })
                 }
             }
-
-            const jwtToken = await wooFetchJwtToken(
-                wpUser.username || wpUser.slug,
-                socialPassword,
-                wpUrl
-            )
 
             const fullName =
                 wpUser?.first_name && wpUser?.last_name
@@ -88,12 +85,12 @@ export default defineOAuthGoogleEventHandler({
                     name: fullName,
                     email: wpUser.email || email,
                     avatar: picture,
-                    nicename: wpUser.username,
+                    nicename: wpUser.username || email.split('@')[0],
                 },
                 secure: {
-                    token: jwtToken,
                     provider: 'google',
                 },
+                loggedInAt: new Date().toISOString(),
             })
 
             return sendRedirect(event, '/?auth=success')

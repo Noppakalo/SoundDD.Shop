@@ -87,12 +87,7 @@ export default defineOAuthFacebookEventHandler({
                 }
             }
 
-            const jwtToken = await wooFetchJwtToken(
-                wpUser.username || wpUser.slug,
-                socialPassword,
-                wpUrl
-            )
-
+            // Social login: ไม่ต้องใช้ JWT ตั้ง session โดยตรงเลย
             const fullName =
                 wpUser?.first_name && wpUser?.last_name
                     ? `${wpUser.first_name} ${wpUser.last_name}`.trim()
@@ -101,14 +96,14 @@ export default defineOAuthFacebookEventHandler({
             await setUserSession(event, {
                 user: {
                     name: fullName,
-                    email: wpUser?.email || email,
-                    avatar: avatarUrl,
-                    nicename: wpUser?.username,
+                    email: wpUser.email || email,
+                    avatar: picture,
+                    nicename: wpUser.username || email.split('@')[0],
                 },
                 secure: {
-                    token: jwtToken,
                     provider: 'facebook',
                 },
+                loggedInAt: new Date().toISOString(),
             })
 
             return sendRedirect(event, '/?auth=success')
