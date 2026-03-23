@@ -7,26 +7,18 @@ function buildBasicAuth(username: string, password: string): string {
 export function buildWooAuth(
     config: ReturnType<typeof useRuntimeConfig>
 ): string {
-    const wpUsername =
-        (config.wpAppUsername as string) ||
-        process.env.NUXT_WP_APP_USERNAME ||
-        'Oatzys'
-    const wpPassword =
-        (config.wpAppPassword as string) ||
-        process.env.NUXT_WP_APP_PASSWORD ||
-        ''
-    if (wpPassword) return buildBasicAuth(wpUsername, wpPassword)
+    const wooKey =
+        config.wooConsumerKey || process.env.NUXT_WOO_CONSUMER_KEY || ''
+    const wooSecret =
+        config.wooConsumerSecret || process.env.NUXT_WOO_CONSUMER_SECRET || ''
 
-    const key =
-        (config.wooConsumerKey as string) ||
-        process.env.NUXT_WOO_CONSUMER_KEY ||
-        ''
-    const secret =
-        (config.wooConsumerSecret as string) ||
-        process.env.NUXT_WOO_CONSUMER_SECRET ||
-        ''
+    if (!wooKey || !wooSecret) {
+        console.warn(
+            '⚠️ ไม่พบ Consumer Key หรือ Consumer Secret ของ WooCommerce'
+        )
+    }
 
-    return buildBasicAuth(key, secret)
+    return buildBasicAuth(wooKey, wooSecret)
 }
 
 export async function wooFindCustomerByEmail(
@@ -92,7 +84,10 @@ export async function wooFetchJwtToken(
         )
         return res.token ?? null
     } catch (error: any) {
-        console.error('JWT Token Error:', error.response?._data || error.message)
+        console.error(
+            'JWT Token Error:',
+            error.response?._data || error.message
+        )
         return null
     }
 }

@@ -53,7 +53,11 @@
                         form="edit-customer-form"
                         label="บันทึกข้อมูลส่วนตัว"
                         :loading="isUpdating"
-                        @click="() => { submitCloseFn = close as any; }"
+                        @click="
+                            () => {
+                                submitCloseFn = close as any
+                            }
+                        "
                     />
                 </template>
             </UModal>
@@ -88,9 +92,19 @@
         <div v-else class="grid grid-cols-2 gap-4">
             <AddressDisplay
                 :address="{
-                    first_name: customer?.first_name || (user?.name?.includes(' ') ? user?.name?.split(' ')[0] : user?.nicename) || '',
-                    last_name: customer?.last_name || (user?.name?.includes(' ') ? user?.name?.split(' ').slice(1).join(' ') : '') || '',
-                    phone: customer?.billing?.phone || ''
+                    first_name:
+                        customer?.first_name ||
+                        (user?.name?.includes(' ')
+                            ? user?.name?.split(' ')[0]
+                            : user?.name) ||
+                        '',
+                    last_name:
+                        customer?.last_name ||
+                        (user?.name?.includes(' ')
+                            ? user?.name?.split(' ').slice(1).join(' ')
+                            : '') ||
+                        '',
+                    phone: customer?.billing?.phone || '',
                 }"
                 :email="user?.email || ''"
                 :birth-date="displayBirthDate"
@@ -142,11 +156,22 @@ const openEditModal = () => {
     const metaDate = props.customer?.meta_data?.find(
         (m: any) => m.key === 'birth_date'
     )
-    birthDateValue.value = typeof metaDate?.value === 'string' ? metaDate.value : ''
+    birthDateValue.value =
+        typeof metaDate?.value === 'string' ? metaDate.value : ''
 
     editForm.value = {
-        first_name: props.customer?.first_name || (props.user?.name?.includes(' ') ? props.user?.name?.split(' ')[0] : props.user?.nicename) || '',
-        last_name: props.customer?.last_name || (props.user?.name?.includes(' ') ? props.user?.name?.split(' ').slice(1).join(' ') : '') || '',
+        first_name:
+            props.customer?.first_name ||
+            (props.user?.name?.includes(' ')
+                ? props.user?.name?.split(' ')[0]
+                : props.user?.name) ||
+            '',
+        last_name:
+            props.customer?.last_name ||
+            (props.user?.name?.includes(' ')
+                ? props.user?.name?.split(' ').slice(1).join(' ')
+                : '') ||
+            '',
         email: props.user?.email || '',
         phone: props.customer?.billing?.phone || '',
     }
@@ -156,7 +181,7 @@ const openEditModal = () => {
 const UpdateCustomer = async () => {
     if (!props.customer?.id) return
     isUpdating.value = true
-    
+
     const payload: Record<string, unknown> = {
         first_name: editForm.value.first_name,
         last_name: editForm.value.last_name,

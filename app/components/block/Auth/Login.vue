@@ -47,9 +47,12 @@
 import { object, string, boolean, type InferType } from 'yup'
 import type { FormSubmitEvent, AuthFormField } from '@nuxt/ui'
 
+import type { LoginResponse } from '~/types/auth'
+
 const isLoading = ref(false)
-const { showAuthSuccess, showAuthError } = useAuthToast()
-const { login } = useWpAuthApi()
+const toast = useToast()
+
+const { fetch } = useUserSession()
 
 const emit = defineEmits<{
     success: []
@@ -96,21 +99,39 @@ type Schema = InferType<typeof schema.value>
 const onSubmit = async (event: FormSubmitEvent<Schema>) => {
     isLoading.value = true
     try {
-        const result = await login({
-            email: event.data.email,
-            password: event.data.password,
-            remember: event.data.remember,
+        const response = await $fetch<LoginResponse>('/api/auth/login', {
+            method: 'POST',
+            body: {
+                email: event.data.email,
+                password: event.data.password,
+                remember: event.data.remember,
+            },
         })
-
-        if (result.success) {
-            showAuthSuccess(`ยินดีต้อนรับคุณ ${result.user?.name || ''}`)
+        await fetch()
+        if (response.success) {
+            toast.add({
+                title: 'เข้าสู่ระบบสำเร็จ',
+                description: `ยินดีต้อนรับคุณ ${response.user?.name || ''}`,
+                color: 'success',
+            })
             emit('success')
             emit('close')
         } else {
-            showAuthError(result.error)
+            toast.add({
+                title: 'เข้าสู่ระบบไม่สำเร็จ',
+                description: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
+                color: 'error',
+            })
         }
-    } catch (error) {
-        showAuthError()
+    } catch (error: any) {
+        const message =
+            error.data?.statusMessage ||
+            'ระบบขัดข้อง กรุณาลองใหม่อีกครั้งในภายหลัง'
+        toast.add({
+            title: 'เกิดข้อผิดพลาด',
+            description: message,
+            color: 'error',
+        })
     } finally {
         isLoading.value = false
     }

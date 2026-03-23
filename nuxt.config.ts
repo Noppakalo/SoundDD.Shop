@@ -42,7 +42,6 @@ export default defineNuxtConfig({
         'nuxt-easy-lightbox',
     ],
     runtimeConfig: {
-        wpAppPassword: process.env.NUXT_WP_APP_PASSWORD,
         wpAppUsername: process.env.NUXT_WP_APP_USERNAME,
         wooConsumerKey: process.env.NUXT_WOO_CONSUMER_KEY,
         wooConsumerSecret: process.env.NUXT_WOO_CONSUMER_SECRET,

@@ -64,7 +64,7 @@
                         />
                     </UChip>
                 </div>
-                <div v-if="user">
+                <div v-if="loggedIn && user">
                     <UPopover
                         mode="hover"
                         :popper="{
@@ -73,8 +73,8 @@
                         }"
                     >
                         <UAvatar
-                            :src="user?.avatar || customer?.avatar_url || ''"
-                            :alt="user?.name"
+                            :src="user.avatar"
+                            :alt="user.name"
                             loading="lazy"
                             draggable="false"
                             size="xl"
@@ -114,14 +114,11 @@
 </template>
 
 <script setup lang="ts">
-import type { Customer } from '~/types/customer'
-const { user } = useWpAuthApi()
+const { loggedIn, user } = useUserSession()
 const { cartItemCount } = useCart()
 const { wishlistItemCount } = useWishlist()
 const isOpen = ref(false)
 const showLogoutModal = ref(false)
-
-const customer = useState<Customer | null>('current_customer')
 
 const accountMenu = [
     { label: 'บัญชีของฉัน', click: () => navigateTo('/account') },

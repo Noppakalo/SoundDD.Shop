@@ -1,5 +1,5 @@
 export const useWishlist = () => {
-    const { user } = useWpAuthApi()
+    const { user } = useUserSession()
     const { getCustomer, updateCustomer } = useWooCustomerApi()
 
     const wishlistItems = useState<number[]>('wishlistItems', () => [])
@@ -147,7 +147,9 @@ export const useWishlist = () => {
         return wishlistItems.value.includes(productId)
     }
 
-    const wishlistItemCount = computed(() => Array.isArray(wishlistItems.value) ? wishlistItems.value.length : 0)
+    const wishlistItemCount = computed(() =>
+        Array.isArray(wishlistItems.value) ? wishlistItems.value.length : 0
+    )
 
     return {
         wishlistItems,

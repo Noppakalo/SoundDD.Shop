@@ -1,25 +1,17 @@
 export interface Register {
-    name?: string
+    username?: string
     email: string
     password: string
-    confirmPassword?: string
+    confirmPassword: string
 }
-
 export interface RegisterResponse {
-    id: number
-    username: string
-    email: string
-    name: string
-    slug: string
-    roles: string[]
-}
-
-export interface WpJwtResponse {
-    token: string
-    user_email: string
-    user_nicename: string
-    user_display_name: string
-    user_id?: number | string
+    success: boolean
+    user?: {
+        id: number
+        name: string
+        email: string
+    }
+    error?: string
 }
 
 export interface Login {
@@ -30,33 +22,41 @@ export interface Login {
 
 export interface LoginResponse {
     success: boolean
-    user?: {
+    user: {
+        id: number | string
         name: string
         email: string
-        nicename: string
+        avatar?: string
     }
     error?: string
 }
-
+export interface WpJwtResponse {
+    token: string
+    user_id: number | string
+    user_nicename: string
+    user_email: string
+}
 declare module '#auth-utils' {
     interface User {
+        id: number | string
         name: string
         email: string
-        nicename: string
         avatar?: string
-        nickname?: string
     }
     interface SecureSessionData {
-        token?: string | null
+        token?: string
+        refreshToken?: string
+        googleSub?: string
         provider?: string
     }
     interface SessionData {
-        facebookPending?: {
+        googlePending?: {
+            sub: string
             email: string
             name: string
             picture?: string
-            sub: string
         }
+        loggedInAt?: string
     }
 }
 

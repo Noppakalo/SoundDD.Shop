@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig()
 
     try {
-        const response = await $fetch<WpJwtResponse>(
+        const authSession = await $fetch<WpJwtResponse>(
             `${config.public.wpUrl}/wp-json/jwt-auth/v1/token`,
             {
                 method: 'POST',
@@ -18,68 +18,56 @@ export default defineEventHandler(async (event) => {
                 },
             }
         )
+        if (authSession.token) {
+            const wooAuth = buildWooAuth(config)
+            const customer = await wooFindCustomerByEmail(
+                authSession.user_email,
+                wooAuth,
+                config.public.wpUrl
+            )
+            const avatar = customer?.avatar_url || ''
 
-        const authHeader = buildWooAuth(config)
-        const wpUrl = config.public.wpUrl as string
-        const wpUser = await wooFindCustomerByEmail(
-            response.user_email,
-            authHeader,
-            wpUrl
-        ).catch(() => null)
-
-        const socialAvatar = wpUser?.meta_data?.find(
-            (m: any) => m.key === 'social_avatar_url'
-        )?.value
-        const avatar = socialAvatar || wpUser?.avatar_url || ''
-
-        const sessionData: any = {
-            user: {
-                name: response.user_display_name,
-                email: response.user_email,
-                nicename: response.user_nicename,
-                avatar: avatar,
-            },
-            secure: {
-                token: response.token,
-            },
-            loggedInAt: new Date().toISOString(),
+            await setUserSession(
+                event,
+                {
+                    user: {
+                        id: authSession.user_id,
+                        name: authSession.user_nicename,
+                        email: authSession.user_email,
+                        avatar,
+                    },
+                    secure: {
+                        token: authSession.token,
+                    },
+                    loggedInAt: new Date().toISOString(),
+                },
+                {
+                    maxAge: body.remember
+                        ? config.session.cookie.maxAge
+                        : 60 * 60 * 24,
+                }
+            )
         }
-
-        const sessionOptions = {
-            maxAge: body.remember ? config.session.cookie.maxAge : (60 * 60 * 24)
-        }
-
-        await setUserSession(event, sessionData, sessionOptions)
+        const wooAuth = buildWooAuth(config)
+        const customer = await wooFindCustomerByEmail(
+            authSession.user_email,
+            wooAuth,
+            config.public.wpUrl
+        )
 
         return {
             success: true,
             user: {
-                name: response.user_display_name,
-                email: response.user_email,
-                nicename: response.user_nicename,
-                avatar: avatar,
+                id: authSession.user_id,
+                name: authSession.user_nicename,
+                email: authSession.user_email,
+                avatar: customer?.avatar_url || '',
             },
         }
     } catch (error: any) {
-        const statusCode = error.response?.status || 401
-        let message =
-            error.response?._data?.message || 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
-        message = message.replace(/(<([^>]+)>)/gi, '')
-
-        if (
-            error.response?._data?.code === 'application_password_invalid' ||
-            message.toLowerCase().includes('application password') ||
-            error.response?._data?.code === 'incorrect_password' ||
-            message.toLowerCase().includes('incorrect password') ||
-            message.toLowerCase().includes('invalid username') ||
-            message.toLowerCase().includes('unknown email address')
-        ) {
-            message = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
-        }
-
         throw createError({
-            statusCode: statusCode,
-            statusMessage: message,
+            statusCode: error.response?.status || 500,
+            message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
         })
     }
 })

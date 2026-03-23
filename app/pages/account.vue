@@ -38,7 +38,7 @@ definePageMeta({
     middleware: 'auth',
 })
 
-const { user } = useWpAuthApi()
+const { user } = useUserSession()
 const { getCustomer } = useWooCustomerApi()
 
 const customer = useState<Customer | null>('current_customer', () => null)

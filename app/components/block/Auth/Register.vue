@@ -13,12 +13,13 @@
 <script setup lang="ts">
 import { object, string, ref as yupRef, type InferType } from 'yup'
 import type { FormSubmitEvent, AuthFormField } from '@nuxt/ui'
+import type { RegisterResponse } from '~/types/auth'
 
 const isLoading = ref(false)
-const { showRegisterSuccess, showRegisterError } = useAuthToast()
-const { register, login } = useWpAuthApi()
+const { fetch } = useUserSession()
+const toast = useToast()
 
-const emit = defineEmits(['success', 'close', 'existing-user'])
+const emit = defineEmits(['success', 'close'])
 
 const fields: AuthFormField[] = [
     {
@@ -57,55 +58,42 @@ const schema = object({
 type Schema = InferType<typeof schema>
 
 const onSubmit = async (event: FormSubmitEvent<Schema>) => {
-    if (isLoading.value) return
     isLoading.value = true
-
     try {
-        const result = await register({
-            email: event.data.email,
-            password: event.data.password,
+        const response = await $fetch<RegisterResponse>('/api/auth/register', {
+            method: 'POST',
+            body: {
+                email: event.data.email,
+                password: event.data.password,
+                confirmPassword: event.data.confirmPassword,
+            },
         })
+        await fetch()
 
-        if (result.success && result.jobId) {
-            let attempts = 0
-            const maxAttempts = 20
-
-            const tryLogin = async () => {
-                attempts++
-                try {
-                    const loginResult = await login({
-                        email: event.data.email,
-                        password: event.data.password,
-                    })
-
-                    if (loginResult.success) {
-                        showRegisterSuccess()
-                        emit('success')
-                        emit('close')
-                        isLoading.value = false
-                        return
-                    }
-                } catch {}
-
-                if (attempts < maxAttempts) {
-                    setTimeout(tryLogin, 1500)
-                } else {
-                    isLoading.value = false
-                    showRegisterError(
-                        'การสมัครสมาชิกใช้เวลานานเกินไป กรุณาลองเข้าสู่ระบบด้วยอีเมลนี้'
-                    )
-                }
-            }
-
-            tryLogin()
+        if (response.success) {
+            toast.add({
+                title: 'สมัครสมาชิกสำเร็จ',
+                description: `ยินดีต้อนรับคุณ ${response.user?.name || ''}`,
+                color: 'success',
+            })
+            emit('success')
+            emit('close')
         } else {
-            isLoading.value = false
-            showRegisterError(result.error || 'ไม่สามารถสมัครสมาชิกได้')
-            if (result.statusCode === 409) emit('existing-user')
+            toast.add({
+                title: 'สมัครสมาชิกไม่สำเร็จ',
+                description: 'กรุณาลองใหม่อีกครั้ง',
+                color: 'error',
+            })
         }
     } catch (error: any) {
+        const message = error.data?.statusMessage || 'สมัครสมาชิกไม่สำเร็จ'
+        toast.add({
+            title: 'เกิดข้อผิดพลาด',
+            description: message,
+            color: 'error',
+        })
+    } finally {
         isLoading.value = false
-        showRegisterError(error.statusMessage || 'เกิดข้อผิดพลาดในการเชื่อมต่อ')
     }
 }
 </script>

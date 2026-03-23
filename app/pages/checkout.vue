@@ -114,7 +114,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['update'])
 const toast = useToast()
-const { user } = useWpAuthApi()
+const { user } = useUserSession()
 const { getCustomer, updateCustomer } = useWooCustomerApi()
 
 const customer = ref<Customer | null>(null)
