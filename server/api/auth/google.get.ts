@@ -108,7 +108,8 @@ export default defineOAuthGoogleEventHandler({
 
     onError(event, error: any) {
         const message = encodeURIComponent(
-            'คุณได้ยกเลิกการเข้าสู่ระบบ หรือเกิดข้อผิดพลาดจาก Google'
+            error.statusMessage ||
+                'คุณได้ยกเลิกการเข้าสู่ระบบ หรือเกิดข้อผิดพลาดจาก Google'
         )
         return sendRedirect(event, `/?auth=error&message=${message}`)
     },

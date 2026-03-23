@@ -44,26 +44,17 @@ const emit = defineEmits<{
 }>()
 
 const { clear } = useUserSession()
-const toast = useToast()
+const toast = useAppToast()
 
 const handleLogout = async () => {
     try {
         await clear()
         await $fetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
         await navigateTo('/', { replace: true })
-        toast.add({
-            title: 'ออกจากระบบสำเร็จ',
-            description: 'ขอบคุณที่ใช้บริการ SoundDD Shop',
-            color: 'success',
-            icon: 'i-iconamoon:check-circle-1-light',
-        })
+        toast.success('ออกจากระบบสำเร็จ', 'ขอบคุณที่ใช้บริการ SoundDD Shop')
         emit('update:modelValue', false)
     } catch (error) {
-        toast.add({
-            title: 'เกิดข้อผิดพลาด',
-            description: 'ไม่สามารถดำเนินการได้ในขณะนี้',
-            color: 'error',
-        })
+        toast.error('ออกจากระบบไม่สำเร็จ', 'ไม่สามารถดำเนินการได้ในขณะนี้')
     }
 }
 </script>

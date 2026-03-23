@@ -46,11 +46,10 @@
 <script setup lang="ts">
 import { object, string, boolean, type InferType } from 'yup'
 import type { FormSubmitEvent, AuthFormField } from '@nuxt/ui'
-
 import type { LoginResponse } from '~/types/auth'
 
 const isLoading = ref(false)
-const toast = useToast()
+const toast = useAppToast()
 
 const { fetch } = useUserSession()
 
@@ -109,29 +108,17 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
         })
         await fetch()
         if (response.success) {
-            toast.add({
-                title: 'เข้าสู่ระบบสำเร็จ',
-                description: `ยินดีต้อนรับคุณ ${response.user?.name || ''}`,
-                color: 'success',
-            })
+            toast.success('เข้าสู่ระบบสำเร็จ')
             emit('success')
             emit('close')
         } else {
-            toast.add({
-                title: 'เข้าสู่ระบบไม่สำเร็จ',
-                description: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
-                color: 'error',
-            })
+            toast.error('เข้าสู่ระบบไม่สำเร็จ', 'อีเมลหรือรหัสผ่านไม่ถูกต้อง')
         }
     } catch (error: any) {
         const message =
             error.data?.statusMessage ||
             'ระบบขัดข้อง กรุณาลองใหม่อีกครั้งในภายหลัง'
-        toast.add({
-            title: 'เกิดข้อผิดพลาด',
-            description: message,
-            color: 'error',
-        })
+        toast.error('เกิดข้อผิดพลาด', message)
     } finally {
         isLoading.value = false
     }

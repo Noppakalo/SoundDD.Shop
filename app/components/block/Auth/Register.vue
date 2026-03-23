@@ -17,7 +17,7 @@ import type { RegisterResponse } from '~/types/auth'
 
 const isLoading = ref(false)
 const { fetch } = useUserSession()
-const toast = useToast()
+const toast = useAppToast()
 
 const emit = defineEmits(['success', 'close'])
 
@@ -71,27 +71,15 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
         await fetch()
 
         if (response.success) {
-            toast.add({
-                title: 'สมัครสมาชิกสำเร็จ',
-                description: `ยินดีต้อนรับคุณ ${response.user?.name || ''}`,
-                color: 'success',
-            })
+            toast.success('สมัครสมาชิกสำเร็จ')
             emit('success')
             emit('close')
         } else {
-            toast.add({
-                title: 'สมัครสมาชิกไม่สำเร็จ',
-                description: 'กรุณาลองใหม่อีกครั้ง',
-                color: 'error',
-            })
+            toast.error('สมัครสมาชิกไม่สำเร็จ', 'กรุณาลองใหม่อีกครั้ง')
         }
     } catch (error: any) {
         const message = error.data?.statusMessage || 'สมัครสมาชิกไม่สำเร็จ'
-        toast.add({
-            title: 'เกิดข้อผิดพลาด',
-            description: message,
-            color: 'error',
-        })
+        toast.error('เกิดข้อผิดพลาด', message)
     } finally {
         isLoading.value = false
     }
