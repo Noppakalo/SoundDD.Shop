@@ -100,7 +100,8 @@ export default defineOAuthGoogleEventHandler({
             return sendRedirect(event, '/?auth=success')
         } catch (error: any) {
             const message = encodeURIComponent(
-                error.statusMessage || 'เกิดข้อผิดพลาด กรุณาลองใหม่'
+                error.statusMessage ||
+                    'เกิดข้อผิดพลาดในการเข้าสู่ระบบ กรุณาลองใหม่'
             )
             return sendRedirect(event, `/?auth=error&message=${message}`)
         }

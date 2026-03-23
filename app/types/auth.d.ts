@@ -47,10 +47,17 @@ declare module '#auth-utils' {
         token?: string
         refreshToken?: string
         googleSub?: string
-        provider?: string
+        facebookSub?: string
+        provider?: 'google' | 'facebook'
     }
     interface SessionData {
         googlePending?: {
+            sub: string
+            email: string
+            name: string
+            picture?: string
+        }
+        fbPending?: {
             sub: string
             email: string
             name: string
