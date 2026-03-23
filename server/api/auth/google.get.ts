@@ -97,15 +97,19 @@ export default defineOAuthGoogleEventHandler({
                 },
                 loggedInAt: new Date().toISOString(),
             })
-            return sendRedirect(event, '/')
+            return sendRedirect(event, '/?auth=success')
         } catch (error: any) {
-            console.error('GitHub OAuth error:', error)
-            return sendRedirect(event, '/')
+            const message = encodeURIComponent(
+                error.statusMessage || 'เกิดข้อผิดพลาด กรุณาลองใหม่'
+            )
+            return sendRedirect(event, `/?auth=error&message=${message}`)
         }
     },
 
     onError(event, error: any) {
-        console.error('GitHub OAuth error:', error)
-        return sendRedirect(event, '/')
+        const message = encodeURIComponent(
+            'คุณได้ยกเลิกการเข้าสู่ระบบ หรือเกิดข้อผิดพลาดจาก Google'
+        )
+        return sendRedirect(event, `/?auth=error&message=${message}`)
     },
 })
