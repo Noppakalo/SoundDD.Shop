@@ -13,9 +13,11 @@ const toaster = { max: 1, duration: 2000 }
 
 const { initWishlist } = useWishlist()
 const { initCart } = useCart()
+const { handleAuthQueries } = useAppToast()
 
 onMounted(() => {
     initWishlist()
     initCart()
+    handleAuthQueries()
 })
 </script>
