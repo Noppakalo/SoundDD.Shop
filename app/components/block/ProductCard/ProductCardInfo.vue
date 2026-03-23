@@ -42,7 +42,7 @@
                     target="_blank"
                     size="xs"
                     color="error"
-                    class="w-max"
+                    class="w-max font-medium"
                 >
                     ติดต่อสอบถามราคา
                 </UButton>
@@ -57,7 +57,8 @@
                 "
             >
                 <UTooltip
-                 :aria-label="
+                    :delay-duration="0"
+                    :aria-label="
                         isInWishlist(product.id)
                             ? 'นำสินค้าที่สนใจออก'
                             : 'เพิ่มสินค้าที่สนใจ'
@@ -67,7 +68,6 @@
                             ? 'นำสินค้าที่สนใจออก'
                             : 'เพิ่มสินค้าที่สนใจ'
                     "
-                    :content="{ align: 'center', side: 'left', sideOffset: 8 }"
                 >
                     <UButton
                         @click.prevent="toggleWishlist(product.id)"
@@ -78,10 +78,12 @@
                         class="size-9.5 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
                     />
                 </UTooltip>
+
                 <UTooltip
-                aria-label="หยิบใส่ตะกร้า"
+                    v-if="hasDisplayPrice"
+                    :delay-duration="0"
+                    aria-label="หยิบใส่ตะกร้า"
                     text="หยิบใส่ตะกร้า"
-                    :content="{ align: 'center', side: 'left', sideOffset: 8 }"
                 >
                     <UButton
                         @click.prevent="addToCart(product)"
@@ -96,7 +98,6 @@
         </div>
     </div>
 </template>
-
 <script setup lang="ts">
 import type { Product } from '~/types/product'
 import { formatPrice } from '~/utils/formatter'

@@ -10,10 +10,24 @@ export default defineOAuthFacebookEventHandler({
 
     async onSuccess(event, { user, tokens }) {
         const config = useRuntimeConfig()
+
+        // Debug: Log all Facebook user data
+        console.log(
+            '[Facebook Auth] Raw user data:',
+            JSON.stringify(user, null, 2)
+        )
+
         const facebookSub = user.id
         const fbEmail = user.email
         const fbName = user.name || ''
         const fbPicture = user.picture?.data?.url || ''
+
+        console.log('[Facebook Auth] Extracted:', {
+            facebookSub,
+            fbEmail,
+            fbName,
+            fbPicture,
+        })
 
         try {
             const authHeader = buildWooAuth(config)
@@ -51,36 +65,36 @@ export default defineOAuthFacebookEventHandler({
                         )
                     } catch (e) {
                         console.error(
-                            '[Facebook Auth] Failed to update metadata:'
+                            '[Facebook Auth] Failed to update metadata'
                         )
                     }
-                } else {
-                    const randomPass = Math.random().toString(36).slice(-12)
-                    wpUser = await $fetch(
-                        `${config.public.wpUrl}/wp-json/wc/v3/customers`,
-                        {
-                            method: 'POST',
-                            headers: { Authorization: authHeader },
-                            body: {
-                                email: fbEmail,
-                                first_name: fbName.split(' ')[0] || fbName,
-                                last_name:
-                                    fbName.split(' ').slice(1).join(' ') || '',
-                                username:
-                                    fbEmail.split('@')[0] +
-                                    Math.floor(Math.random() * 1000),
-                                password: randomPass,
-                                avatar_url: fbPicture,
-                                meta_data: [
-                                    {
-                                        key: 'facebook_customer_sub',
-                                        value: facebookSub,
-                                    },
-                                ],
-                            },
-                        }
-                    )
                 }
+            } else {
+                const randomPass = Math.random().toString(36).slice(-12)
+                wpUser = await $fetch(
+                    `${config.public.wpUrl}/wp-json/wc/v3/customers`,
+                    {
+                        method: 'POST',
+                        headers: { Authorization: authHeader },
+                        body: {
+                            email: fbEmail,
+                            first_name: fbName.split(' ')[0] || fbName,
+                            last_name:
+                                fbName.split(' ').slice(1).join(' ') || '',
+                            username:
+                                fbEmail.split('@')[0] +
+                                Math.floor(Math.random() * 1000),
+                            password: randomPass,
+                            avatar_url: fbPicture,
+                            meta_data: [
+                                {
+                                    key: 'facebook_customer_sub',
+                                    value: facebookSub,
+                                },
+                            ],
+                        },
+                    }
+                )
             }
 
             await setUserSession(event, {
@@ -100,6 +114,11 @@ export default defineOAuthFacebookEventHandler({
             })
             return sendRedirect(event, '/?auth=success')
         } catch (error: any) {
+            console.error('[Facebook Auth] Full error:', error)
+            console.error(
+                '[Facebook Auth] Response data:',
+                error.response?._data
+            )
             const message = encodeURIComponent(
                 error.statusMessage ||
                     'เกิดข้อผิดพลาดในการเข้าสู่ระบบ กรุณาลองใหม่'

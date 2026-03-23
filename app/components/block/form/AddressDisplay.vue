@@ -98,7 +98,12 @@
                 />
             </UFormField>
             <UFormField label="อีเมล">
-                <UInput :value="email" readonly class="w-full" />
+                <UInput
+                    :value="email"
+                    readonly
+                    placeholder="-- ยังไม่มีข้อมูล --"
+                    class="w-full"
+                />
             </UFormField>
             <UFormField label="เบอร์โทรศัพท์">
                 <UInput

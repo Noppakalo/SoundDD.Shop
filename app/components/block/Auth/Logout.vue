@@ -48,11 +48,11 @@ const toast = useAppToast()
 
 const handleLogout = async () => {
     try {
+        emit('update:modelValue', false)
         await clear()
-        await $fetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
+        $fetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
         await navigateTo('/', { replace: true })
         toast.success('ออกจากระบบสำเร็จ', 'ขอบคุณที่ใช้บริการ SoundDD Shop')
-        emit('update:modelValue', false)
     } catch (error) {
         toast.error('ออกจากระบบไม่สำเร็จ', 'ไม่สามารถดำเนินการได้ในขณะนี้')
     }

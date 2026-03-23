@@ -54,6 +54,7 @@
                 :src="displayImageUrls[1]"
                 :alt="product.name"
                 loading="lazy"
+                sizes="300px"
                 draggable="false"
                 class="absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
             />
@@ -101,6 +102,8 @@
                 <NuxtImg
                     :src="variation.imageSrc"
                     :alt="variation.imageAlt"
+                    loading="lazy"
+                    draggable="false"
                     class="size-full object-cover"
                 />
             </div>

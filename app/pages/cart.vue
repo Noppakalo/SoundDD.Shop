@@ -31,7 +31,7 @@
                     <div
                         v-for="item in items"
                         :key="item.product.id"
-                        class="grid grid-cols-[auto_1fr_20%] items-center justify-between gap-6 rounded-lg p-4 shadow-sm"
+                        class="grid grid-cols-[auto_1fr] items-center justify-between gap-4 rounded-lg p-4 shadow-sm sm:grid-cols-[auto_1fr_20%] sm:gap-6"
                     >
                         <div
                             class="size-20 shrink-0 overflow-hidden rounded-lg"
@@ -49,23 +49,26 @@
                                 />
                             </ULink>
                         </div>
+
                         <ULink
                             :to="`/product/${item.product.slug}`"
-                            class="hover:text-primary line-clamp-2 font-medium"
+                            class="hover:text-primary line-clamp-2 text-sm font-medium sm:text-base"
                         >
                             {{ item.product.name }}
                         </ULink>
-                        <div>
+                        <div
+                            class="col-span-2 flex flex-row items-center justify-between gap-2 border-t border-gray-50 pt-3 sm:col-span-1 sm:flex-col sm:items-end sm:justify-end sm:border-0 sm:pt-0"
+                        >
                             <div
                                 v-if="item.product.sale_price"
-                                class="mt-auto flex flex-col items-end"
+                                class="flex flex-col items-start sm:items-end"
                             >
                                 <div
                                     v-if="item.product.acf?.promotional_price"
-                                    class="flex flex-col items-end"
+                                    class="flex flex-col items-start sm:items-end"
                                 >
                                     <div
-                                        class="flex flex-col items-end text-sm text-gray-400"
+                                        class="flex flex-col items-start text-xs text-gray-400 sm:items-end sm:text-sm"
                                     >
                                         <p
                                             v-if="
@@ -99,7 +102,7 @@
                                                 )
                                             "
                                         >
-                                            ราคาโปรโมชันเดิม
+                                            โปรโมชันเดิม
                                             <span
                                                 class="line-through decoration-1"
                                                 >฿{{
@@ -117,7 +120,10 @@
                                         }}
                                     </p>
                                 </div>
-                                <div v-else class="flex items-baseline gap-2">
+                                <div
+                                    v-else
+                                    class="flex flex-col items-start gap-0 sm:flex-row sm:items-baseline sm:gap-2"
+                                >
                                     <p
                                         v-if="
                                             item.product.on_sale &&
@@ -128,7 +134,7 @@
                                                     item.product.sale_price
                                                 )
                                         "
-                                        class="text-gray-400 line-through decoration-1"
+                                        class="text-xs text-gray-400 line-through decoration-1 sm:text-sm"
                                     >
                                         ฿{{
                                             formatPrice(
@@ -150,10 +156,13 @@
                                     }}
                                 </p>
                             </div>
+
                             <div class="flex gap-2">
                                 <UInputNumber
                                     v-model="item.quantity"
                                     :min="1"
+                                    size="sm"
+                                    class="w-24 sm:w-auto"
                                     @update:model-value="
                                         (val) =>
                                             updateQuantity(

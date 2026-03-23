@@ -91,6 +91,8 @@
                                     <NuxtImg
                                         v-if="sub.acf?.image_category"
                                         :src="sub.acf.image_category.url"
+                                        loading="lazy"
+                                        draggable="false"
                                         class="h-full w-full object-contain p-1 transition-transform group-hover:scale-110"
                                     />
                                 </div>

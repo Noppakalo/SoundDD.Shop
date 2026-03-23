@@ -34,10 +34,6 @@
 import type { Customer } from '~/types/customer'
 import type { NavigationMenuItem } from '@nuxt/ui'
 
-definePageMeta({
-    middleware: 'auth',
-})
-
 const { user } = useUserSession()
 const { getCustomer } = useWooCustomerApi()
 

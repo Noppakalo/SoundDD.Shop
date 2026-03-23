@@ -72,25 +72,18 @@
                 </div>
             </div>
         </div>
-        <UButton
-            v-else
-            to="https://page.line.me/lyd9910p?oat__id=3047370&openQrModal=true"
-            target="_blank"
-            size="xs"
-            color="error"
-            class="w-max"
-            >ติดต่อสอบถามราคา</UButton
-        >
         <div
             v-if="product.short_description"
             v-html="product.short_description"
+            class="prose prose-sm max-w-none"
         ></div>
-        <div v-if="colorVariations.length > 0" class="flex flex-col">
+
+        <div v-if="colorVariations.length > 0" class="flex flex-col gap-2">
             <p>
                 เลือกสี :
-                <span class="text-primary font-bold">
-                    {{ currentColorName }}
-                </span>
+                <span class="text-primary font-bold">{{
+                    currentColorName
+                }}</span>
             </p>
             <div class="flex flex-wrap gap-2">
                 <UButton
@@ -113,87 +106,93 @@
             </div>
         </div>
         <div class="flex flex-col gap-4 rounded-md bg-gray-100 p-4">
-            <div class="flex items-center gap-2">
-                <p class="font-medium">จำนวน :</p>
-                <UInputNumber v-model="quantity" :min="1" />
-            </div>
-            <div class="flex gap-4">
-                <UTooltip
-                    :aria-label="
-                        isInWishlist(product.id)
-                            ? 'นำสินค้าที่สนใจออก'
-                            : 'เพิ่มสินค้าที่สนใจ'
-                    "
-                    :delay-duration="0"
-                    :text="
-                        isInWishlist(product.id)
-                            ? 'นำสินค้าที่สนใจออก'
-                            : 'เพิ่มสินค้าที่สนใจ'
-                    "
-                >
-                    <UButton
-                        @click.prevent="toggleWishlist(product.id)"
-                        :icon="
+            <template v-if="hasDisplayPrice">
+                <div class="flex items-center gap-2">
+                    <p class="font-medium">จำนวน :</p>
+                    <UInputNumber v-model="quantity" :min="1" />
+                </div>
+                <div class="flex gap-4">
+                    <UTooltip
+                        :delay-duration="0"
+                        :text="
                             isInWishlist(product.id)
-                                ? 'i-iconamoon:heart-fill'
-                                : 'i-iconamoon:heart-light'
+                                ? 'นำสินค้าที่สนใจออก'
+                                : 'เพิ่มสินค้าที่สนใจ'
                         "
-                        color="primary"
-                        variant="ghost"
-                        size="xl"
-                        class="size-max rounded-full"
                     >
+                        <UButton
+                            @click.prevent="toggleWishlist(product.id)"
+                            :icon="
+                                isInWishlist(product.id)
+                                    ? 'i-iconamoon:heart-fill'
+                                    : 'i-iconamoon:heart-light'
+                            "
+                            color="primary"
+                            variant="ghost"
+                            size="xl"
+                            class="size-max rounded-full"
+                        />
+                    </UTooltip>
+                    <UButton
+                        :disabled="isSoldOut"
+                        color="primary"
+                        variant="soft"
+                        size="lg"
+                        icon="i-iconamoon:shopping-bag"
+                        class="flex-1 justify-center whitespace-nowrap"
+                        @click.prevent="onAddToCart"
+                    >
+                        ใส่ตะกร้า
                     </UButton>
-                </UTooltip>
+                    <UButton
+                        :disabled="isSoldOut"
+                        color="primary"
+                        size="lg"
+                        class="flex-1 justify-center whitespace-nowrap"
+                        @click="onBuyNow"
+                    >
+                        ซื้อเลย
+                    </UButton>
+                </div>
+            </template>
+            <template v-else>
                 <UButton
-                    :disabled="isSoldOut"
-                    color="primary"
-                    variant="soft"
-                    size="lg"
-                    icon="i-iconamoon:shopping-bag"
-                    class="flex-1 justify-center whitespace-nowrap"
-                    @click.prevent="onAddToCart"
+                    to="https://page.line.me/lyd9910p?oat__id=3047370&openQrModal=true"
+                    target="_blank"
+                    size="xl"
+                    color="error"
                 >
-                    ใส่ตะกร้า
+                    ติดต่อสอบถามราคา
                 </UButton>
-                <UButton
-                    :disabled="isSoldOut"
-                    color="primary"
-                    size="lg"
-                    class="flex-1 justify-center whitespace-nowrap"
-                    @click="onBuyNow"
-                >
-                    ซื้อเลย
-                </UButton>
-            </div>
+            </template>
         </div>
         <USeparator class="my-4" />
         <div class="flex flex-col gap-2.5">
-            <div class="text-error flex items-center gap-3">
+            <div class="text-error flex items-center gap-3 font-medium">
                 <UIcon name="i-iconamoon:star-fill" class="shrink-0" />
                 <p>
                     เช็ค Stock และราคาสินค้า กับเจ้าหน้าที่ก่อนสั่งซื้อทุกครั้ง
                 </p>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 text-sm text-gray-600">
                 <UIcon
                     name="i-iconamoon:badge-light"
-                    class="text-success shrink"
+                    class="text-success shrink-0"
                 />
                 <p>
                     สงวนสิทธิ์การเปลี่ยนแปลงข้อมูล ราคา ไม่แจ้งให้ทราบล่วงหน้า
                 </p>
             </div>
-            <div class="flex items-center gap-3">
-                <UIcon name="i-heroicons-truck" class="text-success shrink" />
+            <div class="flex items-center gap-3 text-sm text-gray-600">
+                <UIcon name="i-heroicons-truck" class="text-success shrink-0" />
                 <p>
                     รับสินค้าภายใน 3 - 7 วัน (ขึ้นอยู่กับที่อยู่จัดส่งของลูกค้า)
                 </p>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 text-sm text-gray-600">
                 <UIcon
                     name="i-iconamoon:file-document-light"
-                    class="text-sucess text-success shrink"
+                    class="text-success shrink-0"
                 />
                 <p>สงวนสิทธิ์การรับผิดชอบเนื่องจากการพิมพ์ผิดพลาดต่างๆ</p>
             </div>
@@ -225,15 +224,7 @@ const displayPriceData = computed(() => {
         const v = props.selectedVariation
         const sale = v.sale_price || v.regular_price
         const regular = v.regular_price
-        const discount =
-            sale && regular && parseFloat(regular) > parseFloat(sale)
-                ? Math.round(
-                      ((parseFloat(regular) - parseFloat(sale)) /
-                          parseFloat(regular)) *
-                          100
-                  )
-                : null
-        return { sale, regular, discount }
+        return { sale, regular }
     }
     return basePriceData.value
 })
@@ -246,11 +237,12 @@ const displaySku = computed(() => {
     return props.selectedVariation?.sku || props.product.sku
 })
 
-const isSoldOut = computed(
-    () =>
+const isSoldOut = computed(() => {
+    return (
         currentStockStatus.value === 'outofstock' ||
         currentStockStatus.value === 'onbackorder'
-)
+    )
+})
 
 const getColorName = (v: any) => {
     if (!v?.attributes) return null
@@ -302,7 +294,6 @@ const onVariationSelect = (variation: any) => {
 
 const onAddToCart = () => {
     let productToCart = { ...props.product }
-
     if (props.selectedVariation) {
         productToCart = {
             ...productToCart,
@@ -316,7 +307,6 @@ const onAddToCart = () => {
                 : productToCart.images,
         }
     }
-
     addToCart(productToCart as any, quantity.value)
 }
 
