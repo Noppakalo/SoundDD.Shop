@@ -1,4 +1,3 @@
-// useCountdown.ts
 import {
     ref,
     onMounted,
@@ -20,7 +19,6 @@ export const useCountdown = (
         const start = toValue(dateFrom)
         const end = toValue(dateTo)
 
-        // 1. ถ้าไม่มีวันสิ้นสุด ไม่ต้องทำงาน
         if (!end) {
             isFlashSale.value = false
             return
@@ -28,12 +26,9 @@ export const useCountdown = (
 
         const now = new Date().getTime()
 
-        // 2. ฟังก์ชันช่วยแปลงค่าให้เป็น Timestamp ที่แม่นยำ
         const parseToMs = (val: any) => {
             if (!val) return 0
-            // ถ้าเป็นตัวเลข หรือสตริงตัวเลข (เช่นจาก PHP ที่คูณ 1000 มาแล้ว)
-            if (!isNaN(val)) return parseInt(val)
-            // ถ้าเป็น ISO String หรือรูปแบบวันที่อื่นๆ
+            if (!isNaN(val) && typeof val !== 'object') return parseInt(val)
             const d = new Date(val).getTime()
             return isNaN(d) ? 0 : d
         }
@@ -41,13 +36,7 @@ export const useCountdown = (
         const startTime = parseToMs(start)
         const endTime = parseToMs(end)
 
-        // --- DEBUG: ลองเปิด Console ดูค่าที่คำนวณได้ ---
-        // console.log('Now:', now, 'End:', endTime, 'Diff:', endTime - now)
-
-        // 3. เงื่อนไข: ต้องมีวันสิ้นสุด และ (ตอนนี้ยังไม่หมดเวลา)
-        // หมายเหตุ: ผมเอา startTime ออกก่อนเพื่อเช็คว่ามันยอมโชว์ไหม
-        // ถ้าโชว์แล้วค่อยใส่ (now >= startTime) กลับเข้าไปครับ
-        if (endTime > 0 && now < endTime) {
+        if (endTime > 0 && now >= startTime && now < endTime) {
             isFlashSale.value = true
             const diff = endTime - now
 
@@ -65,14 +54,6 @@ export const useCountdown = (
         }
     }
 
-    const startTimer = () => {
-        stopTimer()
-        updateCountdown()
-        if (isFlashSale.value) {
-            countdownInterval = setInterval(updateCountdown, 1000)
-        }
-    }
-
     const stopTimer = () => {
         if (countdownInterval) {
             clearInterval(countdownInterval)
@@ -80,8 +61,16 @@ export const useCountdown = (
         }
     }
 
-    onMounted(() => startTimer())
-    onUnmounted(() => stopTimer())
+    const startTimer = () => {
+        if (import.meta.server) return
+
+        stopTimer()
+        updateCountdown()
+
+        if (isFlashSale.value) {
+            countdownInterval = window.setInterval(updateCountdown, 1000)
+        }
+    }
 
     watch(
         [() => toValue(dateFrom), () => toValue(dateTo)],
@@ -90,6 +79,14 @@ export const useCountdown = (
         },
         { immediate: true }
     )
+
+    onMounted(() => {
+        startTimer()
+    })
+
+    onUnmounted(() => {
+        stopTimer()
+    })
 
     return { timeLeft, isFlashSale }
 }

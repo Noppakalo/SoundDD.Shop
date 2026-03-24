@@ -126,35 +126,12 @@
             />
         </div>
     </div>
-    <div
-        v-if="isFlashSale"
+    <FlashSaleTimer
+        :date-from="effectiveSaleFrom"
+        :date-to="effectiveSaleTo"
         class="absolute left-1/2 z-20 w-max -translate-x-1/2 px-4"
         :class="viewMode === 'list' ? 'max-lg:hidden' : ''"
-    >
-        <div
-            class="bg-primary flex items-center justify-center gap-2 rounded-sm px-2 py-1.5 text-white"
-        >
-            <p class="text-xs font-medium">เหลือเวลาอีก</p>
-            <div
-                class="flex items-center gap-0.5 text-xs font-bold max-sm:text-[10px]"
-            >
-                <span v-if="timeLeft.days > 0" class="rounded bg-white/20 px-1">
-                    {{ pad(timeLeft.days) }} วัน
-                </span>
-                <span class="rounded bg-white/20 px-1">{{
-                    pad(timeLeft.hours)
-                }}</span>
-                <span>:</span>
-                <span class="rounded bg-white/20 px-1">{{
-                    pad(timeLeft.minutes)
-                }}</span>
-                <span>:</span>
-                <span class="rounded bg-white/20 px-1">{{
-                    pad(timeLeft.seconds)
-                }}</span>
-            </div>
-        </div>
-    </div>
+    />
 </template>
 
 <script setup lang="ts">
@@ -255,10 +232,6 @@ const effectiveSaleTo = computed(() => {
     if (firstSaleVar) return firstSaleVar.date_on_sale_to
     return props.product.date_on_sale_to
 })
-const { timeLeft, isFlashSale } = useCountdown(
-    effectiveSaleFrom,
-    effectiveSaleTo
-)
 
 const currentDiscount = computed(
     () => hoveredDiscount.value || displayPriceData.value.discount
@@ -347,8 +320,6 @@ const colorVariations = computed(() => {
     })
     return Array.from(uniqueVariations.values())
 })
-
-const pad = (num: number) => String(num).padStart(2, '0')
 
 if (props.product.brands?.[0]) {
     const brandSlug = props.product.brands[0].slug
