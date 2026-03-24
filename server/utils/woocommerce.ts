@@ -1,7 +1,7 @@
 import type { Customer } from '~/types/customer'
 
 function buildBasicAuth(username: string, password: string): string {
-    return `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`
+    return `Basic ${btoa(`${username}:${password}`)}`
 }
 
 export function buildWooAuth(
@@ -30,11 +30,16 @@ export async function wooFindCustomerByEmail(
         `${wpUrl}/wp-json/wc/v3/customers`,
         {
             headers: { Authorization: authHeader },
-            query: { email, per_page: 1 },
+            query: {
+                search: email,
+                per_page: 10,
+                role: 'all',
+            },
         }
     )
 
-    if (!customers || customers.length === 0) return null
+    if (!customers || !Array.isArray(customers) || customers.length === 0)
+        return null
 
     return (
         customers.find((u) => u.email.toLowerCase() === email.toLowerCase()) ??
@@ -63,7 +68,7 @@ export async function wooUpdateCustomer(
     return $fetch<Customer>(`${wpUrl}/wp-json/wc/v3/customers/${id}`, {
         method: 'PUT',
         headers: { Authorization: authHeader },
-        body: { id, ...data },
+        body: data,
     })
 }
 

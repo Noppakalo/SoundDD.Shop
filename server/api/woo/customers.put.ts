@@ -36,8 +36,7 @@ export default defineEventHandler(async (event) => {
 
     const meta_data_to_send = Array.isArray(meta_data) ? [...meta_data] : []
     const upsertMeta = (key: string, value: any) => {
-        if (value === undefined) return
-
+        if (value === undefined || value === null) return
         const idx = meta_data_to_send.findIndex((m) => m.key === key)
         if (idx > -1) {
             meta_data_to_send[idx].value = value
@@ -52,22 +51,17 @@ export default defineEventHandler(async (event) => {
     upsertMeta('wishlist', wishlist)
     upsertMeta('cart', cart)
 
-
     if (meta_data_to_send.length > 0) payload.meta_data = meta_data_to_send
 
+    const authHeader = buildWooAuth(config)
+    const wpUrl = config.public.wpUrl as string
+
     try {
-        const response = await wooUpdateCustomer(
-            id,
-            payload,
-            buildWooAuth(config),
-            config.public.wpUrl
-        )
-        return { success: true, data: response, message: null }
+        const response = await wooUpdateCustomer(id, payload, authHeader, wpUrl)
+        return { success: true, data: response, message: 'อัปเดตข้อมูลสำเร็จ' }
     } catch (error: any) {
-        const errData =
-            error?.data || error?.response?.data || error?.response?._data
-        const status =
-            error?.statusCode || error?.response?.status || errData?.status
+        const errData = error?.data || error?.response?._data
+        const status = error?.statusCode || error?.response?.status || 500
         const code = errData?.code
 
         if (code === 'woocommerce_rest_cannot_edit' || status === 401) {
@@ -75,30 +69,28 @@ export default defineEventHandler(async (event) => {
                 const retryResp = await wooUpdateCustomer(
                     id,
                     payload,
-                    buildWooAuth(config),
-                    config.public.wpUrl as string
+                    authHeader,
+                    wpUrl
                 )
-                return { success: true, data: retryResp, message: null }
+                return {
+                    success: true,
+                    data: retryResp,
+                    message: 'อัปเดตข้อมูลสำเร็จ (Retry)',
+                }
             } catch (err2: any) {
-                const err2Data =
-                    err2?.data || err2?.response?.data || err2?.response?._data
+                const err2Data = err2?.data || err2?.response?._data
                 throw createError({
                     statusCode:
                         err2?.statusCode || err2?.response?.status || 500,
                     statusMessage:
-                        err2Data?.message ||
-                        err2?.message ||
-                        'ไม่สามารถแก้ไขข้อมูลลูกค้าได้',
+                        err2Data?.message || 'ไม่สามารถแก้ไขข้อมูลลูกค้าได้',
                 })
             }
         }
 
         throw createError({
-            statusCode: status || 500,
-            statusMessage:
-                errData?.message ||
-                error?.message ||
-                'ไม่สามารถแก้ไขข้อมูลลูกค้าได้',
+            statusCode: status,
+            statusMessage: errData?.message || 'ไม่สามารถแก้ไขข้อมูลลูกค้าได้',
         })
     }
 })

@@ -8,84 +8,85 @@ export default defineOAuthGoogleEventHandler({
     },
     async onSuccess(event, { user, tokens }) {
         const config = useRuntimeConfig()
+        const wpUrl = config.public.wpUrl as string
+
         const googleSub = user.sub
         const googleEmail = user.email
-        const googleName = user.given_name
-        const googleLastName = user.family_name
-        const googlePicture = user.picture
+        const googleName = user.given_name || ''
+        const googleLastName = user.family_name || ''
+        const googlePicture = user.picture || ''
+
+        if (!googleEmail) {
+            const message = encodeURIComponent(
+                'บัญชี Google ของคุณไม่ได้ให้ข้อมูลอีเมล์ กรุณาตรวจสอบการตั้งค่าความเป็นส่วนตัว'
+            )
+            return sendRedirect(event, `/?auth=error&message=${message}`)
+        }
 
         try {
             const authHeader = buildWooAuth(config)
-            const users = await $fetch<any[]>(
-                `${config.public.wpUrl}/wp-json/wc/v3/customers`,
-                {
-                    headers: { Authorization: authHeader },
-                    query: { email: googleEmail },
-                }
-            )
 
-            let wpUser: any
-            if (users.length > 0) {
-                wpUser = users[0]
+            let wpUser = await wooFindCustomerByEmail(
+                googleEmail,
+                authHeader,
+                wpUrl
+            ).catch((err) => {
+                return null
+            })
+
+            if (wpUser) {
                 const hasGoogleSub = wpUser.meta_data?.some(
                     (m: any) => m.key === 'google_customer_sub'
                 )
 
                 if (!hasGoogleSub) {
                     try {
-                        await $fetch(
-                            `${config.public.wpUrl}/wp-json/wc/v3/customers/${wpUser.id}`,
+                        await wooUpdateCustomer(
+                            wpUser.id,
                             {
-                                method: 'PUT',
-                                headers: { Authorization: authHeader },
-                                body: {
-                                    meta_data: [
-                                        {
-                                            key: 'google_customer_sub',
-                                            value: googleSub,
-                                        },
-                                    ],
-                                },
-                            }
+                                meta_data: [
+                                    {
+                                        key: 'google_customer_sub',
+                                        value: googleSub,
+                                    },
+                                ],
+                            },
+                            authHeader,
+                            wpUrl
                         )
                     } catch (e) {
-                        console.error(
-                            '[Google Auth] Failed to update metadata:',
-                            e
-                        )
+                        console.error('[Google Auth] Failed to update metadata')
                     }
                 }
             } else {
-                const randomPass = Math.random().toString(36).slice(-12)
-                wpUser = await $fetch(
-                    `${config.public.wpUrl}/wp-json/wc/v3/customers`,
+                wpUser = await wooCreateCustomer(
                     {
-                        method: 'POST',
-                        headers: { Authorization: authHeader },
-                        body: {
-                            email: googleEmail,
-                            first_name: googleName,
-                            last_name: googleLastName,
-                            username:
-                                googleEmail.split('@')[0] +
-                                Math.floor(Math.random() * 1000),
-                            password: randomPass,
-                            avatar_url: googlePicture,
-                            meta_data: [
-                                {
-                                    key: 'google_customer_sub',
-                                    value: googleSub,
-                                },
-                            ],
-                        },
-                    }
+                        email: googleEmail,
+                        first_name: googleName,
+                        last_name: googleLastName,
+                        username: googleEmail.split('@')[0] || 'user',
+                        password: Math.random().toString(36).slice(-12),
+                        avatar_url: googlePicture,
+                        meta_data: [
+                            { key: 'google_customer_sub', value: googleSub },
+                        ],
+                    },
+                    authHeader,
+                    wpUrl
                 )
             }
-
+            if (!wpUser) {
+                throw createError({
+                    statusCode: 500,
+                    statusMessage:
+                        'ไม่สามารถระบุตัวตนหรือสร้างบัญชีสมาชิกได้ในขณะนี้',
+                })
+            }
             await setUserSession(event, {
                 user: {
                     id: wpUser.id,
-                    name: `${googleName} ${googleLastName}`.trim(),
+                    name:
+                        `${googleName} ${googleLastName}`.trim() || googleEmail,
                     email: googleEmail,
                     avatar: googlePicture || wpUser.avatar_url || '',
                 },
@@ -97,20 +98,22 @@ export default defineOAuthGoogleEventHandler({
                 },
                 loggedInAt: new Date().toISOString(),
             })
+
             return sendRedirect(event, '/?auth=success')
         } catch (error: any) {
-            const message = encodeURIComponent(
-                error.statusMessage ||
-                    'เกิดข้อผิดพลาดในการเข้าสู่ระบบ กรุณาลองใหม่'
+            const errMsg =
+                error.response?._data?.message ||
+                'เกิดข้อผิดพลาดในการเชื่อมต่อระบบสมาชิก'
+            return sendRedirect(
+                event,
+                `/?auth=error&message=${encodeURIComponent(errMsg)}`
             )
-            return sendRedirect(event, `/?auth=error&message=${message}`)
         }
     },
 
     onError(event, error: any) {
         const message = encodeURIComponent(
-            error.statusMessage ||
-                'คุณได้ยกเลิกการเข้าสู่ระบบ หรือเกิดข้อผิดพลาดจาก Google'
+            'คุณได้ยกเลิกการเข้าสู่ระบบ หรือเกิดข้อผิดพลาดจาก Google'
         )
         return sendRedirect(event, `/?auth=error&message=${message}`)
     },

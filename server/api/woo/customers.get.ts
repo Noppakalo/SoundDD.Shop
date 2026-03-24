@@ -1,16 +1,3 @@
-import type { Customer } from '~/types/customer'
-
-const customerFileds = [
-    'id',
-    'email',
-    'first_name',
-    'last_name',
-    'billing',
-    'shipping',
-    'avatar_url',
-    'meta_data',
-].join(',')
-
 export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig()
     const query = getQuery(event)
@@ -20,29 +7,40 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 400, statusMessage: 'กรุณาระบุ email' })
     }
 
-     const authHeader = buildWooAuth(config)
+    const authHeader = buildWooAuth(config)
     const wpUrl = config.public.wpUrl as string
 
     try {
-        const customers = await $fetch<Customer[]>(
-            `${wpUrl}/wp-json/wc/v3/customers`,
-            {
-                method: 'GET',
-                headers: { Authorization: authHeader },
-                query: { email, per_page: 1, _fields: customerFileds },
-            }
+        const existingCustomer = await wooFindCustomerByEmail(
+            email,
+            authHeader,
+            wpUrl
         )
 
-        if (!customers || customers.length === 0) {
-            try {
-                const created = await wooCreateCustomer({ email }, authHeader, wpUrl)
-                return { success: true, data: created }
-            } catch {
-                return { success: false, data: null }
-            }
+        if (existingCustomer) {
+            return { success: true, data: existingCustomer }
         }
 
-        return { success: true, data: customers[0] }
+        try {
+            const payload = {
+                email: email,
+                username:
+                    (email?.split('@')[0] ?? 'user') +
+                    Math.floor(Math.random() * 1000),
+                password: Math.random().toString(36).slice(-12),
+            }
+
+            const created = await wooCreateCustomer(payload, authHeader, wpUrl)
+            return { success: true, data: created }
+        } catch (createError: any) {
+            return {
+                success: false,
+                data: null,
+                message:
+                    createError.response?._data?.message ||
+                    'ไม่สามารถสร้างบัญชีใหม่ได้',
+            }
+        }
     } catch (error: any) {
         throw createError({
             statusCode: error.response?.status || 500,

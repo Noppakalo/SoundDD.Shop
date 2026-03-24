@@ -66,8 +66,8 @@ const fields: AuthFormField[] = [
     {
         name: 'email',
         type: 'email',
-        label: 'อีเมล์์',
-        placeholder: 'กรอกอีเมล์ของคุณ',
+        label: 'อีเมล์์์',
+        placeholder: 'กรอกอีเมล์์ของคุณ',
         required: true,
     },
     {
@@ -87,8 +87,8 @@ const fields: AuthFormField[] = [
 const schema = ref(
     object({
         email: string()
-            .email('รูปแบบอีเมล์ไม่ถูกต้อง')
-            .required('กรุณากรอกอีเมล์์'),
+            .email('รูปแบบอีเมล์์ไม่ถูกต้อง')
+            .required('กรุณากรอกอีเมล์์์'),
         password: string()
             .min(8, 'รหัสผ่านต้องมีอย่างน้อย 8 ตัว')
             .required('กรุณากรอกรหัสผ่าน'),
@@ -115,13 +115,15 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
             emit('success')
             emit('close')
         } else {
-            toast.error('เข้าสู่ระบบไม่สำเร็จ', 'อีเมล์หรือรหัสผ่านไม่ถูกต้อง')
+            toast.error('เข้าสู่ระบบไม่สำเร็จ', 'อีเมล์์หรือรหัสผ่านไม่ถูกต้อง')
         }
     } catch (error: any) {
-        const message =
-            error.data?.statusMessage ||
-            'ระบบขัดข้อง กรุณาลองใหม่อีกครั้งในภายหลัง'
-        toast.error('เกิดข้อผิดพลาด', message)
+        const errorMessage =
+            error.data?.message ||
+            error.statusMessage ||
+            'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
+
+        toast.error('เข้าสู่ระบบไม่สำเร็จ', errorMessage)
     } finally {
         isLoading.value = false
     }

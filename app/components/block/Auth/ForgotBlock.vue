@@ -19,10 +19,10 @@
             @submit="onSubmit"
             class="flex flex-col justify-center gap-4"
         >
-            <UFormField label="ระบุอีเมล์เพื่อรีเซ็ตรหัสผ่าน" name="email">
+            <UFormField label="ระบุอีเมล์์เพื่อรีเซ็ตรหัสผ่าน" name="email">
                 <UInput
                     v-model="state.email"
-                    placeholder="กรอกอีเมล์ของคุณ"
+                    placeholder="กรอกอีเมล์์ของคุณ"
                     class="w-full"
                 />
             </UFormField>
@@ -52,8 +52,8 @@ const isLoading = ref(false)
 
 const schema = object({
     email: string()
-        .email('รูปแบบอีเมล์ไม่ถูกต้อง')
-        .required('กรุณากรอกอีเมล์์'),
+        .email('รูปแบบอีเมล์์ไม่ถูกต้อง')
+        .required('กรุณากรอกอีเมล์์์'),
 })
 
 type Schema = InferType<typeof schema>

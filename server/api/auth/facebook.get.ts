@@ -10,58 +10,51 @@ export default defineOAuthFacebookEventHandler({
 
     async onSuccess(event, { user, tokens }) {
         const config = useRuntimeConfig()
+        const wpUrl = config.public.wpUrl as string
 
-        // Debug: Log all Facebook user data
-        console.log(
-            '[Facebook Auth] Raw user data:',
-            JSON.stringify(user, null, 2)
-        )
-
+        // 1. ดึงข้อมูลจาก Facebook
         const facebookSub = user.id
         const fbEmail = user.email
         const fbName = user.name || ''
         const fbPicture = user.picture?.data?.url || ''
 
-        console.log('[Facebook Auth] Extracted:', {
-            facebookSub,
-            fbEmail,
-            fbName,
-            fbPicture,
-        })
+        // ตรวจสอบ Email ป้องกัน Error (Facebook บางเคสอาจไม่ส่ง Email มาถ้าผู้ใช้ไม่ได้ยืนยัน)
+        if (!fbEmail) {
+            const message = encodeURIComponent(
+                'บัญชี Facebook ของคุณไม่ได้ให้ข้อมูลอีเมล หรืออีเมลยังไม่ได้ยืนยัน'
+            )
+            return sendRedirect(event, `/?auth=error&message=${message}`)
+        }
 
         try {
             const authHeader = buildWooAuth(config)
-            const users = await $fetch<any[]>(
-                `${config.public.wpUrl}/wp-json/wc/v3/customers`,
-                {
-                    headers: { Authorization: authHeader },
-                    query: { email: fbEmail },
-                }
-            )
 
-            let wpUser: any
-            if (users.length > 0) {
-                wpUser = users[0]
+            // 2. ค้นหา User ใน WooCommerce (ใช้ฟังก์ชันกลางที่แก้เรื่อง role: 'all' แล้ว)
+            let wpUser = await wooFindCustomerByEmail(
+                fbEmail,
+                authHeader,
+                wpUrl
+            ).catch(() => null)
+
+            if (wpUser) {
                 const hasFacebookSub = wpUser.meta_data?.some(
                     (m: any) => m.key === 'facebook_customer_sub'
                 )
 
                 if (!hasFacebookSub) {
                     try {
-                        await $fetch(
-                            `${config.public.wpUrl}/wp-json/wc/v3/customers/${wpUser.id}`,
+                        await wooUpdateCustomer(
+                            wpUser.id,
                             {
-                                method: 'PUT',
-                                headers: { Authorization: authHeader },
-                                body: {
-                                    meta_data: [
-                                        {
-                                            key: 'facebook_customer_sub',
-                                            value: facebookSub,
-                                        },
-                                    ],
-                                },
-                            }
+                                meta_data: [
+                                    {
+                                        key: 'facebook_customer_sub',
+                                        value: facebookSub,
+                                    },
+                                ],
+                            },
+                            authHeader,
+                            wpUrl
                         )
                     } catch (e) {
                         console.error(
@@ -70,33 +63,28 @@ export default defineOAuthFacebookEventHandler({
                     }
                 }
             } else {
-                const randomPass = Math.random().toString(36).slice(-12)
-                wpUser = await $fetch(
-                    `${config.public.wpUrl}/wp-json/wc/v3/customers`,
+                wpUser = await wooCreateCustomer(
                     {
-                        method: 'POST',
-                        headers: { Authorization: authHeader },
-                        body: {
-                            email: fbEmail,
-                            first_name: fbName.split(' ')[0] || fbName,
-                            last_name:
-                                fbName.split(' ').slice(1).join(' ') || '',
-                            username:
-                                fbEmail.split('@')[0] +
-                                Math.floor(Math.random() * 1000),
-                            password: randomPass,
-                            avatar_url: fbPicture,
-                            meta_data: [
-                                {
-                                    key: 'facebook_customer_sub',
-                                    value: facebookSub,
-                                },
-                            ],
-                        },
-                    }
+                        email: fbEmail,
+                        first_name: fbName.split(' ')[0] || fbName,
+                        last_name: fbName.split(' ').slice(1).join(' ') || '',
+                        username: fbEmail.split('@')[0] || 'fb_user',
+                        password: Math.random().toString(36).slice(-12),
+                        avatar_url: fbPicture,
+                        meta_data: [
+                            {
+                                key: 'facebook_customer_sub',
+                                value: facebookSub,
+                            },
+                        ],
+                    },
+                    authHeader,
+                    wpUrl
                 )
             }
-
+            if (!wpUser) {
+                throw new Error('ไม่สามารถระบุตัวตนหรือสร้างสมาชิกได้')
+            }
             await setUserSession(event, {
                 user: {
                     id: wpUser.id,
@@ -106,31 +94,27 @@ export default defineOAuthFacebookEventHandler({
                 },
                 secure: {
                     token: tokens.access_token,
-                    refreshToken: tokens.refresh_token,
                     facebookSub: facebookSub,
                     provider: 'facebook',
                 },
                 loggedInAt: new Date().toISOString(),
             })
+
             return sendRedirect(event, '/?auth=success')
         } catch (error: any) {
-            console.error('[Facebook Auth] Full error:', error)
-            console.error(
-                '[Facebook Auth] Response data:',
-                error.response?._data
+            const errMsg =
+                error.response?._data?.message ||
+                'เกิดข้อผิดพลาดในการเชื่อมต่อระบบสมาชิก'
+            return sendRedirect(
+                event,
+                `/?auth=error&message=${encodeURIComponent(errMsg)}`
             )
-            const message = encodeURIComponent(
-                error.statusMessage ||
-                    'เกิดข้อผิดพลาดในการเข้าสู่ระบบ กรุณาลองใหม่'
-            )
-            return sendRedirect(event, `/?auth=error&message=${message}`)
         }
     },
 
     onError(event, error: any) {
         const message = encodeURIComponent(
-            error.statusMessage ||
-                'คุณได้ยกเลิกการเข้าสู่ระบบ หรือเกิดข้อผิดพลาดจาก Facebook'
+            'คุณได้ยกเลิกการเข้าสู่ระบบ หรือเกิดข้อผิดพลาดจาก Facebook'
         )
         return sendRedirect(event, `/?auth=error&message=${message}`)
     },

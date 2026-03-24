@@ -3,6 +3,7 @@ import type { WpJwtResponse, Login } from '~/types/auth'
 export default defineEventHandler(async (event) => {
     const body = await readBody<Login>(event)
     const config = useRuntimeConfig()
+    const wpUrl = config.public.wpUrl
 
     try {
         const authSession = await $fetch<WpJwtResponse>(
@@ -25,6 +26,7 @@ export default defineEventHandler(async (event) => {
                 wooAuth,
                 config.public.wpUrl
             )
+
             const avatar = customer?.avatar_url || ''
 
             await setUserSession(
@@ -65,9 +67,24 @@ export default defineEventHandler(async (event) => {
             },
         }
     } catch (error: any) {
+        const wpError = error.response?._data
+        let message = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
+        if (
+            wpError?.code === '[jwt_auth] invalid_username' ||
+            wpError?.code === '[jwt_auth] incorrect_password'
+        ) {
+            message = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
+        } else if (wpError?.message) {
+            message = wpError.message.replace(/<[^>]*>?/gm, '')
+        }
+
         throw createError({
-            statusCode: error.response?.status || 500,
-            message: 'อีเมล์หรือรหัสผ่านไม่ถูกต้อง',
+            statusCode:
+                error.response?.status === 403
+                    ? 401
+                    : error.response?.status || 400,
+            statusMessage: message,
+            data: { message },
         })
     }
 })

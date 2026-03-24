@@ -4,8 +4,8 @@ export const accountSchema = object({
     first_name: string().required('กรุณากรอกชื่อ'),
     last_name: string().required('กรุณากรอกนามสกุล'),
     email: string()
-        .email('กรุณากรอกอีเมล์ให้ถูกต้อง')
-        .required('กรุณากรอกอีเมล์'),
+        .email('กรุณากรอกอีเมล์์ให้ถูกต้อง')
+        .required('กรุณากรอกอีเมล์์'),
     phone: string()
         .matches(/^[0-9]+$/, 'กรุณากรอกเบอร์โทรศัพท์ให้ครบ 10 หลัก')
         .required('กรุณากรอกเบอร์โทร'),

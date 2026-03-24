@@ -152,15 +152,15 @@
                 />
             </UFormField>
             <UFormField
-                label="อีเมล์"
+                label="อีเมล์์"
                 :name="fieldName('email')"
                 class="col-span-2"
             >
                 <UInput
                     v-model="state.email"
-                    placeholder="อีเมล์"
+                    placeholder="อีเมล์์"
                     class="w-full"
-                    aria-label="อีเมล์"
+                    aria-label="อีเมล์์"
                 />
             </UFormField>
             <UFormField label="เบอร์โทรศัพท์" :name="fieldName('phone')">

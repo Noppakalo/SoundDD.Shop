@@ -97,7 +97,7 @@
                     class="w-full"
                 />
             </UFormField>
-            <UFormField label="อีเมล์">
+            <UFormField label="อีเมล์์">
                 <UInput
                     :value="email"
                     readonly
