@@ -1,5 +1,5 @@
 export const formatPrice = (price: string | number) => {
-    if (!price) return '0'
+    if (!price || price === '') return '0'
     const numericPrice = typeof price === 'string' ? parseFloat(price) : price
     return numericPrice.toLocaleString()
 }

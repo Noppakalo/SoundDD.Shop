@@ -3,7 +3,9 @@ import { object, string } from 'yup'
 export const accountSchema = object({
     first_name: string().required('กรุณากรอกชื่อ'),
     last_name: string().required('กรุณากรอกนามสกุล'),
-    email: string().email('กรุณากรอกอีเมลให้ถูกต้อง').required('กรุณากรอกอีเมล'),
+    email: string()
+        .email('กรุณากรอกอีเมล์ให้ถูกต้อง')
+        .required('กรุณากรอกอีเมล์'),
     phone: string()
         .matches(/^[0-9]+$/, 'กรุณากรอกเบอร์โทรศัพท์ให้ครบ 10 หลัก')
         .required('กรุณากรอกเบอร์โทร'),

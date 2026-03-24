@@ -66,7 +66,7 @@ export default defineEventHandler(async (event) => {
         let message = 'เกิดข้อผิดพลาดในการสมัครสมาชิก'
 
         if (wpError?.code === 'registration-error-email-exists') {
-            message = 'อีเมลนี้มีผู้ใช้งานแล้ว กรุณาใช้อีเมลอื่นในการสมัคร'
+            message = 'อีเมล์นี้มีผู้ใช้งานแล้ว กรุณาใช้อีเมล์อื่นในการสมัคร'
         } else if (wpError?.message) {
             message = wpError.message.replace(/<[^>]*>?/gm, '')
         }

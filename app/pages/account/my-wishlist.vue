@@ -6,6 +6,8 @@
         </div>
         <div
             v-if="isLoadingWishlist"
+            aria-busy="true"
+            aria-live="polite"
             class="flex flex-col items-center justify-center py-20"
         >
             <UIcon
@@ -17,6 +19,7 @@
         <div
             v-else-if="products.length > 0"
             class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3"
+            aria-label="รายการสินค้าที่สนใจทั้งหมด"
         >
             <ProductCard
                 v-for="product in products"
@@ -30,7 +33,12 @@
         >
             <UIcon name="i-iconamoon:heart-light" class="text-5xl" />
             <p>ยังไม่มีสินค้าที่สนใจ</p>
-            <UButton to="/product" color="primary">เลือกสินค้าที่สนใจ</UButton>
+            <UButton
+                to="/product"
+                color="primary"
+                aria-label="ไปที่หน้าสินค้าทั้งหมด"
+                >เลือกสินค้าที่สนใจ</UButton
+            >
         </div>
     </div>
 </template>

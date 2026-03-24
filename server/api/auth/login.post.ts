@@ -67,7 +67,7 @@ export default defineEventHandler(async (event) => {
     } catch (error: any) {
         throw createError({
             statusCode: error.response?.status || 500,
-            message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
+            message: 'อีเมล์หรือรหัสผ่านไม่ถูกต้อง',
         })
     }
 })

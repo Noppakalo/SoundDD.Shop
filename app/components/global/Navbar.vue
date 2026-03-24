@@ -28,9 +28,13 @@
                 size="md"
                 variant="outline"
                 placeholder="Search..."
+                aria-label="ช่องค้นหาสินค้า บทความ"
             />
             <div class="flex items-center justify-end gap-6 max-md:hidden">
-                <div class="flex items-center gap-2">
+                <nav
+                    class="flex items-center gap-2"
+                    aria-label="เมนูผู้ใช้งานส่วนตัว"
+                >
                     <UChip
                         aria-label="สินค้าที่สนใจ"
                         color="primary"
@@ -45,6 +49,7 @@
                             color="neutral"
                             variant="ghost"
                             size="xl"
+                            :aria-label="`รายการที่สนใจ (${wishlistItemCount} รายการ)`"
                         />
                     </UChip>
                     <UChip
@@ -61,9 +66,10 @@
                             color="neutral"
                             variant="ghost"
                             size="xl"
+                            :aria-label="`ตะกร้าสินค้า (${cartItemCount} รายการ)`"
                         />
                     </UChip>
-                </div>
+                </nav>
                 <div v-if="loggedIn && user">
                     <UPopover
                         mode="hover"
@@ -78,6 +84,7 @@
                             loading="lazy"
                             draggable="false"
                             size="xl"
+                            aria-label="เมนูบัญชีผู้ใช้งาน"
                             class="cursor-pointer"
                         />
                         <template #content>
@@ -85,6 +92,7 @@
                                 <li
                                     v-for="(item, index) in accountMenu"
                                     :key="index"
+                                    role="menuitem"
                                     @click="item.click"
                                     class="hover:text-primary hover:bg-primary/10 cursor-pointer rounded-md px-3 py-2 transition-colors"
                                 >
@@ -103,7 +111,11 @@
                         overlay: 'bg-black/50 backdrop-blur-xs',
                     }"
                 >
-                    <UButton label="เข้าสู่ระบบ" @click="isOpen = true" />
+                    <UButton
+                        label="เข้าสู่ระบบ"
+                        @click="isOpen = true"
+                        aria-label="เข้าสู่ระบบและสมัครสมาชิก"
+                    />
                     <template #content>
                         <AuthBlock @close="isOpen = false" />
                     </template>

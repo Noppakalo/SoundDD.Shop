@@ -1,5 +1,5 @@
 <template>
-    <section class="py-8">
+    <section class="py-8" role="region" aria-labelledby="shipping-title">
         <UContainer class="flex flex-col gap-4">
             <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
                 <div class="space-y-4 lg:col-span-2">
@@ -10,6 +10,7 @@
                             color="primary"
                             variant="ghost"
                             icon="i-heroicons-map-pin"
+                            aria-label="จัดการที่อยู่จัดส่งสินค้า"
                         >
                             จัดการที่อยู่
                         </UButton>
@@ -21,7 +22,11 @@
                         >
                             <AddressDisplay :address="customer.shipping" />
                         </UForm>
-                        <div v-if="loading" class="flex justify-center py-10">
+                        <div
+                            v-if="loading"
+                            class="flex justify-center py-10"
+                            aria-busy="true"
+                        >
                             <UIcon
                                 name="i-heroicons-arrow-path"
                                 class="text-primary animate-spin text-2xl"
@@ -48,6 +53,7 @@
                                 <UButton
                                     label="เพิ่มที่อยู่จัดส่ง"
                                     icon="i-heroicons-plus-circle"
+                                    aria-label="เพิ่มที่อยู่จัดส่งสินค้า"
                                     @click="openEditModal"
                                 />
                             </div>
@@ -57,6 +63,7 @@
                                 color="primary"
                                 size="md"
                                 icon="i-heroicons-pencil-square"
+                                aria-label="แก้ไขที่อยู่จัดส่งสินค้า"
                                 @click="openEditModal"
                             />
                             <template #header>
@@ -87,10 +94,12 @@
                                     label="ยกเลิก"
                                     color="neutral"
                                     variant="ghost"
+                                    aria-label="ยกเลิก"
                                     @click="close"
                                 />
                                 <UButton
                                     label="บันทึกที่อยู่จัดส่ง"
+                                    aria-label="บันทึกที่อยู่จัดส่งสินค้า"
                                     :loading="isUpdating"
                                     @click="UpdateAddress(close)"
                                 />

@@ -5,6 +5,7 @@
                 <ULink
                     :to="`/brand/${product.brands[0]?.slug}`"
                     class="text-primary text-sm font-medium tracking-wide uppercase hover:underline"
+                    :aria-label="`แบรนด์: ${product.brands[0]?.name}`"
                 >
                     {{ product.brands[0]?.name }}
                 </ULink>
@@ -18,7 +19,7 @@
         <h1 class="text-4xl font-bold">
             {{ product.name }}
         </h1>
-        <div v-if="hasDisplayPrice">
+        <div v-if="hasDisplayPrice" aria-live="polite">
             <div v-if="product.acf?.promotional_price" class="flex flex-col">
                 <div class="flex items-baseline gap-4 text-gray-400">
                     <p
@@ -77,7 +78,6 @@
             v-html="product.short_description"
             class="prose prose-sm max-w-none"
         ></div>
-
         <div v-if="colorVariations.length > 0" class="flex flex-col gap-2">
             <p>
                 เลือกสี :
@@ -85,7 +85,11 @@
                     currentColorName
                 }}</span>
             </p>
-            <div class="flex flex-wrap gap-2">
+            <div
+                class="flex flex-wrap gap-2"
+                role="radiogroup"
+                aria-label="เลือกสีสินค้า"
+            >
                 <UButton
                     v-for="variation in colorVariations"
                     :key="variation.id"
@@ -99,6 +103,8 @@
                             ? 'primary'
                             : 'neutral'
                     "
+                    role="radio"
+                    :aria-checked="selectedVariation?.id === variation.id"
                     @click="onVariationSelect(variation)"
                 >
                     {{ variation.colorName }}
@@ -114,6 +120,11 @@
                 <div class="flex gap-4">
                     <UTooltip
                         :delay-duration="0"
+                        :aria-label="
+                            isInWishlist(product.id)
+                                ? 'นำสินค้าที่สนใจออก'
+                                : 'เพิ่มสินค้าที่สนใจ'
+                        "
                         :text="
                             isInWishlist(product.id)
                                 ? 'นำสินค้าที่สนใจออก'
@@ -140,6 +151,7 @@
                         size="lg"
                         icon="i-iconamoon:shopping-bag"
                         class="flex-1 justify-center whitespace-nowrap"
+                        aria-label="หยิบสินค้าใส่ตะกร้า"
                         @click.prevent="onAddToCart"
                     >
                         ใส่ตะกร้า
@@ -149,6 +161,7 @@
                         color="primary"
                         size="lg"
                         class="flex-1 justify-center whitespace-nowrap"
+                        aria-label="ซื้อสินค้าทันที"
                         @click="onBuyNow"
                     >
                         ซื้อเลย
@@ -161,20 +174,21 @@
                     target="_blank"
                     size="xl"
                     color="error"
+                    aria-label="ติดต่อสอบถามราคาผ่าน Line"
                 >
                     ติดต่อสอบถามราคา
                 </UButton>
             </template>
         </div>
         <USeparator class="my-4" />
-        <div class="flex flex-col gap-2.5">
+        <div class="flex flex-col gap-2.5 max-sm:text-sm">
             <div class="text-error flex items-center gap-3 font-medium">
                 <UIcon name="i-iconamoon:star-fill" class="shrink-0" />
                 <p>
                     เช็ค Stock และราคาสินค้า กับเจ้าหน้าที่ก่อนสั่งซื้อทุกครั้ง
                 </p>
             </div>
-            <div class="flex items-center gap-3 text-sm text-gray-600">
+            <div class="flex items-center gap-3">
                 <UIcon
                     name="i-iconamoon:badge-light"
                     class="text-success shrink-0"
@@ -183,13 +197,13 @@
                     สงวนสิทธิ์การเปลี่ยนแปลงข้อมูล ราคา ไม่แจ้งให้ทราบล่วงหน้า
                 </p>
             </div>
-            <div class="flex items-center gap-3 text-sm text-gray-600">
+            <div class="flex items-center gap-3">
                 <UIcon name="i-heroicons-truck" class="text-success shrink-0" />
                 <p>
                     รับสินค้าภายใน 3 - 7 วัน (ขึ้นอยู่กับที่อยู่จัดส่งของลูกค้า)
                 </p>
             </div>
-            <div class="flex items-center gap-3 text-sm text-gray-600">
+            <div class="flex items-center gap-3">
                 <UIcon
                     name="i-iconamoon:file-document-light"
                     class="text-success shrink-0"

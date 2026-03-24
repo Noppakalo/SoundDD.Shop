@@ -1,7 +1,11 @@
 <template>
     <section class="py-8">
         <UContainer>
-            <div v-if="pending" class="grid grid-cols-1 gap-8 md:grid-cols-4">
+            <div
+                v-if="pending"
+                class="grid grid-cols-1 gap-8 md:grid-cols-4"
+                aria-hidden="true"
+            >
                 <div class="col-span-1 hidden md:block">
                     <USkeleton class="h-64 w-full rounded-xl" />
                 </div>
@@ -21,7 +25,12 @@
                 <p class="mb-2 text-2xl font-bold text-gray-900">
                     ไม่พบหมวดหมู่ที่คุณค้นหา
                 </p>
-                <UButton to="/" color="primary" variant="solid" size="lg"
+                <UButton
+                    to="/"
+                    color="primary"
+                    variant="solid"
+                    size="lg"
+                    aria-label="กลับสู่หน้าหลัก"
                     >กลับสู่หน้าหลัก</UButton
                 >
             </div>
@@ -63,7 +72,6 @@ const actualSlug = Array.isArray(slug) ? slug[slug.length - 1] : slug
 const sortOptions = ref({ orderby: 'date', order: 'desc' })
 const viewMode = ref<'grid' | 'list'>('grid')
 
-
 const filters = ref({
     minPrice: 0,
     maxPrice: 100000,
@@ -87,8 +95,6 @@ const category = computed(() => {
     }
     return null
 })
-
-
 
 const { data: subResponse } = await useAsyncData(
     `subcategories-${actualSlug}`,

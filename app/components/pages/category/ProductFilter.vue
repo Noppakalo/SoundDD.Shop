@@ -6,6 +6,7 @@
                 label="ตัวกรองทั้งหมด"
                 color="neutral"
                 variant="subtle"
+                aria-label="เปิดเมนูตัวกรองสินค้า"
                 size="md"
             />
             <template #body>
@@ -20,12 +21,14 @@
                     icon="i-tabler:layout-grid"
                     :color="viewMode === 'grid' ? 'primary' : 'neutral'"
                     :variant="viewMode === 'grid' ? 'solid' : 'subtle'"
+                    aria-label="แสดงผลแบบตาราง"
                     @click="viewMode = 'grid'"
                 />
                 <UButton
                     icon="i-tabler:baseline-density-medium"
                     :color="viewMode === 'list' ? 'primary' : 'neutral'"
                     :variant="viewMode === 'list' ? 'solid' : 'subtle'"
+                    aria-label="แสดงผลแบบรายการ"
                     @click="viewMode = 'list'"
                 />
             </div>
@@ -35,6 +38,7 @@
                 icon="i-iconamoon:sorting-left-light"
                 color="neutral"
                 variant="subtle"
+                aria-label="เลือกการเรียงลำดับ"
             />
         </div>
     </div>

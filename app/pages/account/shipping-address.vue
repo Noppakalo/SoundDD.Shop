@@ -30,6 +30,7 @@
                     <UButton
                         label="เพิ่มที่อยู่จัดส่ง"
                         icon="i-heroicons-plus-circle"
+                        aria-label="เปิดหน้าต่างเพิ่มที่อยู่จัดส่ง"
                         @click="openEditModal"
                     />
                 </div>
@@ -39,6 +40,7 @@
                     color="primary"
                     size="md"
                     icon="i-heroicons-pencil-square"
+                    aria-label="เปิดหน้าต่างแก้ไขที่อยู่จัดส่ง"
                     @click="openEditModal"
                 />
                 <template #header>
@@ -70,6 +72,7 @@
                         label="ยกเลิก"
                         color="neutral"
                         variant="ghost"
+                        aria-label="ยกเลิก"
                         @click="close"
                     />
                     <UButton
@@ -77,12 +80,17 @@
                         form="edit-shipping-form"
                         label="บันทึกที่อยู่จัดส่ง"
                         :loading="isUpdating"
-                        @click="() => { submitCloseFn = close as any; }"
+                        aria-label="บันทึกที่อยู่จัดส่ง"
+                        @click="
+                            () => {
+                                submitCloseFn = close as any
+                            }
+                        "
                     />
                 </template>
             </UModal>
         </div>
-        <div v-if="loading" class="grid grid-cols-2 gap-6">
+        <div v-if="loading" class="grid grid-cols-2 gap-6" aria-hidden="true">
             <div class="space-y-2">
                 <USkeleton class="h-4 w-12" /><USkeleton class="h-10 w-full" />
             </div>

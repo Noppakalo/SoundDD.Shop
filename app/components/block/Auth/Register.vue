@@ -25,8 +25,8 @@ const fields: AuthFormField[] = [
     {
         name: 'email',
         type: 'email',
-        label: 'อีเมล์',
-        placeholder: 'กรอกอีเมลของคุณ',
+        label: 'อีเมล์์',
+        placeholder: 'กรอกอีเมล์ของคุณ',
         required: true,
     },
     {
@@ -46,7 +46,9 @@ const fields: AuthFormField[] = [
 ]
 
 const schema = object({
-    email: string().email('รูปแบบอีเมลไม่ถูกต้อง').required('กรุณากรอกอีเมลล์'),
+    email: string()
+        .email('รูปแบบอีเมล์ไม่ถูกต้อง')
+        .required('กรุณากรอกอีเมล์์'),
     password: string()
         .min(8, 'รหัสผ่านต้องมีอย่างน้อย 8 ตัว')
         .required('กรุณากรอกรหัสผ่าน'),

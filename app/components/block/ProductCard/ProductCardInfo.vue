@@ -3,7 +3,10 @@
         class="flex flex-1 flex-col justify-between"
         :class="viewMode === 'list' ? 'px-8 py-2 max-sm:px-4' : 'gap-2 p-4'"
     >
-        <ULink :to="productLink">
+        <ULink
+            :to="productLink"
+            :aria-label="`ดูรายละเอียดสินค้า ${product.name}`"
+        >
             <p
                 class="group-hover:text-primary line-clamp-2 font-medium"
                 :class="
@@ -13,7 +16,6 @@
                 {{ product.name }}
             </p>
         </ULink>
-
         <div class="flex items-end justify-between">
             <div
                 class="flex flex-col justify-end"
@@ -43,11 +45,11 @@
                     size="xs"
                     color="error"
                     class="w-max font-medium"
+                    aria-label="ติดต่อสอบถามราคาผ่าน Line"
                 >
                     ติดต่อสอบถามราคา
                 </UButton>
             </div>
-
             <div
                 class="flex gap-2 max-md:hidden"
                 :class="
@@ -78,7 +80,6 @@
                         class="size-9.5 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
                     />
                 </UTooltip>
-
                 <UTooltip
                     v-if="hasDisplayPrice"
                     :delay-duration="0"
@@ -91,6 +92,7 @@
                         color="primary"
                         :variant="isInCart(product.id) ? 'solid' : 'soft'"
                         size="xl"
+                        aria-label="หยิบสินค้าใส่ตะกร้า"
                         class="size-9.5 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
                     />
                 </UTooltip>

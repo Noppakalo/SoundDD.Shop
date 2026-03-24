@@ -7,6 +7,7 @@
                 variant="ghost"
                 size="xl"
                 class="absolute left-0"
+                aria-label="ย้อนกลับไปหน้าเข้าสู่ระบบ"
                 @click="emit('back')"
             />
 
@@ -18,14 +19,20 @@
             @submit="onSubmit"
             class="flex flex-col justify-center gap-4"
         >
-            <UFormField label="ระบุอีเมลเพื่อรีเซ็ตรหัสผ่าน" name="email">
+            <UFormField label="ระบุอีเมล์เพื่อรีเซ็ตรหัสผ่าน" name="email">
                 <UInput
                     v-model="state.email"
-                    placeholder="กรอกอีเมลของคุณ"
+                    placeholder="กรอกอีเมล์ของคุณ"
                     class="w-full"
                 />
             </UFormField>
-            <UButton type="submit" color="primary" block :loading="isLoading">
+            <UButton
+                type="submit"
+                color="primary"
+                block
+                :loading="isLoading"
+                aria-label="ส่งคำขอรีเซ็ตรหัสผ่าน"
+            >
                 ดำเนินการต่อ
             </UButton>
         </UForm>
@@ -44,7 +51,9 @@ const emit = defineEmits<{
 const isLoading = ref(false)
 
 const schema = object({
-    email: string().email('รูปแบบอีเมลไม่ถูกต้อง').required('กรุณากรอกอีเมลล์'),
+    email: string()
+        .email('รูปแบบอีเมล์ไม่ถูกต้อง')
+        .required('กรุณากรอกอีเมล์์'),
 })
 
 type Schema = InferType<typeof schema>

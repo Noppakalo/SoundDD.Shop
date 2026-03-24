@@ -10,6 +10,7 @@
                     color="primary"
                     variant="ghost"
                     class="px-0 whitespace-nowrap hover:bg-transparent"
+                    aria-label="ดูบทความแนะนำทั้งหมด"
                 >
                     ดูทั้งหมด
                 </UButton>

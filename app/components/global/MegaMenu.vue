@@ -12,10 +12,13 @@
             label="สินค้าทั้งหมด"
             color="primary"
             size="md"
+            aria-label="เปิดเมนูหมวดหมู่สินค้าทั้งหมด"
         />
         <template #content>
             <div
                 class="flex h-[500px] w-[900px] overflow-hidden rounded-xl bg-white px-2 shadow-2xl"
+                role="menu"
+                aria-label="เมนูหมวดหมู่สินค้า"
             >
                 <aside
                     class="custom-scrollbar w-1/4 overflow-y-auto border-r border-gray-100 bg-gray-50/50 p-2"
@@ -56,7 +59,12 @@
                     </div>
                 </aside>
 
-                <main class="custom-scrollbar flex-1 overflow-y-auto p-6">
+                <main
+                    class="custom-scrollbar flex-1 overflow-y-auto p-6"
+                    role="tabpanel"
+                    :id="`panel-${activeTab}`"
+                    :aria-labelledby="`tab-${activeTab}`"
+                >
                     <div v-if="activeCategory" class="space-y-8">
                         <div
                             class="flex items-center justify-between border-b border-gray-100 pb-4"
@@ -67,6 +75,7 @@
                             <ULink
                                 :to="`/product-category/${activeCategory.slug}`"
                                 class="text-primary flex items-center gap-1 text-xs font-bold hover:underline"
+                                :aria-label="`ดูสินค้าทั้งหมดในหมวดหมู่ ${activeCategory.name}`"
                             >
                                 ดูทั้งหมด
                                 <UIcon
@@ -83,6 +92,7 @@
                                 v-for="sub in activeCategory.children"
                                 :key="sub.id"
                                 :to="`/product-category/${sub.slug}`"
+                                :aria-label="`หมวดหมู่ย่อย ${sub.name} มี ${sub.count} รายการ`"
                                 class="group flex items-center gap-3 rounded-xl border border-transparent p-2 transition-all hover:border-gray-100 hover:bg-gray-50 hover:shadow-sm"
                             >
                                 <div

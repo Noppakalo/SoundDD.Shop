@@ -14,6 +14,11 @@
                     </h2>
                     <UButton
                         :to="displayLink"
+                        :aria-label="
+                            categoryInfo?.name
+                                ? `ดูสินค้าทั้งหมดในหมวดหมู่ ${categoryInfo.name}`
+                                : 'ดูสินค้าทั้งหมด'
+                        "
                         trailing-icon="i-iconamoon:arrow-right-6-circle"
                         color="primary"
                         variant="ghost"
@@ -33,6 +38,7 @@
                 >
                     <UButton
                         :key="item.id"
+                        :aria-label="`แสดงสินค้าหมวดหมู่ ${item.name}`"
                         :variant="
                             activeCategoryId === item.id ? 'solid' : 'outline'
                         "

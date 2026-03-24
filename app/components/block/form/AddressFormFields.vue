@@ -8,6 +8,7 @@
                     :items="typeOptions"
                     size="xl"
                     class="col-span-2"
+                    aria-label="เลือกประเภทลูกค้า"
                     :ui="{ fieldset: 'flex gap-x-10 justify-center' }"
                 />
                 <template v-if="state.customer_type === 'natural'">
@@ -16,6 +17,7 @@
                             v-model="state.first_name"
                             placeholder="ชื่อ"
                             class="w-full"
+                            aria-label="ชื่อลูกค้า"
                         />
                     </UFormField>
                     <UFormField label="นามสกุล" :name="fieldName('last_name')">
@@ -23,6 +25,7 @@
                             v-model="state.last_name"
                             placeholder="นามสกุล"
                             class="w-full"
+                            aria-label="นามสกุลลูกค้า"
                         />
                     </UFormField>
                 </template>
@@ -35,6 +38,7 @@
                             v-model="state.company"
                             placeholder="ระบุชื่อบริษัท"
                             class="w-full"
+                            aria-label="ชื่อบริษัทหรือนิติบุคคล"
                         />
                     </UFormField>
                     <UFormField
@@ -47,6 +51,7 @@
                             placeholder="เลข 13 หลัก"
                             @input="handleTaxIdInput"
                             class="w-full"
+                            aria-label="เลขประจำตัวผู้เสียภาษี 13 หลัก"
                         />
                     </UFormField>
                 </template>
@@ -78,6 +83,7 @@
                     placeholder="0XXXXXXXXX"
                     @input="handlePhoneInput"
                     class="w-full"
+                    aria-label="เบอร์โทรศัพท์ติดต่อ"
                 />
             </UFormField>
             <UFormField
@@ -90,6 +96,7 @@
                     placeholder="ที่อยู่..."
                     class="w-full"
                     autoresize
+                    aria-label="ที่อยู่"
                 />
             </UFormField>
             <UFormField label="อำเภอ / เขต" :name="fieldName('city')">
@@ -97,6 +104,7 @@
                     v-model="state.city"
                     placeholder="อำเภอ / เขต"
                     class="w-full"
+                    aria-label="อำเภอ / เขต"
                 />
             </UFormField>
             <UFormField label="ตำบล / แขวง" :name="fieldName('address_2')">
@@ -104,6 +112,7 @@
                     v-model="state.address_2"
                     placeholder="ตำบล / แขวง"
                     class="w-full"
+                    aria-label="ตำบล / แขวง"
                 />
             </UFormField>
             <UFormField label="จังหวัด" :name="fieldName('state')">
@@ -111,6 +120,7 @@
                     v-model="state.state"
                     placeholder="จังหวัด"
                     class="w-full"
+                    aria-label="จังหวัด"
                 />
             </UFormField>
             <UFormField label="รหัสไปรษณีย์" :name="fieldName('postcode')">
@@ -120,6 +130,7 @@
                     placeholder="รหัสไปรษณีย์"
                     @input="handlePostcodeInput"
                     class="w-full"
+                    aria-label="รหัสไปรษณีย์ 5 หลัก"
                 />
             </UFormField>
         </template>
@@ -129,6 +140,7 @@
                     v-model="state.first_name"
                     placeholder="ชื่อ"
                     class="w-full"
+                    aria-label="ชื่อ"
                 />
             </UFormField>
             <UFormField label="นามสกุล" :name="fieldName('last_name')">
@@ -136,29 +148,29 @@
                     v-model="state.last_name"
                     placeholder="นามสกุล"
                     class="w-full"
+                    aria-label="นามสกุล"
                 />
             </UFormField>
             <UFormField
-                label="อีเมล"
+                label="อีเมล์"
                 :name="fieldName('email')"
                 class="col-span-2"
             >
                 <UInput
                     v-model="state.email"
-                    placeholder="อีเมล"
+                    placeholder="อีเมล์"
                     class="w-full"
+                    aria-label="อีเมล์"
                 />
             </UFormField>
-            <UFormField
-                label="เบอร์โทรศัพท์"
-                :name="fieldName('phone')"
-            >
+            <UFormField label="เบอร์โทรศัพท์" :name="fieldName('phone')">
                 <UInput
                     v-model="state.phone"
                     maxlength="10"
                     placeholder="0XXXXXXXXX"
                     @input="handlePhoneInput"
                     class="w-full"
+                    aria-label="เบอร์โทรศัพท์ติดต่อ"
                 />
             </UFormField>
             <UFormField label="วัน / เดือน / ปีเกิด">
@@ -167,16 +179,16 @@
                     v-model="internalBirthDate"
                     class="w-full"
                     locale="th-TH-u-ca-buddhist"
+                    aria-label="เลือกวันเดือนปีเกิด"
                 >
                     <template #trailing>
-                        <UPopover
-                            :reference="inputDate?.inputsRef[2]?.$el"
-                        >
+                        <UPopover :reference="inputDate?.inputsRef[2]?.$el">
                             <UButton
                                 color="primary"
                                 variant="link"
                                 icon="i-iconamoon:calendar-1-light"
                                 class="px-0"
+                                aria-label="เปิดปฏิทินเลือกวันเกิด"
                             />
                             <template #content>
                                 <UCalendar
@@ -204,24 +216,32 @@ import {
 
 const birthDateString = defineModel<string>('birthDate')
 
-const props = withDefaults(defineProps<{
-    state: any
-    prefix?: string
-    isBilling?: boolean
-    onlyContact?: boolean
-}>(), {
-    prefix: '',
-    isBilling: false,
-    onlyContact: false
-})
+const props = withDefaults(
+    defineProps<{
+        state: any
+        prefix?: string
+        isBilling?: boolean
+        onlyContact?: boolean
+    }>(),
+    {
+        prefix: '',
+        isBilling: false,
+        onlyContact: false,
+    }
+)
 
-const fieldName = (name: string) => props.prefix ? `${props.prefix}.${name}` : name
+const fieldName = (name: string) =>
+    props.prefix ? `${props.prefix}.${name}` : name
 
 const inputDate = useTemplateRef('inputDate')
 const internalBirthDate = shallowRef<CalendarDate | undefined>(undefined)
 
 watchEffect(() => {
-    if (birthDateString.value && typeof birthDateString.value === 'string' && birthDateString.value.trim() !== '') {
+    if (
+        birthDateString.value &&
+        typeof birthDateString.value === 'string' &&
+        birthDateString.value.trim() !== ''
+    ) {
         try {
             internalBirthDate.value = toCalendar(
                 parseDate(birthDateString.value),
@@ -237,7 +257,10 @@ watchEffect(() => {
 
 watch(internalBirthDate, (newVal) => {
     if (newVal) {
-        birthDateString.value = toCalendar(newVal, createCalendar('gregory')).toString()
+        birthDateString.value = toCalendar(
+            newVal,
+            createCalendar('gregory')
+        ).toString()
     } else {
         birthDateString.value = ''
     }

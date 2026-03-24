@@ -8,6 +8,7 @@
                     ? 'grid-cols-2 lg:grid-cols-4'
                     : 'grid-cols-1'
             "
+            aria-hidden="true"
         >
             <div
                 v-for="i in 16"
@@ -28,17 +29,21 @@
                         ? 'grid-cols-2 lg:grid-cols-4'
                         : 'grid-cols-1'
                 "
+                role="list"
+                :aria-label="`รายการสินค้าในหมวดหมู่ ${category?.name || ''}`"
             >
                 <ProductCard
                     v-for="product in products"
                     :key="product.id"
                     :product="product"
                     :view-mode="viewMode"
+                    role="listitem"
                 />
             </div>
             <div
                 v-if="!isNoMoreProducts && products.length > 0"
                 class="mt-10 flex flex-col items-center gap-4"
+                aria-live="polite"
             >
                 <UButton
                     :loading="loadingMore"
@@ -48,6 +53,7 @@
                     size="xl"
                     icon="i-iconamoon:arrow-down-2-light"
                     class="px-10 font-bold"
+                    aria-label="โหลดสินค้าเพิ่มเติมจากรายการเดิม"
                     @click="handleLoadMore"
                 />
                 <p>

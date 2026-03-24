@@ -12,6 +12,7 @@
                 to="#"
                 class="text-primary font-medium"
                 tabindex="-1"
+                aria-label="ไปที่หน้าลืมรหัสผ่าน"
                 @click.prevent="emit('forgot-password')"
                 >ลืมรหัสผ่าน?</ULink
             >
@@ -23,6 +24,7 @@
                     block
                     class="text-primary border-primary hover:bg-primary border bg-white hover:text-white"
                     to="/api/auth/google"
+                    aria-label="เข้าสู่ระบบด้วยบัญชี Google"
                     external
                 >
                     เข้าสู่ระบบด้วย Google</UButton
@@ -32,6 +34,7 @@
                     block
                     class="text-primary border-primary hover:bg-primary border bg-white hover:text-white"
                     to="/api/auth/facebook"
+                    aria-label="เข้าสู่ระบบด้วยบัญชี Facebook"
                     external
                     >เข้าสู่ระบบด้วย Facebook</UButton
                 >
@@ -63,8 +66,8 @@ const fields: AuthFormField[] = [
     {
         name: 'email',
         type: 'email',
-        label: 'อีเมล์',
-        placeholder: 'กรอกอีเมลของคุณ',
+        label: 'อีเมล์์',
+        placeholder: 'กรอกอีเมล์ของคุณ',
         required: true,
     },
     {
@@ -84,8 +87,8 @@ const fields: AuthFormField[] = [
 const schema = ref(
     object({
         email: string()
-            .email('รูปแบบอีเมลไม่ถูกต้อง')
-            .required('กรุณากรอกอีเมลล์'),
+            .email('รูปแบบอีเมล์ไม่ถูกต้อง')
+            .required('กรุณากรอกอีเมล์์'),
         password: string()
             .min(8, 'รหัสผ่านต้องมีอย่างน้อย 8 ตัว')
             .required('กรุณากรอกรหัสผ่าน'),
@@ -112,7 +115,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
             emit('success')
             emit('close')
         } else {
-            toast.error('เข้าสู่ระบบไม่สำเร็จ', 'อีเมลหรือรหัสผ่านไม่ถูกต้อง')
+            toast.error('เข้าสู่ระบบไม่สำเร็จ', 'อีเมล์หรือรหัสผ่านไม่ถูกต้อง')
         }
     } catch (error: any) {
         const message =

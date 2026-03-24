@@ -30,6 +30,7 @@
                     <UButton
                         label="เพิ่มใบกำกับภาษี"
                         icon="i-heroicons-plus-circle"
+                        aria-label="เปิดหน้าต่างเพิ่มข้อมูลใบกำกับภาษี"
                         @click="openEditModal"
                     />
                 </div>
@@ -39,6 +40,7 @@
                     color="primary"
                     size="md"
                     icon="i-heroicons-pencil-square"
+                    aria-label="เปิดหน้าต่างแก้ไขใบกำกับภาษี"
                     @click="openEditModal"
                 />
                 <template #header>
@@ -71,6 +73,7 @@
                         label="ยกเลิก"
                         color="neutral"
                         variant="ghost"
+                        aria-label="ยกเลิก"
                         @click="close"
                     />
                     <UButton
@@ -78,12 +81,21 @@
                         form="edit-tax-form"
                         label="บันทึกใบกำกับภาษี"
                         :loading="isUpdating"
-                        @click="() => { submitCloseFn = close as any; }"
+                        aria-label="บันทึกใบกำกับภาษี"
+                        @click="
+                            () => {
+                                submitCloseFn = close as any
+                            }
+                        "
                     />
                 </template>
             </UModal>
         </div>
-        <div v-if="props.loading" class="grid grid-cols-2 gap-6">
+        <div
+            v-if="props.loading"
+            class="grid grid-cols-2 gap-6"
+            aria-hidden="true"
+        >
             <div class="col-span-2 space-y-2">
                 <USkeleton class="h-4 w-24" />
                 <USkeleton class="h-10 w-full" />

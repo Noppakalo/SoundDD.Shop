@@ -20,6 +20,7 @@
                     size="md"
                     icon="i-iconamoon:edit-light"
                     variant="solid"
+                    aria-label="เปิดหน้าต่างแก้ไขข้อมูลส่วนตัว"
                     @click="openEditModal"
                 />
                 <template #header>
@@ -46,6 +47,7 @@
                         label="ยกเลิก"
                         color="neutral"
                         variant="ghost"
+                        aria-label="ยกเลิก"
                         @click="close"
                     />
                     <UButton
@@ -53,6 +55,7 @@
                         form="edit-customer-form"
                         label="บันทึกข้อมูลส่วนตัว"
                         :loading="isUpdating"
+                        aria-label="บันทึกข้อมูลส่วนตัว"
                         @click="
                             () => {
                                 submitCloseFn = close as any
@@ -72,9 +75,10 @@
                 draggable="false"
                 size="xl"
                 class="size-30"
+                aria-label="รูปโปรไฟล์ของคุณ"
             />
         </div>
-        <div v-if="loading" class="grid grid-cols-2 gap-6">
+        <div v-if="loading" class="grid grid-cols-2 gap-6" aria-hidden="true">
             <div class="space-y-2">
                 <USkeleton class="h-4 w-20" /> <USkeleton class="h-10 w-full" />
             </div>

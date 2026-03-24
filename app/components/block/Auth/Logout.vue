@@ -4,7 +4,10 @@
             <div
                 v-if="modelValue"
                 class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs"
-                @click.self="$emit('update:modelValue', false)"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="logout-title"
+                @click.self="closeModal"
             >
                 <div class="w-96 rounded-lg bg-white p-6 shadow-lg">
                     <h2
@@ -20,12 +23,14 @@
                             label="ยกเลิก"
                             color="neutral"
                             variant="ghost"
+                            aria-label="ยกเลิกและกลับสู่หน้าเดิม"
                             @click="$emit('update:modelValue', false)"
                         />
                         <UButton
                             label="ยืนยันออกจากระบบ"
                             color="primary"
                             variant="solid"
+                            aria-label="ยืนยันการออกจากระบบ"
                             @click="handleLogout"
                         />
                     </div>
@@ -36,25 +41,38 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
     modelValue: boolean
 }>()
+
 const emit = defineEmits<{
     'update:modelValue': [value: boolean]
 }>()
 
 const { clear } = useUserSession()
 const toast = useAppToast()
+const isLoading = ref(false)
+
+const closeModal = () => {
+    if (isLoading.value) return
+    emit('update:modelValue', false)
+}
 
 const handleLogout = async () => {
+    if (isLoading.value) return
+
+    isLoading.value = true
     try {
-        emit('update:modelValue', false)
         await clear()
-        $fetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
+        await $fetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
+        emit('update:modelValue', false)
         await navigateTo('/', { replace: true })
+
         toast.success('ออกจากระบบสำเร็จ', 'ขอบคุณที่ใช้บริการ SoundDD Shop')
     } catch (error) {
         toast.error('ออกจากระบบไม่สำเร็จ', 'ไม่สามารถดำเนินการได้ในขณะนี้')
+    } finally {
+        isLoading.value = false
     }
 }
 </script>

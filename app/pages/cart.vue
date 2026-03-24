@@ -10,7 +10,11 @@
                     class="mx-auto mb-4 h-20 w-20"
                 />
                 <p class="text-xl font-medium">ไม่มีสินค้าในตะกร้า</p>
-                <UButton to="/product" color="primary" size="lg"
+                <UButton
+                    to="/product"
+                    color="primary"
+                    size="lg"
+                    aria-label="เลือกช้อปสินค้า"
                     >เลือกช้อปสินค้า</UButton
                 >
             </div>
@@ -23,6 +27,7 @@
                             color="error"
                             variant="ghost"
                             icon="i-lucide-trash-2"
+                            aria-label="ลบสินค้าทั้งหมดออกจากตะกร้า"
                             @click="clearCart"
                         >
                             ล้างตะกร้า
@@ -30,7 +35,7 @@
                     </div>
                     <div
                         v-for="item in items"
-                        :key="item.product.id"
+                        :key="`${item.product.id}-${item.product.variation_id}`"
                         class="grid grid-cols-[auto_1fr] items-center justify-between gap-4 rounded-lg p-4 shadow-sm sm:grid-cols-[auto_1fr_20%] sm:gap-6"
                     >
                         <div
@@ -52,12 +57,14 @@
 
                         <ULink
                             :to="`/product/${item.product.slug}`"
+                            aria-label="ดูรายละเอียดสินค้า"
                             class="hover:text-primary line-clamp-2 text-sm font-medium sm:text-base"
                         >
                             {{ item.product.name }}
                         </ULink>
                         <div
-                            class="col-span-2 flex flex-row items-center justify-between gap-2 border-t border-gray-50 pt-3 sm:col-span-1 sm:flex-col sm:items-end sm:justify-end sm:border-0 sm:pt-0"
+                            class="col-span-2 flex items-center justify-between gap-2 border-t border-gray-50 pt-3 sm:col-span-1 sm:flex-col sm:items-end sm:justify-end sm:border-0 sm:pt-0"
+                            aria-live="polite"
                         >
                             <div
                                 v-if="item.product.sale_price"
@@ -163,6 +170,7 @@
                                     :min="1"
                                     size="sm"
                                     class="w-24 sm:w-auto"
+                                    aria-label="แก้ไขจำนวนสินค้า"
                                     @update:model-value="
                                         (val) =>
                                             updateQuantity(
@@ -177,6 +185,7 @@
                                     variant="ghost"
                                     icon="i-lucide-trash"
                                     class="hover:text-error text-gray-400 hover:bg-rose-50"
+                                    aria-label="ลบสินค้านี้ออกจากตะกร้า"
                                     @click="
                                         removeFromCart(
                                             item.product.id,
@@ -217,6 +226,7 @@
                             color="primary"
                             size="xl"
                             block
+                            aria-label="ดำเนินการชำระเงิน"
                             class="mt-2"
                         >
                             ดำเนินการชำระเงิน

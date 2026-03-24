@@ -31,7 +31,7 @@
         class="relative overflow-hidden"
         :class="
             viewMode === 'list'
-                ? 'size-60 p-4 max-sm:size-40'
+                ? 'size-60 max-sm:size-40'
                 : 'aspect-square w-full'
         "
     >
@@ -110,7 +110,7 @@
         </div>
         <div
             v-if="product.acf?.image_gift"
-            class="absolute z-10 mx-auto"
+            class="absolute z-10"
             :class="
                 viewMode === 'list'
                     ? 'bottom-1 px-2'
@@ -124,6 +124,35 @@
                 loading="lazy"
                 draggable="false"
             />
+        </div>
+    </div>
+    <div
+        v-if="isFlashSale"
+        class="absolute left-1/2 z-20 w-max -translate-x-1/2 px-4"
+        :class="viewMode === 'list' ? 'max-lg:hidden' : ''"
+    >
+        <div
+            class="bg-primary flex items-center justify-center gap-2 rounded-sm px-2 py-1.5 text-white"
+        >
+            <p class="text-xs font-medium">เหลือเวลาอีก</p>
+            <div
+                class="flex items-center gap-0.5 text-xs font-bold max-sm:text-[10px]"
+            >
+                <span v-if="timeLeft.days > 0" class="rounded bg-white/20 px-1">
+                    {{ pad(timeLeft.days) }} วัน
+                </span>
+                <span class="rounded bg-white/20 px-1">{{
+                    pad(timeLeft.hours)
+                }}</span>
+                <span>:</span>
+                <span class="rounded bg-white/20 px-1">{{
+                    pad(timeLeft.minutes)
+                }}</span>
+                <span>:</span>
+                <span class="rounded bg-white/20 px-1">{{
+                    pad(timeLeft.seconds)
+                }}</span>
+            </div>
         </div>
     </div>
 </template>
@@ -198,6 +227,39 @@ const onCardClick = () => {
 }
 
 const { displayPriceData } = useProductPrice(() => props.product)
+
+const effectiveSaleFrom = computed(() => {
+    if (hoveredVariationId.value) {
+        const v = props.product.variations_data?.find(
+            (v) => v.id === hoveredVariationId.value
+        )
+        if (v?.date_on_sale_from) return v.date_on_sale_from
+    }
+    const firstSaleVar = props.product.variations_data?.find(
+        (v) => v.date_on_sale_from
+    )
+    if (firstSaleVar) return firstSaleVar.date_on_sale_from
+    return props.product.date_on_sale_from
+})
+
+const effectiveSaleTo = computed(() => {
+    if (hoveredVariationId.value) {
+        const v = props.product.variations_data?.find(
+            (v) => v.id === hoveredVariationId.value
+        )
+        if (v?.date_on_sale_to) return v.date_on_sale_to
+    }
+    const firstSaleVar = props.product.variations_data?.find(
+        (v) => v.date_on_sale_to
+    )
+    if (firstSaleVar) return firstSaleVar.date_on_sale_to
+    return props.product.date_on_sale_to
+})
+const { timeLeft, isFlashSale } = useCountdown(
+    effectiveSaleFrom,
+    effectiveSaleTo
+)
+
 const currentDiscount = computed(
     () => hoveredDiscount.value || displayPriceData.value.discount
 )
@@ -242,10 +304,7 @@ const onVariationClick = (variation: any) => {
     const router = useRouter()
     router.push({
         path: `/product/${props.product.slug}`,
-        state: {
-            variation_id: variation.id,
-            color: variation.colorName,
-        },
+        query: { variation_id: variation.id },
     })
 }
 
@@ -280,12 +339,16 @@ const colorVariations = computed(() => {
                 stock_status: v.stock_status,
                 imageSrc,
                 imageAlt: v.images?.[0]?.alt || '',
+                date_on_sale_from: v.date_on_sale_from,
+                date_on_sale_to: v.date_on_sale_to,
                 colorName,
             })
         }
     })
     return Array.from(uniqueVariations.values())
 })
+
+const pad = (num: number) => String(num).padStart(2, '0')
 
 if (props.product.brands?.[0]) {
     const brandSlug = props.product.brands[0].slug

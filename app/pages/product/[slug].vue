@@ -1,9 +1,10 @@
 <template>
-    <section class="py-8">
+    <section class="py-8" role="main" :aria-busy="pending">
         <UContainer>
             <div
                 v-if="pending"
                 class="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-16"
+                aria-hidden="true"
             >
                 <div class="aspect-square w-full">
                     <USkeleton class="h-full w-full rounded-2xl" />
@@ -26,7 +27,13 @@
                 <p class="mb-2 text-2xl font-bold text-gray-900">
                     ไม่พบสินค้าที่คุณค้นหา
                 </p>
-                <UButton to="/" color="primary" variant="solid" size="lg">
+                <UButton
+                    to="/"
+                    color="primary"
+                    variant="solid"
+                    size="lg"
+                    aria-label="กลับสู่หน้าหลัก"
+                >
                     กลับสู่หน้าหลัก
                 </UButton>
             </div>

@@ -9,6 +9,7 @@
                     color="error"
                     variant="solid"
                     size="xl"
+                    :aria-label="`ส่วนลด ${displayPriceData.discount} เปอร์เซ็นต์`"
                     class="rounded-full"
                 >
                     -{{ displayPriceData.discount }}%
@@ -81,7 +82,6 @@
                 v-slot="{ item, index }"
                 :items="productImages"
                 :ui="{
-                    container: 'gap-3 max-sm:gap-0',
                     item: 'basis-auto',
                 }"
                 class="w-full"
@@ -238,6 +238,15 @@ function showLightbox(index: number) {
 function onHide() {
     visibleRef.value = false
 }
+
+watch(
+    () => props.selectedVariation?.id,
+    () => {
+        activeIndex.value = 0
+        indexRef.value = 0
+        carouselRef.value?.emblaApi?.scrollTo(0)
+    }
+)
 </script>
 
 <style scoped>
