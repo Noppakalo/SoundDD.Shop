@@ -107,7 +107,6 @@ export const useCart = () => {
             const price = parseFloat(
                 item.product.sale_price || item.product.regular_price || '0'
             )
-
             return total + price * item.quantity
         }, 0)
     })

@@ -6,7 +6,7 @@
         <ProductCardImage
             :product="product"
             :view-mode="viewMode"
-            @hover-variation="hoveredVariation = $event"
+            @select-variation="selectedVariation = $event"
         />
 
         <ProductCardInfo
@@ -28,12 +28,15 @@ const props = withDefaults(
     { viewMode: 'grid' }
 )
 
-const hoveredVariation = ref<any>(null)
+const selectedVariation = ref<any>(null)
 const activePrice = computed(() => {
-    if (hoveredVariation.value) {
+    if (selectedVariation.value) {
         return {
-            regular: hoveredVariation.value.regular_price,
-            sale: hoveredVariation.value.price,
+            id: selectedVariation.value.id,
+            regular: selectedVariation.value.regular_price,
+            sale:
+                selectedVariation.value.sale_price ||
+                selectedVariation.value.price,
         }
     }
     return null

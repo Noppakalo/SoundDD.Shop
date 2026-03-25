@@ -13,22 +13,7 @@
         </UBadge>
     </div>
     <div
-        v-if="brandImage"
-        class="absolute z-10"
-        :class="viewMode === 'list' ? 'top-2 right-2' : 'top-4 right-4'"
-    >
-        <ULink :to="`/brand/${product.brands?.[0]?.slug}`">
-            <NuxtImg
-                :src="brandImage"
-                :alt="product.brands?.[0]?.name"
-                loading="lazy"
-                draggable="false"
-                class="h-12 w-auto object-contain max-sm:h-8"
-            />
-        </ULink>
-    </div>
-    <div
-        class="relative overflow-hidden"
+        class="relative"
         :class="
             viewMode === 'list'
                 ? 'size-60 max-sm:size-40'
@@ -37,20 +22,20 @@
     >
         <div @click="onCardClick" class="cursor-pointer">
             <NuxtImg
-                v-if="hoveredVariationImage || displayImageUrls[0]"
-                :src="hoveredVariationImage || displayImageUrls[0]"
+                v-if="displayImageUrls[0]"
+                :src="displayImageUrls[0]"
                 :alt="product.name"
                 loading="lazy"
                 draggable="false"
                 class="relative size-full object-cover transition-opacity duration-300"
                 :class="[
-                    !hoveredVariationImage && displayImageUrls[1]
+                    displayImageUrls[1]
                         ? 'group-hover:opacity-0'
                         : 'opacity-100',
                 ]"
             />
             <NuxtImg
-                v-if="!hoveredVariationImage && displayImageUrls[1]"
+                v-if="displayImageUrls[1]"
                 :src="displayImageUrls[1]"
                 :alt="product.name"
                 loading="lazy"
@@ -83,32 +68,6 @@
             </div>
         </div>
         <div
-            v-if="colorVariations.length > 0"
-            class="absolute top-1/2 z-30 flex -translate-y-1/2 flex-col gap-2"
-            :class="
-                viewMode === 'list'
-                    ? 'left-2 max-lg:hidden'
-                    : 'left-4 max-sm:hidden'
-            "
-        >
-            <div
-                v-for="variation in colorVariations"
-                :key="variation.id"
-                class="relative block size-10 cursor-pointer overflow-hidden rounded-full shadow-md transition-all hover:scale-110 max-lg:size-12"
-                @mouseenter="onHover(variation)"
-                @mouseleave="onLeave"
-                @click="onVariationClick(variation)"
-            >
-                <NuxtImg
-                    :src="variation.imageSrc"
-                    :alt="variation.imageAlt"
-                    loading="lazy"
-                    draggable="false"
-                    class="size-full object-cover"
-                />
-            </div>
-        </div>
-        <div
             v-if="product.acf?.image_gift"
             class="absolute z-10"
             :class="
@@ -124,6 +83,35 @@
                 loading="lazy"
                 draggable="false"
             />
+        </div>
+        <div
+            v-if="colorVariations.length > 0"
+            class="absolute -bottom-3 z-30 flex gap-2"
+            :class="
+                viewMode === 'list'
+                    ? 'left-2 max-lg:hidden'
+                    : 'left-4 max-sm:hidden'
+            "
+        >
+            <div
+                v-for="variation in colorVariations"
+                :key="variation.id"
+                class="relative block size-8 cursor-pointer overflow-hidden rounded-full shadow-md transition-all hover:scale-110 max-lg:size-12"
+                :class="[
+                    selectedVariationId === variation.id
+                        ? 'ring-primary ring-2'
+                        : '',
+                ]"
+                @click="selectVariation(variation)"
+            >
+                <NuxtImg
+                    :src="variation.imageSrc"
+                    :alt="variation.imageAlt"
+                    loading="lazy"
+                    draggable="false"
+                    class="size-full object-cover"
+                />
+            </div>
         </div>
     </div>
     <FlashSaleTimer
@@ -145,12 +133,11 @@ const props = withDefaults(
     { viewMode: 'grid' }
 )
 
-const emit = defineEmits(['hover-variation'])
+const emit = defineEmits(['select-variation'])
 
-const brandImage = ref<string | null>(null)
-const hoveredVariationImage = ref<string | null>(null)
-const hoveredVariationId = ref<number | null>(null)
-const hoveredDiscount = ref<number | null>(null)
+const selectedVariationId = ref<number | null>(null)
+const selectedVariationImage = ref<string | null>(null)
+const selectedVariationDiscount = ref<number | null>(null)
 const hoveredStockStatus = ref<string | null>(null)
 
 const getColorName = (v: any) => {
@@ -168,9 +155,9 @@ const getColorName = (v: any) => {
 }
 
 const currentVariation = computed(() => {
-    if (hoveredVariationId.value) {
+    if (selectedVariationId.value) {
         return props.product.variations_data?.find(
-            (v) => v.id === hoveredVariationId.value
+            (v) => v.id === selectedVariationId.value
         )
     }
     const currentImage = displayImageUrls.value[0]
@@ -194,21 +181,16 @@ const onCardClick = () => {
     const variation = currentVariation.value
     router.push({
         path: `/product/${props.product.slug}`,
-        state: variation
-            ? {
-                  variation_id: variation.id,
-                  color: getColorName(variation),
-              }
-            : undefined,
+        query: variation ? { variation_id: variation.id } : undefined,
     })
 }
 
 const { displayPriceData } = useProductPrice(() => props.product)
 
 const effectiveSaleFrom = computed(() => {
-    if (hoveredVariationId.value) {
+    if (selectedVariationId.value) {
         const v = props.product.variations_data?.find(
-            (v) => v.id === hoveredVariationId.value
+            (v) => v.id === selectedVariationId.value
         )
         if (v?.date_on_sale_from) return v.date_on_sale_from
     }
@@ -220,9 +202,9 @@ const effectiveSaleFrom = computed(() => {
 })
 
 const effectiveSaleTo = computed(() => {
-    if (hoveredVariationId.value) {
+    if (selectedVariationId.value) {
         const v = props.product.variations_data?.find(
-            (v) => v.id === hoveredVariationId.value
+            (v) => v.id === selectedVariationId.value
         )
         if (v?.date_on_sale_to) return v.date_on_sale_to
     }
@@ -234,19 +216,35 @@ const effectiveSaleTo = computed(() => {
 })
 
 const currentDiscount = computed(
-    () => hoveredDiscount.value || displayPriceData.value.discount
+    () => selectedVariationDiscount.value || displayPriceData.value.discount
 )
 
 const displayImageUrls = computed(() => {
     const images: string[] = []
-    if (props.product.images?.[0]?.src) images.push(props.product.images[0].src)
-    if (props.product.images?.[1]?.src) images.push(props.product.images[1].src)
+    if (selectedVariationImage.value) {
+        images.push(selectedVariationImage.value)
+    } else {
+        if (props.product.images?.[0]?.src)
+            images.push(props.product.images[0].src)
+        if (props.product.images?.[1]?.src)
+            images.push(props.product.images[1].src)
+    }
     return images
 })
 
-const onHover = (variation: any) => {
-    hoveredVariationImage.value = variation.imageSrc
-    hoveredVariationId.value = variation.id
+const selectVariation = (variation: any) => {
+    // Toggle selection if already selected
+    if (selectedVariationId.value === variation.id) {
+        selectedVariationId.value = null
+        selectedVariationImage.value = null
+        selectedVariationDiscount.value = null
+        hoveredStockStatus.value = null
+        emit('select-variation', null)
+        return
+    }
+
+    selectedVariationId.value = variation.id
+    selectedVariationImage.value = variation.imageSrc
     hoveredStockStatus.value = variation.stock_status
 
     if (
@@ -254,31 +252,15 @@ const onHover = (variation: any) => {
         variation.price &&
         variation.price < variation.regular_price
     ) {
-        hoveredDiscount.value = Math.round(
+        selectedVariationDiscount.value = Math.round(
             ((variation.regular_price - variation.price) /
                 variation.regular_price) *
                 100
         )
     } else {
-        hoveredDiscount.value = null
+        selectedVariationDiscount.value = null
     }
-    emit('hover-variation', variation)
-}
-
-const onLeave = () => {
-    hoveredVariationImage.value = null
-    hoveredVariationId.value = null
-    hoveredDiscount.value = null
-    hoveredStockStatus.value = null
-    emit('hover-variation', null)
-}
-
-const onVariationClick = (variation: any) => {
-    const router = useRouter()
-    router.push({
-        path: `/product/${props.product.slug}`,
-        query: { variation_id: variation.id },
-    })
+    emit('select-variation', variation)
 }
 
 const colorVariations = computed(() => {
@@ -286,21 +268,14 @@ const colorVariations = computed(() => {
     const uniqueVariations = new Map<string, any>()
 
     props.product.variations_data.forEach((v) => {
+        const colorAttr = v.attributes?.find((a: any) => a.id === 23)
+        if (!colorAttr) return
+
         const imageSrc = v.images?.[0]?.src
         if (!imageSrc) return
-        let colorName = null
-        if (Array.isArray(v.attributes) && v.attributes.length > 0) {
-            const attr = v.attributes.find((a: any) => {
-                const name = decodeURIComponent(a.name || '').toLowerCase()
-                return (
-                    name.includes('color') ||
-                    name.includes('สี') ||
-                    name.includes('pa_')
-                )
-            })
-            const rawOption = attr?.option || v.attributes[0]?.option || ''
-            colorName = rawOption ? decodeURIComponent(rawOption) : 'Default'
-        }
+
+        const rawOption = colorAttr.option || ''
+        const colorName = rawOption ? decodeURIComponent(rawOption) : 'Default'
 
         const key = colorName || imageSrc
 
@@ -309,6 +284,7 @@ const colorVariations = computed(() => {
                 id: v.id,
                 price: v.sale_price,
                 regular_price: v.regular_price,
+                sale_price: v.sale_price,
                 stock_status: v.stock_status,
                 imageSrc,
                 imageAlt: v.images?.[0]?.alt || '',
@@ -320,15 +296,4 @@ const colorVariations = computed(() => {
     })
     return Array.from(uniqueVariations.values())
 })
-
-if (props.product.brands?.[0]) {
-    const brandSlug = props.product.brands[0].slug
-    const { getBrands } = useWooBrandsApi()
-    const { data: brandRes } = await useAsyncData(`brand-${brandSlug}`, () =>
-        getBrands({ slug: brandSlug })
-    )
-    if (brandRes.value?.success) {
-        brandImage.value = brandRes.value.data?.[0]?.image?.src || null
-    }
-}
 </script>

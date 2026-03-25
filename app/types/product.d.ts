@@ -36,6 +36,7 @@ export interface ProductAcf {
 
 export interface ProductAttributes {
     id: number
+    name?: string
     option?: string
 }
 
@@ -69,6 +70,7 @@ export interface Product {
     tags?: ProductTag[]
     images: ProductImages[]
     default_attributes: ProductAttributes[]
+    attributes: ProductAttributes[]
     stock_status: 'instock' | 'outofstock' | 'onbackorder'
     acf?: ProductAcf
     variations_data?: ProductVariations[]

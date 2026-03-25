@@ -81,16 +81,20 @@
                     />
                 </UTooltip>
                 <UTooltip
-                    v-if="hasDisplayPrice"
+                    v-if="hasDisplayPrice && !isSoldOut"
                     :delay-duration="0"
                     aria-label="หยิบใส่ตะกร้า"
                     text="หยิบใส่ตะกร้า"
                 >
                     <UButton
-                        @click.prevent="addToCart(product)"
+                        @click.prevent="onAddToCart"
                         icon="i-iconamoon:shopping-bag-fill"
                         color="primary"
-                        :variant="isInCart(product.id) ? 'solid' : 'soft'"
+                        :variant="
+                            isInCart(product.id, activePrice?.id)
+                                ? 'solid'
+                                : 'soft'
+                        "
                         size="xl"
                         aria-label="หยิบสินค้าใส่ตะกร้า"
                         class="size-9.5 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
@@ -122,6 +126,22 @@ const { displayPriceData, hasDisplayPrice } = useProductPrice(
     () => props.product
 )
 
+const currentStockStatus = computed(() => {
+    if (props.activePrice?.id) {
+        const variation = props.product.variations_data?.find(
+            (v) => v.id === props.activePrice?.id
+        )
+        return variation?.stock_status || props.product.stock_status
+    }
+    return props.product.stock_status
+})
+
+const isSoldOut = computed(
+    () =>
+        currentStockStatus.value === 'outofstock' ||
+        currentStockStatus.value === 'onbackorder'
+)
+
 const currentPrice = computed(() => {
     if (props.activePrice) {
         return {
@@ -141,4 +161,50 @@ const productLink = computed(() => {
         ? `${base}?variation_id=${props.activePrice.id}`
         : base
 })
+
+const onAddToCart = () => {
+    let productToCart = { ...props.product }
+    if (props.activePrice?.id) {
+        const variation = props.product.variations_data?.find(
+            (v) => v.id === props.activePrice?.id
+        )
+        productToCart = {
+            ...productToCart,
+            variation_id: props.activePrice.id,
+            sale_price: props.activePrice.sale,
+            regular_price: props.activePrice.regular,
+        }
+        if (variation?.images?.[0]?.src) {
+            productToCart.images = [
+                {
+                    id: variation.id,
+                    src: variation.images[0].src,
+                    name: variation.images[0].name || '',
+                    alt: variation.images[0].alt || '',
+                },
+            ]
+        }
+    } else if (props.product.variations_data?.length) {
+        const firstVar = props.product.variations_data[0]
+        productToCart = {
+            ...productToCart,
+            variation_id: firstVar?.id ?? productToCart.id,
+            sale_price: firstVar?.sale_price || productToCart.sale_price || '0',
+            regular_price:
+                firstVar?.regular_price || productToCart.regular_price || '0',
+        }
+        // Use first variation image
+        if (firstVar?.images?.[0]?.src) {
+            productToCart.images = [
+                {
+                    id: firstVar.id,
+                    src: firstVar.images[0].src,
+                    name: firstVar.images[0].name || '',
+                    alt: firstVar.images[0].alt || '',
+                },
+            ]
+        }
+    }
+    addToCart(productToCart as any, 1)
+}
 </script>

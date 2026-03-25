@@ -54,14 +54,18 @@
                                 />
                             </ULink>
                         </div>
-
-                        <ULink
-                            :to="`/product/${item.product.slug}`"
-                            aria-label="ดูรายละเอียดสินค้า"
-                            class="hover:text-primary line-clamp-2 text-sm font-medium sm:text-base"
-                        >
-                            {{ item.product.name }}
-                        </ULink>
+                        <div class="flex flex-col">
+                            <ULink
+                                :to="`/product/${item.product.slug}`"
+                                aria-label="ดูรายละเอียดสินค้า"
+                                class="hover:text-primary line-clamp-2 text-sm font-medium sm:text-base"
+                            >
+                                {{ item.product.name }}
+                            </ULink>
+                            <p v-if="getSelectedName(item)" class="text-xs">
+                                {{ getSelectedName(item) }}
+                            </p>
+                        </div>
                         <div
                             class="col-span-2 flex items-center justify-between gap-2 border-t border-gray-50 pt-3 sm:col-span-1 sm:flex-col sm:items-end sm:justify-end sm:border-0 sm:pt-0"
                             aria-live="polite"
@@ -247,4 +251,18 @@ const {
     updateQuantity,
     clearCart,
 } = useCart()
+
+const getSelectedName = (item: any): string => {
+    if (!item.product.variation_id || !item.product.variations_data) return ''
+    const variation = item.product.variations_data.find(
+        (v: any) => v.id === item.product.variation_id
+    )
+    if (!variation?.attributes || variation.attributes.length === 0) return ''
+    return variation.attributes
+        .map((attr: any) => {
+            const option = attr.option ? decodeURIComponent(attr.option) : ''
+            return `${option}`
+        })
+        .join(', ')
+}
 </script>
