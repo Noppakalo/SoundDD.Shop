@@ -27,7 +27,11 @@ export interface ProductImages {
 
 export interface ProductAcf {
     promotional_price?: string | null
-    variant_links?: string[] | null
+    variant_title?: string | null
+    variant_links_data?: {
+        url: string
+        label: string
+    }[]
     image_gift?: {
         url: string
         alt: string

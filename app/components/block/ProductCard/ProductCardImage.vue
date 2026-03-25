@@ -86,17 +86,15 @@
         </div>
         <div
             v-if="colorVariations.length > 0"
-            class="absolute -bottom-3 z-30 flex gap-2"
+            class="absolute z-30 flex gap-2"
             :class="
-                viewMode === 'list'
-                    ? 'left-2 max-lg:hidden'
-                    : 'left-4 max-sm:hidden'
+                viewMode === 'list' ? 'bottom-2 left-2' : '-bottom-3 left-4'
             "
         >
             <div
                 v-for="variation in colorVariations"
                 :key="variation.id"
-                class="relative block size-8 cursor-pointer overflow-hidden rounded-full shadow-md transition-all hover:scale-110 max-lg:size-12"
+                class="relative block size-8 cursor-pointer overflow-hidden rounded-full shadow-md transition-all hover:scale-110 max-sm:size-6"
                 :class="[
                     selectedVariationId === variation.id
                         ? 'ring-primary ring-2'
@@ -139,20 +137,6 @@ const selectedVariationId = ref<number | null>(null)
 const selectedVariationImage = ref<string | null>(null)
 const selectedVariationDiscount = ref<number | null>(null)
 const hoveredStockStatus = ref<string | null>(null)
-
-const getColorName = (v: any) => {
-    if (!v?.attributes) return null
-    const attr = v.attributes.find((a: any) => {
-        const name = decodeURIComponent(a.name || '').toLowerCase()
-        return (
-            name.includes('color') ||
-            name.includes('สี') ||
-            name.includes('pa_')
-        )
-    })
-    const rawOption = attr?.option || v.attributes[0]?.option || ''
-    return rawOption ? decodeURIComponent(rawOption) : 'Default'
-}
 
 const currentVariation = computed(() => {
     if (selectedVariationId.value) {
@@ -233,7 +217,6 @@ const displayImageUrls = computed(() => {
 })
 
 const selectVariation = (variation: any) => {
-    // Toggle selection if already selected
     if (selectedVariationId.value === variation.id) {
         selectedVariationId.value = null
         selectedVariationImage.value = null

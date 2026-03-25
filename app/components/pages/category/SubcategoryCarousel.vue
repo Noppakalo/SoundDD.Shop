@@ -17,7 +17,7 @@
                 class="group flex flex-col items-center gap-3"
             >
                 <div
-                    class="flex size-40 items-center justify-center overflow-hidden max-sm:size-36"
+                    class="flex size-34 items-center justify-center overflow-hidden max-sm:size-30"
                 >
                     <NuxtImg
                         v-if="item.acf?.image_category"

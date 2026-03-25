@@ -44,11 +44,13 @@
                     :items="breadcrumbItems"
                 />
                 <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                    <ProductImageGallery
-                        :product="product"
-                        :productImages="productImages"
-                        :selectedVariation="selectedVariation"
-                    />
+                    <div class="lg:sticky lg:top-24 lg:self-start">
+                        <ProductImageGallery
+                            :product="product"
+                            :productImages="productImages"
+                            :selectedVariation="selectedVariation"
+                        />
+                    </div>
                     <ProductDetailInfo
                         v-if="product"
                         :product="product"
