@@ -14,7 +14,7 @@
                 v-for="(link, index) in product.acf.variant_links_data"
                 :key="index"
                 :to="link.url"
-                size="md"
+                size="sm"
             >
                 {{ link.label }}
             </UButton>

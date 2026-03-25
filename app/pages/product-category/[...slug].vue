@@ -40,7 +40,7 @@
                     :items="subcategories"
                     :parent-path="route.path"
                 />
-                <div class="flex flex-col gap-4">
+                <div class="flex flex-col gap-4 max-sm:items-center">
                     <p>
                         สินค้าทั้งหมดใน
                         <span class="font-bold">"{{ category?.name }}"</span>
