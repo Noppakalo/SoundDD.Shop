@@ -42,6 +42,7 @@ export interface ProductAttributes {
     id: number
     name?: string
     option?: string
+    color?: string
 }
 
 export interface ProductVariations {

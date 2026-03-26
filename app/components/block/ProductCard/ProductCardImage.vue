@@ -251,7 +251,7 @@ const colorVariations = computed(() => {
     const uniqueVariations = new Map<string, any>()
 
     props.product.variations_data.forEach((v) => {
-        const colorAttr = v.attributes?.find((a: any) => a.id === 23)
+        const colorAttr = v.attributes?.find((a: any) => a.id === 13)
         if (!colorAttr) return
 
         const imageSrc = v.images?.[0]?.src

@@ -4,23 +4,26 @@
             {{ attributeName }} :
             <span class="text-primary font-bold">{{ currentOptionName }}</span>
         </p>
-        <div class="flex flex-wrap gap-2" role="radiogroup">
-            <UButton
+        <div class="flex flex-wrap gap-2.5">
+            <div
                 v-for="variation in variations"
                 :key="variation.id"
-                :variant="
-                    selectedVariation?.id === variation.id ? 'solid' : 'outline'
-                "
-                :color="
+                class="relative block size-6 cursor-pointer overflow-hidden rounded-full shadow-md transition-all hover:scale-110"
+                :class="
                     selectedVariation?.id === variation.id
-                        ? 'primary'
-                        : 'neutral'
+                        ? 'ring-primary ring-2 ring-offset-2'
+                        : 'ring-1 ring-black/5'
                 "
-                size="md"
+                :title="variation.name"
                 @click="onVariationSelect(variation)"
             >
-                {{ variation.optionName }}
-            </UButton>
+                <span
+                    class="block h-full w-full rounded-full border border-black/5 shadow-inner"
+                    :style="{
+                        backgroundColor: variation.hexColor || '#f0f0f0',
+                    }"
+                ></span>
+            </div>
         </div>
     </div>
 </template>
@@ -36,32 +39,35 @@ const props = defineProps<{
 const emit = defineEmits(['select-variation'])
 
 const attributeName = computed(() => {
-    const variationAttr = props.product.attributes?.find(
-        (attr: any) => attr.variation === true
+    const attr = props.product.attributes?.find(
+        (a: any) => a.variation === true
     )
-    const name =
-        variationAttr?.name || props.product.attributes?.[0]?.name || 'ตัวเลือก'
-    return decodeURIComponent(name)
+    return decodeURIComponent(attr?.name ?? 'ตัวเลือก')
 })
 
 const getOptionName = (v: any) => {
-    if (!v?.attributes || v.attributes.length === 0) return 'Default'
-    return v.attributes[0].option
-        ? decodeURIComponent(v.attributes[0].option)
-        : 'Default'
+    const attr =
+        v?.attributes?.find(
+            (a: any) => a.slug === 'pa_color' || a.name?.includes('สี')
+        ) || v?.attributes?.[0]
+    return decodeURIComponent(attr?.option ?? '')
 }
 
 const variations = computed(() => {
-    if (!props.product.variations_data) return []
-    const uniqueVariations = new Map<string, any>()
+    const variationsData = props.product.variations_data
+    if (!variationsData) return []
 
-    props.product.variations_data.forEach((v) => {
-        const optionName = getOptionName(v)
-        if (!uniqueVariations.has(optionName)) {
-            uniqueVariations.set(optionName, {
+    const uniqueVariations = new Map()
+
+    variationsData.forEach((v) => {
+        const name = getOptionName(v)
+        const colorAttr = v.attributes?.find((a: any) => a.color)
+
+        if (!uniqueVariations.has(name)) {
+            uniqueVariations.set(name, {
                 id: v.id,
-                optionName,
-                stock_status: v.stock_status,
+                name,
+                hexColor: colorAttr?.color ?? null,
             })
         }
     })
@@ -73,9 +79,9 @@ const currentOptionName = computed(() => {
 })
 
 const onVariationSelect = (variation: any) => {
-    const fullVariation = props.product.variations_data?.find(
-        (v: any) => v.id === variation.id
+    const full = props.product.variations_data?.find(
+        (v) => v.id === variation.id
     )
-    if (fullVariation) emit('select-variation', fullVariation)
+    if (full) emit('select-variation', full)
 }
 </script>
