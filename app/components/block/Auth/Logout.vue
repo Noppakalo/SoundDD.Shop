@@ -66,7 +66,6 @@ const handleLogout = async () => {
         await clear()
         await $fetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
         emit('update:modelValue', false)
-        await navigateTo('/', { replace: true })
 
         toast.success('ออกจากระบบสำเร็จ', 'ขอบคุณที่ใช้บริการ SoundDD Shop')
     } catch (error) {

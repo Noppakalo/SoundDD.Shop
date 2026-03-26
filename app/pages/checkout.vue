@@ -122,7 +122,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['update'])
-const toast = useToast()
+const toast = useAppToast()
 const { user } = useUserSession()
 const { getCustomer, updateCustomer } = useWooCustomerApi()
 
@@ -200,11 +200,7 @@ const UpdateAddress = async (closeFn?: () => void) => {
         !editForm.value.shipping.address_1 ||
         !editForm.value.shipping.postcode
     ) {
-        toast.add({
-            title: 'ข้อมูลไม่ครบถ้วน',
-            description: 'กรุณากรอกข้อมูลให้ครบถ้วน',
-            color: 'error',
-        })
+        toast.error('ข้อมูลไม่ครบถ้วน', 'กรุณากรอกข้อมูลให้ครบถ้วน')
         return
     }
 
@@ -215,28 +211,19 @@ const UpdateAddress = async (closeFn?: () => void) => {
             shipping: { ...editForm.value.shipping, country: 'TH' },
         })
         if (result.success) {
-            toast.add({
-                title: 'สำเร็จ',
-                description: 'อัปเดตที่อยู่จัดส่งเรียบร้อยแล้ว',
-                color: 'success',
-            })
+            toast.success('สำเร็จ', 'อัปเดตที่อยู่จัดส่งเรียบร้อยแล้ว')
             await loadCustomer()
             if (closeFn) closeFn()
             else open.value = false
             emit('update')
         } else {
-            toast.add({
-                title: 'เกิดข้อผิดพลาด',
-                description: 'กรุณาลองใหม่อีกครั้ง',
-                color: 'error',
-            })
+            toast.error('เกิดข้อผิดพลาด', 'กรุณาลองใหม่อีกครั้ง')
         }
     } catch (error) {
-        toast.add({
-            title: 'ระบบขัดข้อง',
-            description: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ในขณะนี้',
-            color: 'error',
-        })
+        toast.error(
+            'ระบบขัดข้อง',
+            'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ในขณะนี้'
+        )
     } finally {
         isUpdating.value = false
     }

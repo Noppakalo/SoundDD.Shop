@@ -9,7 +9,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 
-const toaster = { max: 1, duration: 2000 }
+const toaster = { max: 1, duration: 1000 }
 
 const { initWishlist } = useWishlist()
 const { initCart } = useCart()

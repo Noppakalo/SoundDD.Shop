@@ -184,11 +184,7 @@
 
 <script setup lang="ts">
 import type { Category } from '~/types/category'
-
-interface Brand {
-    id: number
-    name: string
-}
+import type { Brands } from '~/types/brand'
 
 interface AttributeFilter {
     id: number
@@ -199,7 +195,7 @@ interface AttributeFilter {
 
 const props = defineProps<{
     category?: Category | null
-    brands?: Brand[]
+    brands?: Brands[]
     categories?: Category[]
 }>()
 
@@ -227,7 +223,6 @@ const filters = defineModel<{
     }),
 })
 
-// Price range
 const priceRange = computed(() => props.category?.price_range)
 const priceValue = computed({
     get: () => [filters.value.minPrice || 0, filters.value.maxPrice || 0],
@@ -237,7 +232,6 @@ const priceValue = computed({
     },
 })
 
-// Initialize price filters when category changes
 watch(
     () => priceRange.value,
     (range) => {
@@ -249,10 +243,8 @@ watch(
     { immediate: true }
 )
 
-// Available brands from category products or props
 const availableBrands = computed(() => props.brands || [])
 
-// Selected brands
 const selectedBrands = computed({
     get: () => filters.value.brands,
     set: (val: number[]) => {
@@ -260,10 +252,8 @@ const selectedBrands = computed({
     },
 })
 
-// Available categories from props (subcategories)
 const availableCategories = computed(() => props.categories || [])
 
-// Selected categories
 const selectedCategories = computed({
     get: () => filters.value.categories,
     set: (val: number[]) => {
@@ -271,10 +261,8 @@ const selectedCategories = computed({
     },
 })
 
-// Other attributes (frequency, etc.)
 const otherAttributes = ref<AttributeFilter[]>([])
 
-// Selected attributes
 const selectedAttributes = computed({
     get: () => filters.value.attributes,
     set: (val: Record<string, string[]>) => {
@@ -282,7 +270,6 @@ const selectedAttributes = computed({
     },
 })
 
-// Check if any filter is active
 const hasActiveFilters = computed(() => {
     const f = filters.value
     const range = priceRange.value
@@ -294,7 +281,6 @@ const hasActiveFilters = computed(() => {
     return false
 })
 
-// Clear all filters
 const clearAllFilters = () => {
     const range = priceRange.value
     filters.value = {
