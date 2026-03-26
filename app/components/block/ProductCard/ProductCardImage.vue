@@ -20,13 +20,16 @@
                 : 'aspect-square w-full'
         "
     >
-        <div @click="onCardClick" class="cursor-pointer">
+        <ULink
+            :to="productLink"
+            class="block cursor-pointer"
+            :aria-label="`ดูรายละเอียดสินค้า ${product.name}`"
+        >
             <NuxtImg
                 v-if="displayImageUrls[0]"
                 :src="displayImageUrls[0]"
                 :alt="product.name"
                 loading="lazy"
-                draggable="false"
                 class="relative size-full object-cover transition-opacity duration-300"
                 :class="[
                     displayImageUrls[1]
@@ -39,10 +42,9 @@
                 :src="displayImageUrls[1]"
                 :alt="product.name"
                 loading="lazy"
-                sizes="300px"
-                draggable="false"
                 class="absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
             />
+
             <div
                 v-if="isSoldOut"
                 class="absolute inset-0 z-20 flex items-center justify-center bg-black/30"
@@ -66,7 +68,7 @@
                     </p>
                 </div>
             </div>
-        </div>
+        </ULink>
         <div
             v-if="product.acf?.image_gift"
             class="absolute z-10"
@@ -159,15 +161,6 @@ const isSoldOut = computed(
         currentStockStatus.value === 'outofstock' ||
         currentStockStatus.value === 'onbackorder'
 )
-
-const onCardClick = () => {
-    const router = useRouter()
-    const variation = currentVariation.value
-    router.push({
-        path: `/product/${props.product.slug}`,
-        query: variation ? { variation_id: variation.id } : undefined,
-    })
-}
 
 const { displayPriceData } = useProductPrice(() => props.product)
 
@@ -278,5 +271,12 @@ const colorVariations = computed(() => {
         }
     })
     return Array.from(uniqueVariations.values())
+})
+
+const productLink = computed(() => {
+    const base = `/product/${props.product.slug}`
+    return selectedVariationId.value
+        ? `${base}?variation_id=${selectedVariationId.value}`
+        : base
 })
 </script>
