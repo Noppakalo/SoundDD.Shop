@@ -15,6 +15,7 @@
                 }"
             >
                 <UButton
+                    v-if="user"
                     label="แก้ไขข้อมูลส่วนตัว"
                     color="primary"
                     size="md"
@@ -68,8 +69,8 @@
         <div class="col-span-2 flex justify-center">
             <USkeleton v-if="loading" class="size-30 rounded-full shadow-sm" />
             <UAvatar
-                v-else
-                :src="user?.avatar || customer?.avatar_url || ''"
+                v-else-if="user?.avatar || customer?.avatar_url"
+                :src="user?.avatar || customer?.avatar_url"
                 :alt="user?.name"
                 loading="lazy"
                 draggable="false"
@@ -77,6 +78,16 @@
                 class="size-30"
                 aria-label="รูปโปรไฟล์ของคุณ"
             />
+            <div
+                v-else
+                class="flex size-30 items-center justify-center rounded-full bg-gray-100 text-gray-400"
+            >
+                <UIcon
+                    name="i-iconamoon:profile"
+                    class="size-16"
+                    aria-hidden="true"
+                />
+            </div>
         </div>
         <div v-if="loading" class="grid grid-cols-2 gap-6" aria-hidden="true">
             <div class="space-y-2">
@@ -155,8 +166,10 @@ const displayBirthDate = computed(() => {
 })
 
 const openEditModal = () => {
+    // แยกชื่อด้วยช่องว่าง
     const userName = props.user?.name || ''
-    const nameParts = userName.split(' ')
+    const nameParts = userName.trim().split(/\s+/) // ใช้ regex เพื่อจัดการช่องว่างหลายชั้น
+
     const metaDate = props.customer?.meta_data?.find(
         (m: any) => m.key === 'birth_date'
     )
@@ -164,18 +177,13 @@ const openEditModal = () => {
         typeof metaDate?.value === 'string' ? metaDate.value : ''
 
     editForm.value = {
-        first_name:
-            props.customer?.first_name ||
-            (props.user?.name?.includes(' ')
-                ? props.user?.name?.split(' ')[0]
-                : props.user?.name) ||
-            '',
+        // ใช้ nameParts[0] เป็นชื่อจริง
+        first_name: props.customer?.first_name || nameParts[0] || '',
+
+        // ใช้ส่วนที่เหลือทั้งหมดเป็นนามสกุล
         last_name:
-            props.customer?.last_name ||
-            (props.user?.name?.includes(' ')
-                ? props.user?.name?.split(' ').slice(1).join(' ')
-                : '') ||
-            '',
+            props.customer?.last_name || nameParts.slice(1).join(' ') || '',
+
         email: props.user?.email || '',
         phone: props.customer?.billing?.phone || '',
     }

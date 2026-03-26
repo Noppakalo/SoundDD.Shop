@@ -43,15 +43,23 @@
                         >
                             <ULink :to="`/product/${item.product.slug}`">
                                 <NuxtImg
-                                    :src="
-                                        item.product.images?.[0]?.src ||
-                                        'https://via.placeholder.com/300'
-                                    "
+                                    v-if="item.product.images?.[0]?.src"
+                                    :src="item.product.images?.[0]?.src"
                                     :alt="item.product.name"
                                     loading="lazy"
                                     draggable="false"
                                     class="h-full w-full object-cover"
                                 />
+                                <div
+                                    v-else
+                                    class="flex aspect-square w-full items-center justify-center rounded-lg bg-gray-100 text-gray-400"
+                                >
+                                    <UIcon
+                                        name="i-iconamoon:folder-image-light"
+                                        class="size-10"
+                                        aria-hidden="true"
+                                    />
+                                </div>
                             </ULink>
                         </div>
                         <div class="flex flex-col">

@@ -25,26 +25,38 @@
             class="block cursor-pointer"
             :aria-label="`ดูรายละเอียดสินค้า ${product.name}`"
         >
-            <NuxtImg
-                v-if="displayImageUrls[0]"
-                :src="displayImageUrls[0]"
-                :alt="product.name"
-                loading="lazy"
-                class="relative size-full object-cover transition-opacity duration-300"
-                :class="[
-                    displayImageUrls[1]
-                        ? 'group-hover:opacity-0'
-                        : 'opacity-100',
-                ]"
-            />
-            <NuxtImg
-                v-if="displayImageUrls[1]"
-                :src="displayImageUrls[1]"
-                :alt="product.name"
-                loading="lazy"
-                class="absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-            />
+            <template v-if="displayImageUrls.length > 0">
+                <NuxtImg
+                    v-if="displayImageUrls[0]"
+                    :src="displayImageUrls[0]"
+                    :alt="product.name"
+                    loading="lazy"
+                    class="relative size-full object-cover transition-opacity duration-300"
+                    :class="[
+                        displayImageUrls[1]
+                            ? 'group-hover:opacity-0'
+                            : 'opacity-100',
+                    ]"
+                />
+                <NuxtImg
+                    v-if="displayImageUrls[1]"
+                    :src="displayImageUrls[1]"
+                    :alt="product.name"
+                    loading="lazy"
+                    class="absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                />
+            </template>
 
+            <div
+                v-else
+                class="flex aspect-square w-full items-center justify-center bg-gray-100 text-gray-400 transition-colors group-hover:bg-gray-200"
+            >
+                <UIcon
+                    name="i-iconamoon:folder-image-light"
+                    class="size-20"
+                    aria-hidden="true"
+                />
+            </div>
             <div
                 v-if="isSoldOut"
                 class="absolute inset-0 z-20 flex items-center justify-center bg-black/30"
@@ -99,18 +111,30 @@
                 class="relative block size-8 cursor-pointer overflow-hidden rounded-full shadow-md transition-all hover:scale-110 max-sm:size-6"
                 :class="[
                     selectedVariationId === variation.id
-                        ? 'ring-primary ring-2'
-                        : '',
+                        ? 'ring-primary ring-2 ring-offset-1'
+                        : 'ring-1 ring-black/5',
                 ]"
                 @click="selectVariation(variation)"
             >
                 <NuxtImg
+                    v-if="variation.imageSrc"
                     :src="variation.imageSrc"
                     :alt="variation.imageAlt"
                     loading="lazy"
                     draggable="false"
                     class="size-full object-cover"
                 />
+
+                <div
+                    v-else
+                    class="flex size-full items-center justify-center bg-gray-100 text-gray-400"
+                >
+                    <UIcon
+                        name="i-iconamoon:folder-image-light"
+                        class="size-4"
+                        aria-hidden="true"
+                    />
+                </div>
             </div>
         </div>
     </div>
@@ -246,24 +270,18 @@ const colorVariations = computed(() => {
     props.product.variations_data.forEach((v) => {
         const colorAttr = v.attributes?.find((a: any) => a.id === 13)
         if (!colorAttr) return
-
-        const imageSrc = v.images?.[0]?.src
-        if (!imageSrc) return
-
+        const imageSrc = v.images?.[0]?.src || null
         const rawOption = colorAttr.option || ''
         const colorName = rawOption ? decodeURIComponent(rawOption) : 'Default'
-
-        const key = colorName || imageSrc
-
-        if (!uniqueVariations.has(key)) {
-            uniqueVariations.set(key, {
+        const key = colorName || imageSrc || v.id
+        if (!uniqueVariations.has(String(key))) {
+            uniqueVariations.set(String(key), {
                 id: v.id,
                 price: v.sale_price,
                 regular_price: v.regular_price,
-                sale_price: v.sale_price,
                 stock_status: v.stock_status,
                 imageSrc,
-                imageAlt: v.images?.[0]?.alt || '',
+                imageAlt: v.images?.[0]?.alt || colorName,
                 date_on_sale_from: v.date_on_sale_from,
                 date_on_sale_to: v.date_on_sale_to,
                 colorName,

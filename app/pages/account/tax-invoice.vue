@@ -28,6 +28,7 @@
                     <UIcon name="i-iconamoon:invoice-light" class="text-5xl" />
                     <p>ยังไม่มีข้อมูลใบกำกับภาษี</p>
                     <UButton
+                        v-if="customer"
                         label="เพิ่มใบกำกับภาษี"
                         icon="i-heroicons-plus-circle"
                         aria-label="เปิดหน้าต่างเพิ่มข้อมูลใบกำกับภาษี"
@@ -35,7 +36,7 @@
                     />
                 </div>
                 <UButton
-                    v-else
+                    v-else-if="customer"
                     label="แก้ไขใบกำกับภาษี"
                     color="primary"
                     size="md"

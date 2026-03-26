@@ -28,6 +28,7 @@
                     <UIcon name="i-heroicons-map-pin" class="text-5xl" />
                     <p>ยังไม่มีข้อมูลที่อยู่จัดส่งสินค้า</p>
                     <UButton
+                        v-if="customer"
                         label="เพิ่มที่อยู่จัดส่ง"
                         icon="i-heroicons-plus-circle"
                         aria-label="เปิดหน้าต่างเพิ่มที่อยู่จัดส่ง"
@@ -35,7 +36,7 @@
                     />
                 </div>
                 <UButton
-                    v-else
+                    v-else-if="customer"
                     label="แก้ไขที่อยู่จัดส่ง"
                     color="primary"
                     size="md"

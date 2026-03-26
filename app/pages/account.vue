@@ -3,13 +3,13 @@
         <UContainer class="flex flex-col gap-4">
             <div class="flex flex-col items-start gap-8 md:flex-row">
                 <aside class="w-1/4 shrink-0">
-                    <div class="flex min-w-0 items-baseline gap-2">
+                    <div v-if="user" class="flex min-w-0 items-baseline gap-2">
                         <span class="shrink-0">สวัสดีคุณ,</span>
                         <p class="truncate text-lg font-bold">
                             {{ user?.name }}
                         </p>
+                        <USeparator class="my-4" />
                     </div>
-                    <USeparator class="my-4" />
                     <UNavigationMenu
                         orientation="vertical"
                         :items="navigation"
@@ -59,55 +59,62 @@ const handleLogout = () => {
     showLogoutModal.value = true
 }
 
-const navigation = ref<NavigationMenuItem[]>([
-    {
-        label: 'ข้อมูลส่วนตัว',
-        icon: 'i-iconamoon:profile-light',
-        to: '/account',
-        exact: true,
-    },
-    {
-        label: 'ที่อยู่จัดส่งสินค้า',
-        icon: 'i-iconamoon:location-pin',
-        to: '/account/shipping-address',
-    },
-    {
-        label: 'ใบกำกับภาษี',
-        icon: 'i-iconamoon:invoice-light',
-        to: '/account/tax-invoice',
-    },
-    {
-        label: 'รายการคำสั่งซื้อ',
-        icon: 'i-iconamoon:file-document-light',
-        to: '/account/order-history',
-    },
-    {
-        label: 'รายการสินค้าที่สนใจ',
-        icon: 'i-iconamoon:heart-light',
-        to: '/account/my-wishlist',
-    },
-    {
-        label: 'รีวิวของฉัน',
-        icon: 'i-iconamoon:star',
-        to: '/account/my-review',
-    },
-    {
-        label: 'คูปองของฉัน',
-        icon: 'i-iconamoon:ticket-light',
-        to: '/account/my-coupon',
-    },
-    {
-        label: 'ใบเสนอราคา',
-        icon: 'i-heroicons-document-duplicate',
-        to: '/account/quotation',
-    },
-    {
-        label: 'ออกจากระบบ',
-        icon: 'i-iconamoon:exit-light',
-        class: 'cursor-pointer',
-        onSelect: handleLogout,
-    },
-])
+const navigation = computed<NavigationMenuItem[]>(() => {
+    const items: NavigationMenuItem[] = [
+        {
+            label: 'ข้อมูลส่วนตัว',
+            icon: 'i-iconamoon:profile-light',
+            to: '/account',
+            exact: true,
+        },
+        {
+            label: 'ที่อยู่จัดส่งสินค้า',
+            icon: 'i-iconamoon:location-pin',
+            to: '/account/shipping-address',
+        },
+        {
+            label: 'ใบกำกับภาษี',
+            icon: 'i-iconamoon:invoice-light',
+            to: '/account/tax-invoice',
+        },
+        {
+            label: 'รายการคำสั่งซื้อ',
+            icon: 'i-iconamoon:file-document-light',
+            to: '/account/order-history',
+        },
+        {
+            label: 'รายการสินค้าที่สนใจ',
+            icon: 'i-iconamoon:heart-light',
+            to: '/account/my-wishlist',
+        },
+        {
+            label: 'รีวิวของฉัน',
+            icon: 'i-iconamoon:star',
+            to: '/account/my-review',
+        },
+        {
+            label: 'คูปองของฉัน',
+            icon: 'i-iconamoon:ticket-light',
+            to: '/account/my-coupon',
+        },
+        {
+            label: 'ใบเสนอราคา',
+            icon: 'i-heroicons-document-duplicate',
+            to: '/account/quotation',
+        },
+    ]
+
+    if (user.value) {
+        items.push({
+            label: 'ออกจากระบบ',
+            icon: 'i-iconamoon:exit-light',
+            class: 'cursor-pointer',
+            onSelect: handleLogout,
+        })
+    }
+
+    return items
+})
 
 await loadCustomer()
 </script>
