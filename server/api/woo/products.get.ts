@@ -14,6 +14,8 @@ export default defineEventHandler(async (event) => {
     const minPrice = query.min_price as string | undefined
     const maxPrice = query.max_price as string | undefined
     const brandIds = query.brand as string | undefined
+    const attribute = query.attribute as string | undefined
+    const attributeTerm = query.attribute_term as string | undefined
     const orderby = (query.orderby as string) || 'date'
     const order = (query.order as string) || 'desc'
 
@@ -79,6 +81,8 @@ export default defineEventHandler(async (event) => {
                     min_price: minPrice,
                     max_price: maxPrice,
                     brand: brandIds,
+                    attribute: attribute,
+                    attribute_term: attributeTerm,
                 },
             })
 

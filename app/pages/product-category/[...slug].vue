@@ -51,6 +51,10 @@
                     <ProductFilter
                         v-model:view-mode="viewMode"
                         v-model:sort-options="sortOptions"
+                        v-model:filters="filters"
+                        :category="category"
+                        :brands="brands"
+                        :categories="subcategories"
                     />
                 </div>
                 <ProductGrid
@@ -74,8 +78,9 @@ const viewMode = ref<'grid' | 'list'>('grid')
 
 const filters = ref({
     minPrice: 0,
-    maxPrice: 100000,
+    maxPrice: 1000000,
     brands: [] as number[],
+    attributes: {} as Record<string, string[]>,
     categories: [] as number[],
 })
 
@@ -111,5 +116,14 @@ const { data: subResponse } = await useAsyncData(
 
 const subcategories = computed(() =>
     subResponse.value?.success ? subResponse.value.data : []
+)
+
+const { data: brandsResponse } = await useAsyncData(
+    `brands-${actualSlug}`,
+    () => useWooBrandsApi().getBrands()
+)
+
+const brands = computed(() =>
+    brandsResponse.value?.success ? brandsResponse.value.data : []
 )
 </script>

@@ -72,6 +72,7 @@ const props = defineProps<{
         minPrice: number
         maxPrice: number
         brands: number[]
+        attributes: Record<string, string[]>
         categories: number[]
     }
     sortOptions: { orderby: string; order: string }
@@ -104,6 +105,15 @@ const { pending: productsPending, refresh: fetchProducts } = await useAsyncData(
 
         if (props.filters.brands && props.filters.brands.length > 0) {
             params.brand = props.filters.brands.join(',')
+        }
+
+        if (props.filters.categories && props.filters.categories.length > 0) {
+            // Combine main category with selected subcategories
+            const allCategories = [
+                props.category.id,
+                ...props.filters.categories,
+            ]
+            params.category = allCategories.join(',')
         }
 
         const res = await useWooProductApi().getProducts(params)
@@ -139,6 +149,8 @@ watch(
         props.filters.minPrice,
         props.filters.maxPrice,
         props.filters.brands?.length,
+        props.filters.categories?.length,
+        Object.keys(props.filters.attributes).length,
         props.sortOptions.orderby,
         props.sortOptions.order,
     ],
