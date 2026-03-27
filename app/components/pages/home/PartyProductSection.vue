@@ -1,3 +1,3 @@
 <template>
-    <ProductCarousel title="ลำโพงบลูทูธ Party" :category-id="860" :limit="8" />
+    <ProductCarousel title="ลำโพงบลูทูธ Party" :category-id="36" :limit="8" />
 </template>

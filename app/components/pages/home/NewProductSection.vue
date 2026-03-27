@@ -1,7 +1,7 @@
 <template>
     <ProductCarousel
         title="📌 สินค้าใหม่ประจำเดือน 📌"
-        :category-id="1087"
+        :category-id="18"
         :limit="8"
         :align="'center'"
     />

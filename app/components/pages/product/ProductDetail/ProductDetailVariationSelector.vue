@@ -6,7 +6,7 @@
         </p>
 
         <div class="flex flex-wrap gap-2.5" role="radiogroup">
-            <template v-if="attributeId === 13">
+            <template v-if="attributeId === 4">
                 <div
                     v-for="variation in variations"
                     :key="variation.id"

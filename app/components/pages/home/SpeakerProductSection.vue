@@ -1,3 +1,3 @@
 <template>
-    <ProductCarousel title="ลำโพง" :category-id="594" :limit="8" />
+    <ProductCarousel title="ลำโพง" :category-id="32" :limit="8" />
 </template>
