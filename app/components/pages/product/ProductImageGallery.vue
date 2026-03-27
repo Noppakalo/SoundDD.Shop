@@ -19,6 +19,7 @@
                 v-if="productImages.length"
                 ref="carouselRef"
                 v-slot="{ item }"
+                wheel-gestures
                 :items="productImages"
                 :ui="{
                     item: 'basis-full',
@@ -81,6 +82,7 @@
             <UCarousel
                 v-slot="{ item, index }"
                 :items="productImages"
+                wheel-gestures
                 :ui="{
                     item: 'basis-auto',
                 }"

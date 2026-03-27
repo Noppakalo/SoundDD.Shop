@@ -9,6 +9,7 @@
                 :autoplay="{ delay: 5000 }"
                 arrows
                 dots
+                wheel-gestures
             >
                 <ULink :to="item.link">
                     <NuxtImg

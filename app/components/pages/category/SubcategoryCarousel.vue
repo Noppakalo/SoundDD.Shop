@@ -2,6 +2,7 @@
     <UCarousel
         v-if="items && items.length > 0"
         :items="items"
+        wheel-gestures
         :ui="{
             viewport: 'px-2 py-4',
             controls: 'inset-x-10 max-sm:-inset-x-4',

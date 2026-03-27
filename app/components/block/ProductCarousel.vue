@@ -87,6 +87,7 @@
                 v-slot="{ item }"
                 v-else-if="availableProducts.length"
                 :items="availableProducts"
+                wheel-gestures
                 :ui="{
                     viewport: 'px-2 pb-4',
                     controls: 'sm:inset-x-10 max-sm:-inset-x-4',

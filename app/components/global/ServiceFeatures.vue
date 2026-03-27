@@ -1,5 +1,5 @@
 <template>
-    <section class="bg-primary/10">
+    <section class="bg-primary/10 py-4 lg:py-2">
         <UContainer class="py-2.5">
             <div
                 class="grid grid-cols-2 items-center gap-4 text-center sm:grid-cols-4"

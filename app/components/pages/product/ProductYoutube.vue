@@ -3,6 +3,7 @@
         v-if="youtubeItems.length > 0"
         v-slot="{ item }"
         :items="youtubeItems"
+        wheel-gestures
         :ui="{
             viewport: 'px-2 py-4',
             controls: 'inset-x-10 max-sm:-inset-x-4',
