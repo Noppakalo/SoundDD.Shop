@@ -9,9 +9,7 @@
         >
             <p
                 class="group-hover:text-primary line-clamp-2 font-medium"
-                :class="
-                    viewMode === 'list' ? 'min-h-0 sm:text-xl' : 'min-h-[3rem]'
-                "
+                :class="viewMode === 'list' ? 'min-h-0 sm:text-xl' : 'min-h-15'"
             >
                 {{ product.name }}
             </p>
