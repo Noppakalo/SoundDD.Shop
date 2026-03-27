@@ -44,7 +44,7 @@
             <div class="flex py-4">
                 <table
                     v-if="product?.attributes?.length"
-                    class="w-4/5 border-b border-gray-400"
+                    class="w-full border-b border-gray-400"
                 >
                     <tbody>
                         <tr v-for="attr in product.attributes" :key="attr.id">

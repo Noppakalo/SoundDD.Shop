@@ -58,6 +58,9 @@
                         @select-variation="handleVariationSelect"
                     />
                 </div>
+                <div v-if="product?.acf?.youtube_list">
+                    <ProductYoutube :youtubeList="product.acf.youtube_list" />
+                </div>
                 <ProductFeature :product="product" />
             </div>
         </UContainer>

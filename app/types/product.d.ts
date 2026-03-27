@@ -28,14 +28,22 @@ export interface ProductImages {
 export interface ProductAcf {
     promotional_price?: string | null
     variant_title?: string | null
-    variant_links_data?: {
-        url: string
-        label: string
-    }[]
     image_gift?: {
         url: string
         alt: string
     } | null
+    youtube_list?: {
+        youtube1?: string
+        youtube2?: string
+        youtube3?: string
+        youtube4?: string
+        youtube5?: string
+        youtube6?: string
+    }
+    variant_links_data?: {
+        url: string
+        label: string
+    }[]
 }
 
 export interface ProductAttributes {
