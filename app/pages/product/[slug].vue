@@ -58,6 +58,7 @@
                         @select-variation="handleVariationSelect"
                     />
                 </div>
+                <ProductFeature :product="product" />
             </div>
         </UContainer>
     </section>

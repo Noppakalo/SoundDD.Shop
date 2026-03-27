@@ -42,7 +42,7 @@
             </div>
             <div
                 v-if="!isNoMoreProducts && products.length > 0"
-                class="mt-10 flex flex-col items-center gap-4"
+                class="flex flex-col items-center gap-4"
                 aria-live="polite"
             >
                 <UButton
@@ -50,9 +50,7 @@
                     label="ดูสินค้าเพิ่มเติม"
                     color="primary"
                     variant="soft"
-                    size="xl"
                     icon="i-iconamoon:arrow-down-2-light"
-                    class="px-10 font-bold"
                     aria-label="โหลดสินค้าเพิ่มเติมจากรายการเดิม"
                     @click="handleLoadMore"
                 />
@@ -108,7 +106,6 @@ const { pending: productsPending, refresh: fetchProducts } = await useAsyncData(
         }
 
         if (props.filters.categories && props.filters.categories.length > 0) {
-            // Combine main category with selected subcategories
             const allCategories = [
                 props.category.id,
                 ...props.filters.categories,
