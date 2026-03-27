@@ -126,6 +126,7 @@
                 only-contact
             />
         </div>
+        <div v-if="user"></div>
     </div>
 </template>
 
@@ -166,9 +167,8 @@ const displayBirthDate = computed(() => {
 })
 
 const openEditModal = () => {
-    // แยกชื่อด้วยช่องว่าง
     const userName = props.user?.name || ''
-    const nameParts = userName.trim().split(/\s+/) // ใช้ regex เพื่อจัดการช่องว่างหลายชั้น
+    const nameParts = userName.trim().split(/\s+/)
 
     const metaDate = props.customer?.meta_data?.find(
         (m: any) => m.key === 'birth_date'
@@ -177,10 +177,7 @@ const openEditModal = () => {
         typeof metaDate?.value === 'string' ? metaDate.value : ''
 
     editForm.value = {
-        // ใช้ nameParts[0] เป็นชื่อจริง
         first_name: props.customer?.first_name || nameParts[0] || '',
-
-        // ใช้ส่วนที่เหลือทั้งหมดเป็นนามสกุล
         last_name:
             props.customer?.last_name || nameParts.slice(1).join(' ') || '',
 
