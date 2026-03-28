@@ -60,12 +60,15 @@ export default defineEventHandler(async (event) => {
     ].join(',')
 
     const fields = slug ? productDetailFields : productCardFields
-    const wooAuthHeader = buildWooAuth(config)
+    const authHeader = buildWooAuth(config)
     try {
-        const fetchProducts = (authHeader: string) =>
-            $fetch<Product[]>(`${config.public.wpUrl}/wp-json/wc/v3/products`, {
+        const fetchProducts = await $fetch<Product[]>(
+            `${config.public.wpUrl}/wp-json/wc/v3/products`,
+            {
                 method: 'GET',
-                headers: { Authorization: authHeader },
+                headers: {
+                    Authorization: authHeader,
+                },
                 query: {
                     _fields: fields,
                     slug: slug,
@@ -84,21 +87,19 @@ export default defineEventHandler(async (event) => {
                     attribute: attribute,
                     attribute_term: attributeTerm,
                 },
-            })
-
-        const response = await fetchProducts(wooAuthHeader)
+            }
+        )
 
         if (slug) {
-            const firstProduct = response[0]
+            const firstProduct = fetchProducts[0]
             return {
                 success: true,
                 data: firstProduct || null,
             }
         }
-
         return {
             success: true,
-            data: response,
+            data: fetchProducts,
         }
     } catch (error: any) {
         throw createError({

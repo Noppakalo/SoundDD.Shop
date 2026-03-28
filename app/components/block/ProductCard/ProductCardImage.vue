@@ -46,7 +46,6 @@
                     class="absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                 />
             </template>
-
             <div
                 v-else
                 class="flex aspect-square w-full items-center justify-center bg-gray-100 text-gray-400 transition-colors group-hover:bg-gray-200"

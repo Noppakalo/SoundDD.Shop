@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
     ].join(',')
 
     try {
-        const response = await $fetch<Category[]>(
+        const fetchCategory = await $fetch<Category[]>(
             `${config.public.wpUrl}/wp-json/wc/v3/products/categories`,
             {
                 method: 'GET',
@@ -52,9 +52,9 @@ export default defineEventHandler(async (event) => {
         }
         return {
             success: true,
-            data: Array.isArray(response)
-                ? response.map(formatCategory)
-                : formatCategory(response),
+            data: Array.isArray(fetchCategory)
+                ? fetchCategory.map(formatCategory)
+                : formatCategory(fetchCategory),
         }
     } catch (error: any) {
         throw createError({

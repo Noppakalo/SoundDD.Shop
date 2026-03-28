@@ -11,14 +11,25 @@
                 dots
                 wheel-gestures
             >
-                <ULink :to="item.link">
+                <ULink :to="item.link" :aria-label="`ดูโปรโมชั่น ${item.alt}`">
                     <NuxtImg
+                        v-if="item.src"
                         :src="item.src"
                         :alt="item.alt"
                         loading="lazy"
                         draggable="false"
                         class="w-full cursor-pointer rounded-2xl object-cover"
                     />
+                    <div
+                        v-else
+                        class="flex w-full cursor-pointer items-center justify-center rounded-2xl bg-gray-100 text-gray-400"
+                    >
+                        <UIcon
+                            name="i-iconamoon:folder-image-light"
+                            class="size-20"
+                            aria-hidden="true"
+                        />
+                    </div>
                 </ULink>
             </UCarousel>
         </UContainer>
@@ -32,51 +43,19 @@ interface CarouselItem {
     link: string
 }
 
-const items = computed<CarouselItem[]>(() => [
-    {
-        src: '/images/promotions/Valentines-Special-Deal-FEB2026.webp',
-        alt: 'GA4 SEO Result',
-        link: 'https://www.sounddd.shop/?s=soundvision+raptor&post_type=product&dgwt_wcas=1&orderby=relevance',
-    },
-    {
-        src: '/images/promotions/SVS-Raptor-Series-Desktop-Banner.webp',
-        alt: 'Keyword SEO Result',
-        link: '/blog?tag=ga4',
-    },
-    {
-        src: '/images/promotions/SOUNDDD-Chinese-New-year-FEB2026.webp',
-        alt: 'Keyword SEO Result',
-        link: '/blog?tag=ga4',
-    },
-    {
-        src: '/images/promotions/dBTechnologies_Sub.webp',
-        alt: 'Keyword SEO Result',
-        link: '/blog?tag=ga4',
-    },
-    {
-        src: '/images/promotions/Banner-Wiim-Sound-JAN2026.webp',
-        alt: 'Keyword SEO Result',
-        link: '/blog?tag=ga4',
-    },
-    {
-        src: '/images/promotions/Banner-RODE-POD-mic-JAN2026.webp',
-        alt: 'Keyword SEO Result',
-        link: '/blog?tag=ga4',
-    },
-    {
-        src: '/images/promotions/Banner-QSC-KC12-JAN2026.webp',
-        alt: 'Keyword SEO Result',
-        link: '/blog?tag=ga4',
-    },
-    {
-        src: '/images/promotions/Banner-Mixer-TOA-M-124FX-JAN2026.webp',
-        alt: 'Keyword SEO Result',
-        link: '/blog?tag=ga4',
-    },
-    {
-        src: '/images/promotions/Banner-Jabra-Speak-2-JAN2026webp.webp',
-        alt: 'Keyword SEO Result',
-        link: '/blog?tag=ga4',
-    },
-])
+const { data: promotionsData } = await useAsyncData('promotions', () =>
+    $fetch('/api/woo/promotion')
+)
+
+const items = computed<CarouselItem[]>(() => {
+    if (!promotionsData.value?.success || !promotionsData.value?.data) {
+        return []
+    }
+
+    return promotionsData.value.data.map((promotion) => ({
+        src: promotion.acf.image_promotion.url,
+        alt: promotion.acf.image_promotion.alt || 'Promotion',
+        link: promotion.acf.link_promotion,
+    }))
+})
 </script>

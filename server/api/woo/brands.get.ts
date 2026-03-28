@@ -3,12 +3,13 @@ import type { Brands } from '~/types/brand'
 export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig()
     const query = getQuery(event)
-    const slug = query.slug || null
+
+    const slug = query.slug as string | undefined
 
     const authHeader = buildWooAuth(config)
 
     try {
-        const response = await $fetch<Brands[]>(
+        const fetchBrands = await $fetch<Brands[]>(
             `${config.public.wpUrl}/wp-json/wc/v3/products/brands`,
             {
                 method: 'GET',
@@ -21,11 +22,12 @@ export default defineEventHandler(async (event) => {
                 },
             }
         )
-        return { success: true, data: response }
+        return { success: true, data: fetchBrands }
     } catch (error: any) {
         throw createError({
             statusCode: error.response?.status || 500,
-            statusMessage: 'ไม่สามารถดึงข้อมูลแบรนด์ได้',
+            statusMessage:
+                error.response?._data?.message || 'ไม่สามารถดึงข้อมูลแบรนด์ได้',
         })
     }
 })
