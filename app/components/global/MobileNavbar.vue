@@ -1,8 +1,8 @@
 <template>
     <nav
-        class="fixed right-0 bottom-0 left-0 z-50 bg-white drop-shadow-sm md:hidden"
+        class="fixed right-0 bottom-0 left-0 z-50 bg-white drop-shadow-lg md:hidden"
     >
-        <div class="flex justify-between">
+        <div class="grid grid-cols-5 justify-between">
             <UButton
                 to="/"
                 :color="isActive('/') ? 'primary' : 'neutral'"
@@ -15,7 +15,7 @@
                         : '',
                 ]"
                 ><UIcon name="i-iconamoon:store-light" class="size-6" />
-                <p class="text-xs">หน้าแรก</p></UButton
+                <p class="text-xs whitespace-nowrap">หน้าแรก</p></UButton
             >
             <UButton
                 to="/product-category"
@@ -29,7 +29,7 @@
                         : '',
                 ]"
                 ><UIcon name="i-tabler:layout-grid" class="size-6" />
-                <p class="text-xs">หมวดหมู่</p></UButton
+                <p class="text-xs whitespace-nowrap">หมวดหมู่</p></UButton
             >
             <div class="relative">
                 <UButton
@@ -53,7 +53,7 @@
                             {{ cartItemCount > 99 ? '99+' : cartItemCount }}
                         </span>
                     </div>
-                    <p class="text-xs">ตะกร้าสินค้า</p>
+                    <p class="text-xs whitespace-nowrap">ตะกร้าสินค้า</p>
                 </UButton>
             </div>
             <UButton
@@ -68,7 +68,7 @@
                         : '',
                 ]"
                 ><UIcon name="i-iconamoon:news-light" class="size-6" />
-                <p class="text-xs">รีวิว / บทความ</p></UButton
+                <p class="text-xs whitespace-nowrap">รีวิว / บทความ</p></UButton
             >
             <div v-if="loggedIn && user">
                 <UPopover
@@ -113,7 +113,7 @@
                     ]"
                 >
                     <UIcon name="i-iconamoon:profile" class="size-6" />
-                    <p class="text-xs">บัญชี</p>
+                    <p class="text-xs whitespace-nowrap">บัญชี</p>
                 </UButton>
                 <template #content>
                     <AuthBlock @close="isOpen = false" />
