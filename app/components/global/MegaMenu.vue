@@ -157,12 +157,10 @@
 <script setup lang="ts">
 const activeTab = ref<number | null>(null)
 
-// 1. ดึงข้อมูลหมวดหมู่ทั้งหมด
 const { data: categoriesRes } = await useAsyncData('mega-menu-categories', () =>
     useWooCategoriesApi().getCategories({ limit: 100, hide_empty: true })
 )
 
-// 2. แปลงเป็น Tree Structure
 const categoryTree = computed(() => {
     const categories = categoriesRes.value?.success
         ? categoriesRes.value.data
@@ -180,7 +178,6 @@ const categoryTree = computed(() => {
         }
     })
 
-    // ตั้งค่า Tab แรกเป็น Active เริ่มต้น
     if (roots.length > 0 && activeTab.value === null) {
         activeTab.value = roots[0].id
     }
@@ -188,7 +185,6 @@ const categoryTree = computed(() => {
     return roots
 })
 
-// 3. หาข้อมูลหมวดหมู่ที่กำลัง Active
 const activeCategory = computed(() => {
     return categoryTree.value.find((cat) => cat.id === activeTab.value)
 })

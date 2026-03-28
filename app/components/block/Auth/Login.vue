@@ -18,7 +18,7 @@
             >
         </template>
         <template #header>
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-2 gap-3 max-sm:grid-cols-1">
                 <UButton
                     icon="i-custom-google"
                     block

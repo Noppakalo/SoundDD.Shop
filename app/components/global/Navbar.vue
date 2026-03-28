@@ -21,7 +21,7 @@
                         class="h-10 w-auto"
                     />
                 </ULink>
-                <MegaMenu />
+                <MegaMenu class="max-md:hidden" />
             </div>
             <UInput
                 icon="i-lucide-search"

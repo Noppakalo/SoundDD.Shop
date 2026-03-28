@@ -5,6 +5,7 @@
             <slot />
         </main>
         <ServiceFeatures />
+        <MobileNavbar />
         <Footer />
     </div>
 </template>
